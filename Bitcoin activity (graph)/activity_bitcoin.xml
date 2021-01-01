@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#181530">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/backimg"
+            android:layout_width="44dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_back"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="15dp"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/btcLogo"
+                android:layout_width="44dp"
+                android:layout_height="50dp"
+                android:src="@drawable/bitcoin"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="5dp"/>
+            <TextView
+                android:id="@+id/btctxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bitcoin"
+                android:layout_toRightOf="@+id/btcLogo"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/white"
+                android:textSize="20dp" />
+        </RelativeLayout>
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/linechart"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginTop="80dp" />
+
+        <TextView
+            android:id="@+id/aboutview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/linechart"
+            android:layout_marginTop="20dp"
+            android:text="About Bitcoin"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:layout_marginStart="10dp"
+            android:textAlignment="center"
+            />
+        <TextView
+            android:id="@+id/descbtc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="The world's first cryptocurrency, Bitcoin is stored and exchanged securely on the internet through a digital ledger known as a blockchain. Bitcoin is divisble into smallet units called satoshi, each one worth of 0.00000001 bitcoin"
+            android:layout_below="@id/aboutview"
+            android:layout_marginStart="10dp"
+            android:textColor="@color/white"/>
+        <TextView
+            android:id="@+id/marketstats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/descbtc"
+            android:layout_marginTop="20dp"
+            android:text="Market Stats"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:layout_marginStart="10dp"
+            android:textAlignment="center"
+            />
+        rgb(255, 189, 0)
+        <TextView
+            android:id="@+id/max_sup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/marketstats"
+            android:layout_marginTop="20dp"
+            android:text="Max Supply"
+            android:textColor="#FFBD00"
+            android:textSize="18dp"
+            android:layout_marginStart="10dp" />
+        <TextView
+            android:id="@+id/max_sup_val"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/max_sup"
+            android:layout_marginLeft="30dp"
+            android:textColor="@color/white"
+            android:textSize="15dp" />
+
+        <TextView
+            android:id="@+id/circ_sup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Circulating Supply"
+            android:textColor="#FFBD00"
+            android:textSize="18dp"
+            android:layout_marginStart="10dp"
+            android:layout_alignBottom="@+id/max_sup"
+            android:gravity="right" />
+        <TextView
+            android:id="@+id/circ_sup_val"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/max_sup_val"
+            android:layout_marginLeft="320dp"
+            android:textColor="@color/white"
+            android:textSize="15sp"/>
+        <TextView
+            android:id="@+id/market_cap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/circ_sup"
+            android:layout_marginTop="20dp"
+            android:text="Market Cap"
+            android:textColor="#FFBD00"
+            android:textSize="18dp"
+            android:layout_marginStart="10dp" />
+        <TextView
+            android:id="@+id/market_cap_val"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/market_cap"
+            android:layout_marginLeft="30dp"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+    </RelativeLayout>
+</ScrollView>

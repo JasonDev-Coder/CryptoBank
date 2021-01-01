@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Ewallet</string>
+    <string name="home">Home</string>
+    <string name="send">Send</string>
+    <string name="recent">Recent</string>
+    <string name="request">Request</string>
+    <string-array name="currencies_array">
+        <item>Bitcoin</item>
+        <item>USD</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
