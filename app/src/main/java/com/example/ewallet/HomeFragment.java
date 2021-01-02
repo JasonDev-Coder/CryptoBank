@@ -46,6 +46,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
     private static final String TAG =MainActivity.class.getSimpleName();
     public CardView btcCard;
     private static final String MARKET_UPDATES_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=3ea268be-397d-4d62-8127-644e8c4f84d3";
+    private static int JSON_INDEX=0;
     private OkHttpClient okHttpClient = new OkHttpClient();
     private ProgressDialog progressDialog;
     private TextView txt,percentage;
@@ -175,7 +176,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         try {
             JSONObject jsonObject = new JSONObject(body);
             JSONArray bpis = jsonObject.getJSONArray("data");
-            JSONObject btc_info = bpis.getJSONObject(0);
+            JSONObject btc_info = bpis.getJSONObject(JSON_INDEX);
             double btc_percentage = btc_info.getJSONObject("quote").getJSONObject("USD").getDouble("percent_change_1h");
             String btc_perc = Double.toString(btc_percentage);
             Double btc_perc_double= Double.parseDouble(btc_perc);
@@ -200,6 +201,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener{
         Intent i;
         switch (v.getId()){
             case R.id.BitcoinInfo:
+                Bitcoin.CryptoIndex=0;
                 i = new Intent(getActivity(),Bitcoin.class);
                 startActivity(i);
                 break;

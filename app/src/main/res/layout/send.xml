@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    >
+
+    <TextView
+        android:id="@+id/choose_cur"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:text="From: "
+        android:textColor="@color/white"
+        android:textSize="25sp" />
+
+    <Spinner
+        android:id="@+id/currrency_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/choose_cur"
+        android:layout_marginTop="7dp"
+        />
+
+    <TextView
+        android:id="@+id/amount_crypto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/choose_cur"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="20dp"
+        android:text="Amount:"
+        android:textColor="@color/white"
+        android:textSize="25sp" />
+
+    <EditText
+        android:id="@+id/input_amount_crypto"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/amount_crypto"
+        android:layout_toRightOf="@id/amount_crypto"
+        android:layout_marginLeft="10dp"
+        android:backgroundTint="#FFBD00"
+        android:inputType="numberDecimal"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/amount_usd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/input_amount_crypto"
+        android:layout_marginLeft="15dp"
+        android:layout_toRightOf="@id/input_amount_crypto"
+        android:text="USD$"
+        android:textColor="@color/white"
+        android:textSize="25sp" />
+
+    <EditText
+        android:id="@+id/input_amount_usd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/amount_usd"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/amount_usd"
+        android:backgroundTint="#FFBD00"
+        android:inputType="numberDecimal"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/to_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/amount_crypto"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="40dp"
+        android:text="To:"
+        android:textColor="@color/white"
+        android:textSize="25sp" />
+
+    <EditText
+        android:id="@+id/address_edit_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/to_address"
+        android:layout_toRightOf="@id/to_address"
+        android:backgroundTint="#FFBD00"
+        android:hint="Enter address or scan QR code"
+        android:textColorHint="#FFBD00"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:layout_marginLeft="10dp"
+        />
+
+    <Button
+        android:id="@+id/qr_button"
+        android:layout_below="@id/to_address"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:background="@drawable/scan"
+        />
+
+
+</RelativeLayout>

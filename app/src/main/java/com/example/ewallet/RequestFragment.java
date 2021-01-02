@@ -105,6 +105,7 @@ public class RequestFragment extends Fragment implements AdapterView.OnItemSelec
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 ((TextView)parentView.getChildAt(0)).setTextColor(Color.WHITE);
+                ((TextView)parentView.getChildAt(0)).setTextSize(25);
             }
 
             @Override

@@ -47,7 +47,7 @@ import okhttp3.Response;
 
 
 public class Bitcoin extends AppCompatActivity {
-    static int CryptoIndex = 0;
+    static int CryptoIndex = -1;
     private LineChart myChart;
     private static final String HIST_BPI_LINK = "https://api.coindesk.com/v1/bpi/historical/close.json";
     private static final String MARKET_UPDATES_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=3ea268be-397d-4d62-8127-644e8c4f84d3";

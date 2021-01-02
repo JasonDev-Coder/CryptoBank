@@ -160,8 +160,5 @@
                     android:textSize="15sp" />
             </TableRow>
         </TableLayout>
-
-
-
     </RelativeLayout>
 </ScrollView>
