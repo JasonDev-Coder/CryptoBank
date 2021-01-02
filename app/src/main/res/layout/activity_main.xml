@@ -26,6 +26,8 @@
         app:abb_tabColorDisabled="#2C2C53"
         app:abb_tabColorSelected="@color/white"
         app:abb_tabs="@menu/menu"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="#181530"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
