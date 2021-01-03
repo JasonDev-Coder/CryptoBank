@@ -26,7 +26,7 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/btcLogo"
+                android:id="@+id/cryptoLogo"
                 android:layout_width="44dp"
                 android:layout_height="50dp"
                 android:layout_marginLeft="5dp"
@@ -35,11 +35,11 @@
                 android:src="@drawable/bitcoin" />
 
             <TextView
-                android:id="@+id/btctxt"
+                android:id="@+id/cryptotxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:layout_toRightOf="@+id/btcLogo"
+                android:layout_toRightOf="@+id/cryptoLogo"
                 android:text="Bitcoin"
                 android:textColor="@color/white"
                 android:textSize="20dp" />
@@ -48,7 +48,7 @@
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/linechart"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="350dp"
             android:layout_marginTop="80dp" />
 
         <TextView
@@ -65,19 +65,19 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/descbtc"
+            android:id="@+id/desc_crypto"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/aboutview"
             android:layout_marginStart="10dp"
-            android:text="The world's first cryptocurrency, Bitcoin is stored and exchanged securely on the internet through a digital ledger known as a blockchain. Bitcoin is divisble into smallet units called satoshi, each one worth of 0.00000001 bitcoin"
+            android:text="@string/btc_info"
             android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/marketstats"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/descbtc"
+            android:layout_below="@id/desc_crypto"
             android:layout_marginStart="10dp"
             android:layout_marginTop="20dp"
             android:text="Market Stats"

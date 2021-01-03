@@ -86,14 +86,14 @@ public class SendFragment extends Fragment {
         button_scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                open_qr();
+                Intent i = new Intent(getActivity(),QrScanner.class);
+                startActivity(i);
             }
         });
         send_address=v.findViewById(R.id.address_edit_field);
         return v;
     }
     public void open_qr(){
-        Intent i = new Intent(getActivity(),QrScanner.class);
-        startActivity(i);
+
     }
 }
