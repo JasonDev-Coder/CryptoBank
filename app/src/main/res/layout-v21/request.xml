@@ -2,8 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#181530"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#181530">
 
     <Spinner
         android:id="@+id/choice_spinner"
@@ -70,6 +70,7 @@
         android:textSize="20sp"
         android:textAllCaps="true"
         android:textColor="#181530"
+        android:theme="@style/My_button_style"
         />
 
 
