@@ -28,8 +28,8 @@ public class QrScanner extends AppCompatActivity {
                     @Override
                     public void run() {
                         Toast.makeText(QrScanner.this, result.getText(), Toast.LENGTH_SHORT).show();
-                        SendFragment.send_address.setText(result.getText());
-                        finish();
+                        //SendFragment.send_address.setText(result.getText());
+                        //finish();
                     }
                 });
             }

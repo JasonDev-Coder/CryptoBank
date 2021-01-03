@@ -133,8 +133,8 @@ public class CryptoInfo extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        progressDialog.dismiss();
                         parseHistResponse(body);
+                        progressDialog.dismiss();
                     }
                 });
             }

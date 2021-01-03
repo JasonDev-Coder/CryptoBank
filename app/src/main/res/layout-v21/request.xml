@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
+    android:background="#181530"
     >
 
     <Spinner
@@ -67,8 +67,9 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/copy_button"
         android:text="Copy Address"
+        android:textSize="20sp"
         android:textAllCaps="true"
-        android:textColor="@color/white"
+        android:textColor="#181530"
         />
 
 

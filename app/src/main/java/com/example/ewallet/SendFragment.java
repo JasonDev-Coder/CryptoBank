@@ -25,8 +25,8 @@ public class SendFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    Button button_scan;
-    static TextView send_address;
+    private Button button_scan;
+   private TextView send_address;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -82,6 +82,7 @@ public class SendFragment extends Fragment {
 
             }
         });
+        send_address=v.findViewById(R.id.address_edit_field);
         button_scan=(Button)v.findViewById(R.id.qr_button);
         button_scan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,7 +91,7 @@ public class SendFragment extends Fragment {
                 startActivity(i);
             }
         });
-        send_address=v.findViewById(R.id.address_edit_field);
+
         return v;
     }
     public void open_qr(){

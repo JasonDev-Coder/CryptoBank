@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
+    android:background="#181530"
     >
 
     <TextView
@@ -95,14 +95,25 @@
 
     <Button
         android:id="@+id/qr_button"
-        android:layout_below="@id/to_address"
+        android:layout_below="@id/address_edit_field"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:background="@drawable/increase"
+        android:background="@drawable/scan"
+        android:text="QR"
         />
-
-
+    <Button
+        android:id="@+id/copy_button"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/qr_button"
+        android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/copy_button"
+        android:text="SEND"
+        android:textSize="20sp"
+        android:textColor="#181530"
+        />
 </RelativeLayout>

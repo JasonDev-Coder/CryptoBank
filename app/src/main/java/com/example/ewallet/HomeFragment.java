@@ -51,13 +51,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private ProgressDialog progressDialog;
 
     private TextView BtcPrice, BtcPercentage1hr, BtcPercentage1day, BtcPercentage1week;
-    private TextView EthPrice, EthPercentage;
-    private TextView UsdtPrice, UsdtPercentage;
-    private TextView XrpPrice, XrpPercentage;
-    private TextView LtcPrice, LtcPercentage;
+    private TextView EthPrice, EthPercentage1hr, EthPercentage1day, EthPercentage1week;
+    private TextView UsdtPrice, USDTPercentage1hr, USDTPercentage1day, USDTPercentage1week;
+    private TextView XrpPrice, XRPPercentage1hr, XRPPercentage1day, XRPPercentage1week;
+    private TextView LtcPrice, LTCPercentage1hr, LTCPercentage1day, LTCPercentage1week;
 
     private ImageView BtcLogoPercentage1hr, BtcLogoPercentage1day, BtcLogoPercentage1week;
-    private ImageView EthLogoPercentage, UsdtLogoPercentage, XrpLogoPercentage, LtcLogoPercentage;
+    private ImageView EthLogoPercentage1hr, EthLogoPercentage1day, EthLogoPercentage1week;
+    private ImageView XRPLogoPercentage1hr, XRPLogoPercentage1day, XRPLogoPercentage1week;
+    private ImageView USDTLogoPercentage1hr, USDTLogoPercentage1day, USDTLogoPercentage1week;
+    private ImageView LTCLogoPercentage1hr, LTCLogoPercentage1day, LTCLogoPercentage1week;
 
     private AnimatedBottomBar bottom_bar;
 
@@ -126,20 +129,46 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         BtcPercentage1day = (TextView) v.findViewById(R.id.btc_perc_text_1day);
         BtcPercentage1week = (TextView) v.findViewById(R.id.btc_perc_text_1week);
 
-        EthPercentage = (TextView) v.findViewById(R.id.eth_perc_text);
-        UsdtPercentage = (TextView) v.findViewById(R.id.usdt_perc_text);
-        XrpPercentage = (TextView) v.findViewById(R.id.xrp_perc_text);
-        LtcPercentage = (TextView) v.findViewById(R.id.ltc_perc_text);
 
         BtcLogoPercentage1hr = (ImageView) v.findViewById(R.id.btc_perc_logo_1hour);
         BtcLogoPercentage1day = (ImageView) v.findViewById(R.id.btc_perc_logo_1day);
         BtcLogoPercentage1week = (ImageView) v.findViewById(R.id.btc_perc_logo_1week);
 
+        EthPercentage1hr = (TextView) v.findViewById(R.id.eth_perc_text_1hour);
+        EthPercentage1day = (TextView) v.findViewById(R.id.eth_perc_text_1day);
+        EthPercentage1week = (TextView) v.findViewById(R.id.eth_perc_text_1week);
 
-        EthLogoPercentage = (ImageView) v.findViewById(R.id.eth_perc_logo);
-        UsdtLogoPercentage = (ImageView) v.findViewById(R.id.usdt_perc_logo);
-        XrpLogoPercentage = (ImageView) v.findViewById(R.id.xrp_perc_logo);
-        LtcLogoPercentage = (ImageView) v.findViewById(R.id.ltc_perc_logo);
+
+        EthLogoPercentage1hr = (ImageView) v.findViewById(R.id.eth_perc_logo_1hour);
+        EthLogoPercentage1day = (ImageView) v.findViewById(R.id.eth_perc_logo_1day);
+        EthLogoPercentage1week = (ImageView) v.findViewById(R.id.eth_perc_logo_1week);
+
+        USDTPercentage1hr = (TextView) v.findViewById(R.id.usdt_perc_text_1hour);
+        USDTPercentage1day = (TextView) v.findViewById(R.id.usdt_perc_text_1day);
+        USDTPercentage1week = (TextView) v.findViewById(R.id.usdt_perc_text_1week);
+
+
+        USDTLogoPercentage1hr = (ImageView) v.findViewById(R.id.usdt_perc_logo_1hour);
+        USDTLogoPercentage1day = (ImageView) v.findViewById(R.id.usdt_perc_logo_1day);
+        USDTLogoPercentage1week = (ImageView) v.findViewById(R.id.usdt_perc_logo_1week);
+
+        XRPPercentage1hr = (TextView) v.findViewById(R.id.xrp_perc_text_1hour);
+        XRPPercentage1day = (TextView) v.findViewById(R.id.xrp_perc_text_1day);
+        XRPPercentage1week = (TextView) v.findViewById(R.id.xrp_perc_text_1week);
+
+
+        XRPLogoPercentage1hr = (ImageView) v.findViewById(R.id.xrp_perc_logo_1hour);
+        XRPLogoPercentage1day = (ImageView) v.findViewById(R.id.xrp_perc_logo_1day);
+        XRPLogoPercentage1week = (ImageView) v.findViewById(R.id.xrp_perc_logo_1week);
+
+        LTCPercentage1hr = (TextView) v.findViewById(R.id.ltc_perc_text_1hour);
+        LTCPercentage1day = (TextView) v.findViewById(R.id.ltc_perc_text_1day);
+        LTCPercentage1week = (TextView) v.findViewById(R.id.ltc_perc_text_1week);
+
+
+        LTCLogoPercentage1hr = (ImageView) v.findViewById(R.id.ltc_perc_logo_1hour);
+        LTCLogoPercentage1day = (ImageView) v.findViewById(R.id.ltc_perc_logo_1day);
+        LTCLogoPercentage1week = (ImageView) v.findViewById(R.id.ltc_perc_logo_1week);
 
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setTitle("BPI Loading");
@@ -235,26 +264,30 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        progressDialog.dismiss();
+
                         switch (cv.getId()) {
                             case R.id.BitcoinInfo:
                                 parseBpiPercResponse(body, 0, BtcPercentage1hr, BtcPercentage1day, BtcPercentage1week,
                                         BtcLogoPercentage1hr, BtcLogoPercentage1day, BtcLogoPercentage1week);
                                 break;
-                            //case R.id.EthereumInfo:
-                            //    parseBpiPercResponse(body,1,EthPercentage,EthLogoPercentage);
-                            //    break;
-                            //case R.id.TetherInfo:
-                            //    parseBpiPercResponse(body,2 , UsdtPercentage , UsdtLogoPercentage);
-                            //    break;
-                            //case R.id.XrpInfo:
-                            //    parseBpiPercResponse(body,3 , XrpPercentage , XrpLogoPercentage);
-                            //    break;
-                            //case R.id.LitecoinInfo:
-                            //    parseBpiPercResponse(body,4 , LtcPercentage , LtcLogoPercentage);
-                            //    break;
+                            case R.id.EthereumInfo:
+                                parseBpiPercResponse(body, 1, EthPercentage1hr, EthPercentage1day, EthPercentage1week,
+                                        EthLogoPercentage1hr, EthLogoPercentage1day, EthLogoPercentage1week);
+                                break;
+                            case R.id.TetherInfo:
+                                parseBpiPercResponse(body, 2, USDTPercentage1hr, USDTPercentage1day, USDTPercentage1week,
+                                        USDTLogoPercentage1hr, USDTLogoPercentage1day, USDTLogoPercentage1week);
+                                break;
+                            case R.id.XrpInfo:
+                                parseBpiPercResponse(body, 3, XRPPercentage1hr, XRPPercentage1day, XRPPercentage1week,
+                                        XRPLogoPercentage1hr, XRPLogoPercentage1day, XRPLogoPercentage1week);
+                                break;
+                            case R.id.LitecoinInfo:
+                                parseBpiPercResponse(body, 4, LTCPercentage1hr, LTCPercentage1day, LTCPercentage1week,
+                                        LTCLogoPercentage1hr, LTCLogoPercentage1day, LTCLogoPercentage1week);
+                                break;
                         }
-
+                        progressDialog.dismiss();
                     }
                 });
             }
