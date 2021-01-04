@@ -157,7 +157,7 @@
                         android:id="@+id/btc_perc_text_1hour"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:layout_toRightOf="@id/onehour"
                         android:textColor="@color/white" />
 
@@ -165,7 +165,7 @@
                         android:id="@+id/btc_perc_logo_1hour"
                         android:layout_width="25dp"
                         android:layout_height="9dp"
-                        android:layout_marginLeft="10dp"
+
                         android:layout_marginTop="3dp"
                        android:layout_toRightOf="@id/btc_perc_text_1hour"
                         android:src="@drawable/increase" />
@@ -183,7 +183,7 @@
                         android:id="@+id/btc_perc_text_1day"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:layout_toRightOf="@id/oneday"
                         android:textColor="@color/white" />
 
@@ -191,7 +191,6 @@
                         android:id="@+id/btc_perc_logo_1day"
                         android:layout_width="25dp"
                         android:layout_height="9dp"
-                        android:layout_marginLeft="10dp"
                         android:layout_marginTop="3dp"
                         android:layout_toRightOf="@id/btc_perc_text_1day"
                         android:src="@drawable/increase" />
@@ -209,7 +208,7 @@
                         android:id="@+id/btc_perc_text_1week"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:layout_toStartOf="@id/btc_perc_logo_1week"
                         android:textColor="@color/white" />
 
@@ -291,7 +290,7 @@
                         android:id="@+id/eth_perc_text_1hour"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:layout_toRightOf="@id/eth_onehour"
                         android:textColor="@color/white" />
 
@@ -299,7 +298,6 @@
                         android:id="@+id/eth_perc_logo_1hour"
                         android:layout_width="25dp"
                         android:layout_height="9dp"
-                        android:layout_marginLeft="10dp"
                         android:layout_marginTop="3dp"
                         android:layout_toRightOf="@id/eth_perc_text_1hour"
                         android:src="@drawable/increase" />
@@ -317,7 +315,7 @@
                         android:id="@+id/eth_perc_text_1day"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:layout_toRightOf="@id/eth_oneday"
                         android:textColor="@color/white" />
 
@@ -325,7 +323,6 @@
                         android:id="@+id/eth_perc_logo_1day"
                         android:layout_width="25dp"
                         android:layout_height="9dp"
-                        android:layout_marginLeft="10dp"
                         android:layout_marginTop="3dp"
                         android:layout_toRightOf="@id/eth_perc_text_1day"
                         android:src="@drawable/increase" />
@@ -343,7 +340,7 @@
                         android:id="@+id/eth_perc_text_1week"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:layout_toStartOf="@id/eth_perc_logo_1week"
                         android:textColor="@color/white" />
 
@@ -425,7 +422,7 @@
                         android:id="@+id/usdt_perc_text_1hour"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:layout_toRightOf="@id/usdt_onehour"
                         android:textColor="@color/white" />
 
@@ -433,7 +430,6 @@
                         android:id="@+id/usdt_perc_logo_1hour"
                         android:layout_width="25dp"
                         android:layout_height="9dp"
-                        android:layout_marginLeft="10dp"
                         android:layout_marginTop="3dp"
                         android:layout_toRightOf="@id/usdt_perc_text_1hour"
                         android:src="@drawable/increase" />
@@ -451,7 +447,7 @@
                         android:id="@+id/usdt_perc_text_1day"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:layout_toRightOf="@id/usdt_oneday"
                         android:textColor="@color/white" />
 
@@ -459,7 +455,6 @@
                         android:id="@+id/usdt_perc_logo_1day"
                         android:layout_width="25dp"
                         android:layout_height="9dp"
-                        android:layout_marginLeft="10dp"
                         android:layout_marginTop="3dp"
                         android:layout_toRightOf="@id/usdt_perc_text_1day"
                         android:src="@drawable/increase" />
@@ -477,7 +472,7 @@
                         android:id="@+id/usdt_perc_text_1week"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:layout_toStartOf="@id/usdt_perc_logo_1week"
                         android:textColor="@color/white" />
 
@@ -559,7 +554,7 @@
                         android:id="@+id/xrp_perc_text_1hour"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:layout_toRightOf="@id/xrp_onehour"
                         android:textColor="@color/white" />
 
@@ -567,7 +562,6 @@
                         android:id="@+id/xrp_perc_logo_1hour"
                         android:layout_width="25dp"
                         android:layout_height="9dp"
-                        android:layout_marginLeft="15dp"
                         android:layout_marginTop="3dp"
                         android:layout_toRightOf="@id/xrp_perc_text_1hour"
                         android:src="@drawable/increase" />
@@ -585,7 +579,7 @@
                         android:id="@+id/xrp_perc_text_1day"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:layout_toRightOf="@id/xrp_oneday"
                         android:textColor="@color/white" />
 
@@ -593,7 +587,6 @@
                         android:id="@+id/xrp_perc_logo_1day"
                         android:layout_width="25dp"
                         android:layout_height="9dp"
-                        android:layout_marginLeft="10dp"
                         android:layout_marginTop="3dp"
                         android:layout_toRightOf="@id/xrp_perc_text_1day"
                         android:src="@drawable/increase" />
@@ -611,7 +604,7 @@
                         android:id="@+id/xrp_perc_text_1week"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:layout_toStartOf="@id/xrp_perc_logo_1week"
                         android:textColor="@color/white" />
 
@@ -693,7 +686,7 @@
                         android:id="@+id/ltc_perc_text_1hour"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:layout_toRightOf="@id/ltc_onehour"
                         android:textColor="@color/white" />
 
@@ -701,7 +694,6 @@
                         android:id="@+id/ltc_perc_logo_1hour"
                         android:layout_width="25dp"
                         android:layout_height="9dp"
-                        android:layout_marginLeft="10dp"
                         android:layout_marginTop="3dp"
                         android:layout_toRightOf="@id/ltc_perc_text_1hour"
                         android:src="@drawable/increase" />
@@ -719,7 +711,7 @@
                         android:id="@+id/ltc_perc_text_1day"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:layout_toRightOf="@id/ltc_oneday"
                         android:textColor="@color/white" />
 
@@ -727,7 +719,6 @@
                         android:id="@+id/ltc_perc_logo_1day"
                         android:layout_width="25dp"
                         android:layout_height="9dp"
-                        android:layout_marginLeft="10dp"
                         android:layout_marginTop="3dp"
                         android:layout_toRightOf="@id/ltc_perc_text_1day"
                         android:src="@drawable/increase" />
@@ -745,7 +736,7 @@
                         android:id="@+id/ltc_perc_text_1week"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
+                        android:layout_marginLeft="5dp"
                         android:layout_toStartOf="@id/ltc_perc_logo_1week"
                         android:textColor="@color/white" />
 
