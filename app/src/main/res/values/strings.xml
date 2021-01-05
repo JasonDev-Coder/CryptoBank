@@ -6,7 +6,10 @@
     <string name="request">Request</string>
     <string-array name="currencies_array">
         <item>Bitcoin</item>
-        <item>USD</item>
+        <item>Etherum</item>
+        <item>USD-T</item>
+        <item>XRP</item>
+        <item>Litecoin</item>
     </string-array>
     <string name="btc_info">The world\'s first cryptocurrency, Bitcoin is stored and exchanged securely on the internet through a digital ledger known as a blockchain. Bitcoin is divisble into smallet units called satoshi, each one worth of 0.00000001 bitcoin</string>
     <string name="eth_info">Ethereum is a decentralized, open-source blockchain featuring smart contract functionality. Ether is the native cryptocurrency of the platform. It is the second-largest cryptocurrency by market capitalization, after Bitcoin. Ethereum is the most actively used blockchain in the world.</string>

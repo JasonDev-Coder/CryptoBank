@@ -8,7 +8,9 @@ import android.os.Bundle;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +47,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     public CardView btcCard, ethCard, usdtCard, xrpCard, ltcCard;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private static final String MARKET_UPDATES_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=3ea268be-397d-4d62-8127-644e8c4f84d3";
     private OkHttpClient okHttpClient = new OkHttpClient();
@@ -109,7 +112,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.home_layout, container, false);
-
+        swipeRefreshLayout=v.findViewById(R.id.refresh_layout_home);
         btcCard = (CardView) v.findViewById(R.id.BitcoinInfo);
         ethCard = (CardView) v.findViewById(R.id.EthereumInfo);
         usdtCard = (CardView) v.findViewById(R.id.TetherInfo);
@@ -187,12 +190,37 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         loadPrice(ltcCard);
         loadPercentage(ltcCard);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadPrice(btcCard);
+                loadPercentage(btcCard);
 
+                loadPrice(ethCard);
+                loadPercentage(ethCard);
+
+                loadPrice(usdtCard);
+                loadPercentage(usdtCard);
+
+                loadPrice(xrpCard);
+                loadPercentage(xrpCard);
+
+                loadPrice(ltcCard);
+                loadPercentage(ltcCard);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                },3*1000);
+            }
+        });
         btcCard.setOnClickListener(this);
         ethCard.setOnClickListener(this);
         ltcCard.setOnClickListener(this);
         usdtCard.setOnClickListener(this);
         xrpCard.setOnClickListener(this);
+
         return v;
     }
 
@@ -240,10 +268,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         try {
             JSONObject jsonObject = new JSONObject(body);
             JSONArray bpis = jsonObject.getJSONArray("data");
-            JSONObject btc_info = bpis.getJSONObject(currencyIndex);
-            double btc_price = btc_info.getJSONObject("quote").getJSONObject("USD").getDouble("price");
+            JSONObject crypto_info = bpis.getJSONObject(currencyIndex);
+            double crypto_price = crypto_info.getJSONObject("quote").getJSONObject("USD").getDouble("price");
             NumberFormat defaultFormat = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
-            price.setText("US" + defaultFormat.format(btc_price));
+            price.setText("US" + defaultFormat.format(crypto_price));
         } catch (Exception e) {
         }
     }
@@ -300,10 +328,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         try {
             JSONObject jsonObject = new JSONObject(body);
             JSONArray bpis = jsonObject.getJSONArray("data");
-            JSONObject btc_info = bpis.getJSONObject(currencyIndex);
-            double curr_percentage_1hr = btc_info.getJSONObject("quote").getJSONObject("USD").getDouble("percent_change_1h");
-            double curr_percentage_1day = btc_info.getJSONObject("quote").getJSONObject("USD").getDouble("percent_change_24h");
-            double curr_percentage_1week = btc_info.getJSONObject("quote").getJSONObject("USD").getDouble("percent_change_7d");
+            JSONObject crypto_info = bpis.getJSONObject(currencyIndex);
+            double curr_percentage_1hr = crypto_info.getJSONObject("quote").getJSONObject("USD").getDouble("percent_change_1h");
+            double curr_percentage_1day = crypto_info.getJSONObject("quote").getJSONObject("USD").getDouble("percent_change_24h");
+            double curr_percentage_1week = crypto_info.getJSONObject("quote").getJSONObject("USD").getDouble("percent_change_7d");
             String curr_perc_1hr = Double.toString(curr_percentage_1hr);
             String curr_perc_1day = Double.toString(curr_percentage_1day);
             String curr_perc_1week = Double.toString(curr_percentage_1week);

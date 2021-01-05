@@ -4,17 +4,38 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -26,11 +47,15 @@ public class SendFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String MARKET_UPDATES_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=3ea268be-397d-4d62-8127-644e8c4f84d3";
     private ImageButton button_scan;
-   private TextView send_address;
+    private TextView send_address;
+    private Spinner spinner_choice;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private EditText cryptoInput, usdInput;
+    private OkHttpClient okHttpClient = new OkHttpClient();
 
     public SendFragment() {
         // Required empty public constructor
@@ -67,15 +92,16 @@ public class SendFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.send, container, false);
-        Spinner spinner_choice = v.findViewById(R.id.currrency_spinner);
+        spinner_choice = v.findViewById(R.id.currrency_spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.currencies_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_choice.setAdapter(adapter);
         spinner_choice.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                ((TextView)parentView.getChildAt(0)).setTextColor(Color.WHITE);
-                ((TextView)parentView.getChildAt(0)).setTextSize(25);
+                ((TextView) parentView.getChildAt(0)).setTextColor(Color.WHITE);
+                ((TextView) parentView.getChildAt(0)).setTextSize(25);
+                Convert(true);
             }
 
             @Override
@@ -83,19 +109,111 @@ public class SendFragment extends Fragment {
 
             }
         });
-        send_address=v.findViewById(R.id.address_edit_field);
-        button_scan=(ImageButton)v.findViewById(R.id.qr_button);
+        send_address = v.findViewById(R.id.address_edit_field);
+        button_scan = (ImageButton) v.findViewById(R.id.qr_button);
+        cryptoInput = v.findViewById(R.id.input_amount_crypto);
+        usdInput = v.findViewById(R.id.input_amount_usd);
+        cryptoInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!usdInput.isFocused())
+                    Convert(true);
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        usdInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!cryptoInput.isFocused())
+                    Convert(false);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         button_scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getActivity(),QrScanner.class);
+                Intent i = new Intent(getActivity(), QrScanner.class);
                 startActivity(i);
             }
         });
-
         return v;
     }
-    public void open_qr(){
 
+    private void ChangePrice(final int index, final boolean CrypToUs) {
+        Request request = new Request.Builder().url(MARKET_UPDATES_URL).build();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Toast.makeText(getActivity(), "Error during BPI loading:" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String body = response.body().string();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        parseBpiResponse(body, index, CrypToUs);
+                    }
+                });
+            }
+        });
     }
+
+    private void parseBpiResponse(String body, int currencyIndex, boolean CrypToUs) {
+        try {
+            JSONObject jsonObject = new JSONObject(body);
+            JSONArray cryptos = jsonObject.getJSONArray("data");
+            JSONObject crypto_info = cryptos.getJSONObject(currencyIndex);
+            double crypto_price = crypto_info.getJSONObject("quote").getJSONObject("USD").getDouble("price");
+            double value = 0;
+            if (CrypToUs) {
+                try {
+                    value = Double.parseDouble(cryptoInput.getText().toString());
+                } catch (Exception e) {
+                    usdInput.setText("");
+                    return;
+                }
+                double usd = crypto_price * value;
+                usdInput.setText(Double.toString(usd));
+            } else {
+                try {
+                    value = Double.parseDouble(usdInput.getText().toString());
+                } catch (Exception e) {
+                    cryptoInput.setText("");
+                    return;
+                }
+                double crypto = value / crypto_price;
+                DecimalFormat df = new DecimalFormat("#");
+                df.setMaximumFractionDigits(8);
+                cryptoInput.setText(String.format("%.8f", crypto));
+            }
+        } catch (Exception e) {
+        }
+    }
+
+    private void Convert(boolean cryoToUs) {
+        int Cryp_index_spinner = spinner_choice.getSelectedItemPosition();
+        ChangePrice(Cryp_index_spinner, cryoToUs);
+    }
+
 }
