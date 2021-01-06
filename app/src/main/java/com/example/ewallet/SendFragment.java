@@ -47,7 +47,7 @@ public class SendFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private static final String MARKET_UPDATES_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=3ea268be-397d-4d62-8127-644e8c4f84d3";
+
     private ImageButton button_scan;
     static TextView send_address;
     private Spinner spinner_choice;
@@ -159,7 +159,7 @@ public class SendFragment extends Fragment {
     }
 
     private void ChangePrice(final int index, final boolean CrypToUs) {
-        Request request = new Request.Builder().url(MARKET_UPDATES_URL).build();
+        Request request = new Request.Builder().url(CONSTANTS.MARKET_UPDATES_URL).build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

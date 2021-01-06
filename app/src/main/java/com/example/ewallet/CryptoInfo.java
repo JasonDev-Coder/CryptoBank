@@ -39,7 +39,6 @@ public class CryptoInfo extends AppCompatActivity {
     private LineChart myChart;
     private OkHttpClient okHttpClient = new OkHttpClient();
     private ProgressDialog progressDialog;
-    private static String apiKeyCMarket = "3ea268be-397d-4d62-8127-644e8c4f84d3";
     TextView max_market_value;
     TextView circ_sup_view;
     TextView market_cap_val;

@@ -122,7 +122,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.home_layout, container, false);
         walletList = (LinearLayout) v.findViewById(R.id.wallets);
-        addWalletView(R.drawable.bitcoin,"BTC");
         ImageView addWalletMenu = (ImageView) v.findViewById(R.id.addWallet_menu);
         addWalletMenu.setOnClickListener(new View.OnClickListener() {
             @Override
