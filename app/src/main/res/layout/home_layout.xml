@@ -20,16 +20,33 @@
             android:textColor="@color/white"
             android:textSize="20dp" />
 
-        <TextView
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
-            android:text="my wallets:"
-            android:textColor="@color/white"
-            android:textSize="15sp" />
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:text="my wallets:"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/addWallet_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/addicon" />
+
+        </RelativeLayout>
+
 
         <LinearLayout
+            android:id="@+id/wallets"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -43,18 +60,46 @@
                 android:layout_marginRight="15dp"
                 android:layout_marginBottom="20dp"
                 app:cardBackgroundColor="#2C2C53"
-                app:cardCornerRadius="20dp" />
+                app:cardCornerRadius="20dp">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/wallet2"
-                android:layout_width="150dp"
-                android:layout_height="250dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginBottom="20dp"
-                app:cardBackgroundColor="#2C2C53"
-                app:cardCornerRadius="20dp" />
-
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/default_wallet_logo"
+                        android:layout_width="44dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/bitcoin"
+                        android:layout_centerHorizontal="true"/>
+                    <TextView
+                        android:id="@+id/wallet_balance_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/default_wallet_logo"
+                        android:text="Balance:"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        android:layout_centerHorizontal="true"/>
+                    <TextView
+                        android:id="@+id/wallet_balance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/wallet_balance_text"
+                        android:text="0 BTC"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        />
+                    <TextView
+                        android:id="@+id/wallet_balance_usd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/wallet_balance"
+                        android:text="(US$ 0)"
+                        android:textColor="#00FF00"
+                        android:textSize="15sp"
+                        />
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
         </LinearLayout>
 
         <RelativeLayout
@@ -145,6 +190,7 @@
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="7dp"
                         android:layout_gravity="bottom">
 
                         <TextView
@@ -169,7 +215,6 @@
                             android:id="@+id/btc_perc_logo_1hour"
                             android:layout_width="25dp"
                             android:layout_height="9dp"
-
                             android:layout_marginTop="3dp"
                             android:layout_toRightOf="@id/btc_perc_text_1hour"
                             android:src="@drawable/increase" />
@@ -277,7 +322,8 @@
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="bottom">
+                        android:layout_gravity="bottom"
+                        android:layout_marginBottom="7dp">
 
                         <TextView
                             android:id="@+id/eth_onehour"
@@ -408,7 +454,8 @@
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="bottom">
+                        android:layout_gravity="bottom"
+                        android:layout_marginBottom="7dp">
 
                         <TextView
                             android:id="@+id/usdt_onehour"
@@ -539,7 +586,8 @@
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="bottom">
+                        android:layout_gravity="bottom"
+                        android:layout_marginBottom="7dp">
 
                         <TextView
                             android:id="@+id/xrp_onehour"
@@ -670,7 +718,8 @@
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="bottom">
+                        android:layout_gravity="bottom"
+                        android:layout_marginBottom="7dp">
 
                         <TextView
                             android:id="@+id/ltc_onehour"
@@ -749,6 +798,16 @@
                             android:src="@drawable/increase" />
                     </RelativeLayout>
                 </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="65dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginBottom="5dp"
+                    app:cardBackgroundColor="#181530"
+                    app:cardCornerRadius="20dp"/>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </LinearLayout>

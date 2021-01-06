@@ -3,6 +3,7 @@ package com.example.ewallet;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
 
 import androidx.cardview.widget.CardView;
@@ -12,10 +13,13 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +52,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     public CardView btcCard, ethCard, usdtCard, xrpCard, ltcCard;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private View walletView;
+    private LinearLayout walletList;
 
     private static final String MARKET_UPDATES_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=3ea268be-397d-4d62-8127-644e8c4f84d3";
     private OkHttpClient okHttpClient = new OkHttpClient();
@@ -112,6 +118,50 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.home_layout, container, false);
+
+        walletView = getLayoutInflater().inflate(R.layout.wallet,null,false);
+
+        walletList = (LinearLayout)v.findViewById(R.id.wallets);
+
+        ImageView addWalletMenu = (ImageView)v.findViewById(R.id.addWallet_menu);
+        addWalletMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupMenu popup = new PopupMenu(getActivity(),v);
+                popup.getMenuInflater().inflate(R.menu.popup_menu,popup.getMenu());
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch(item.getItemId()){
+                            case R.id.menu_ethereum:
+                                addWalletView(walletView , R.drawable.ethereum , "ETH");
+                                return true;
+                            case R.id.menu_tether:
+                                addWalletView(walletView , R.drawable.tether , "USD-T");
+                                return true;
+                            case R.id.menu_xrp:
+                                addWalletView(walletView , R.drawable.xrp , "XRP");
+                                return true;
+                            case R.id.menu_litecoin:
+                                addWalletView(walletView , R.drawable.litecoin , "LTC");
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+                });
+                popup.show();
+            }
+        });
+
+
+        final ImageView removeView = (ImageView)walletView.findViewById(R.id.removeWallet);
+        removeView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeWalletView(walletView);
+            }
+        });
         swipeRefreshLayout=v.findViewById(R.id.refresh_layout_home);
         btcCard = (CardView) v.findViewById(R.id.BitcoinInfo);
         ethCard = (CardView) v.findViewById(R.id.EthereumInfo);
@@ -222,6 +272,20 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         xrpCard.setOnClickListener(this);
 
         return v;
+    }
+
+    private void addWalletView(View v , int image , String currency_type) {   //cutomize and add wallet to layout
+        ImageView wallet_logo = (ImageView)walletView.findViewById(R.id.wallet_logo);
+        TextView wallet_balance = (TextView)walletView.findViewById(R.id.wallet_balance);
+
+        wallet_logo.setImageResource(image);
+        wallet_balance.setText("0 "+currency_type);
+
+        walletList.addView(v);
+    }
+
+    private void removeWalletView(View v){   //remove wallet from layout
+        walletList.removeView(v);
     }
 
     private void loadPrice(final CardView cv) {
