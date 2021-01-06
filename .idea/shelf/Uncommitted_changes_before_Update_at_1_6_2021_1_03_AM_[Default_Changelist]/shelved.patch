@@ -1,0 +1,571 @@
+Index: app/src/main/res/layout/activity_main.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<androidx.constraintlayout.widget.ConstraintLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:background=\"#181530\"\r\n    tools:context=\".MainActivity\">\r\n    <FrameLayout\r\n        android:id=\"@+id/fragment_container\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"match_parent\" />\r\n\r\n    <nl.joery.animatedbottombar.AnimatedBottomBar\r\n        android:id=\"@+id/bottom_bar\"\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        app:abb_indicatorAppearance=\"round\"\r\n        app:abb_indicatorColor=\"@color/white\"\r\n        app:abb_indicatorHeight=\"4dp\"\r\n        app:abb_indicatorLocation=\"bottom\"\r\n        app:abb_indicatorMargin=\"16dp\"\r\n        app:abb_selectedIndex=\"0\"\r\n        app:abb_selectedTabType=\"icon\"\r\n        app:abb_tabColor=\"@color/white\"\r\n        app:abb_tabColorDisabled=\"#2C2C53\"\r\n        app:abb_tabColorSelected=\"@color/white\"\r\n        app:abb_tabs=\"@menu/menu\"\r\n        app:layout_constraintBottom_toBottomOf=\"parent\"\r\n        android:background=\"#181530\"/>\r\n\r\n\r\n</androidx.constraintlayout.widget.ConstraintLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_main.xml	(revision f6af141f68d462c6b193e41c86893b3fb574b55a)
++++ app/src/main/res/layout/activity_main.xml	(date 1609858550147)
+@@ -6,6 +6,7 @@
+     android:layout_height="match_parent"
+     android:background="#181530"
+     tools:context=".MainActivity">
++
+     <FrameLayout
+         android:id="@+id/fragment_container"
+         android:layout_width="match_parent"
+@@ -27,7 +28,8 @@
+         app:abb_tabColorSelected="@color/white"
+         app:abb_tabs="@menu/menu"
+         app:layout_constraintBottom_toBottomOf="parent"
+-        android:background="#181530"/>
++        android:background="#181530"
++        />
+ 
+ 
+ </androidx.constraintlayout.widget.ConstraintLayout>
+\ No newline at end of file
+Index: app/src/main/java/com/example/ewallet/HomeFragment.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.ewallet;\r\n\r\nimport android.app.ProgressDialog;\r\nimport android.content.Intent;\r\nimport android.graphics.Color;\r\nimport android.os.Bundle;\r\n\r\nimport androidx.cardview.widget.CardView;\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.fragment.app.FragmentManager;\r\n\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.Button;\r\nimport android.widget.ImageView;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport org.json.JSONArray;\r\nimport org.json.JSONObject;\r\n\r\nimport java.io.IOException;\r\nimport java.text.NumberFormat;\r\nimport java.util.Locale;\r\n\r\nimport nl.joery.animatedbottombar.AnimatedBottomBar;\r\nimport okhttp3.Call;\r\nimport okhttp3.Callback;\r\nimport okhttp3.OkHttpClient;\r\nimport okhttp3.Request;\r\nimport okhttp3.Response;\r\n\r\n\r\n/**\r\n * A simple {@link Fragment} subclass.\r\n * Use the {@link HomeFragment#newInstance} factory method to\r\n * create an instance of this fragment.\r\n */\r\npublic class HomeFragment extends Fragment implements View.OnClickListener {\r\n    // TODO: Rename parameter arguments, choose names that match\r\n    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER\r\n    private static final String ARG_PARAM1 = \"param1\";\r\n    private static final String ARG_PARAM2 = \"param2\";\r\n\r\n    private static final String TAG = MainActivity.class.getSimpleName();\r\n    public CardView btcCard, ethCard, usdtCard, xrpCard, ltcCard;\r\n\r\n    private static final String MARKET_UPDATES_URL = \"https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=3ea268be-397d-4d62-8127-644e8c4f84d3\";\r\n    private OkHttpClient okHttpClient = new OkHttpClient();\r\n    private ProgressDialog progressDialog;\r\n\r\n    private TextView BtcPrice, BtcPercentage1hr, BtcPercentage1day, BtcPercentage1week;\r\n    private TextView EthPrice, EthPercentage1hr, EthPercentage1day, EthPercentage1week;\r\n    private TextView UsdtPrice, USDTPercentage1hr, USDTPercentage1day, USDTPercentage1week;\r\n    private TextView XrpPrice, XRPPercentage1hr, XRPPercentage1day, XRPPercentage1week;\r\n    private TextView LtcPrice, LTCPercentage1hr, LTCPercentage1day, LTCPercentage1week;\r\n\r\n    private ImageView BtcLogoPercentage1hr, BtcLogoPercentage1day, BtcLogoPercentage1week;\r\n    private ImageView EthLogoPercentage1hr, EthLogoPercentage1day, EthLogoPercentage1week;\r\n    private ImageView XRPLogoPercentage1hr, XRPLogoPercentage1day, XRPLogoPercentage1week;\r\n    private ImageView USDTLogoPercentage1hr, USDTLogoPercentage1day, USDTLogoPercentage1week;\r\n    private ImageView LTCLogoPercentage1hr, LTCLogoPercentage1day, LTCLogoPercentage1week;\r\n\r\n    private AnimatedBottomBar bottom_bar;\r\n\r\n    private Button home, send, recent, receive;\r\n\r\n    FragmentManager fragmentManager;\r\n\r\n\r\n    // TODO: Rename and change types of parameters\r\n    private String mParam1;\r\n    private String mParam2;\r\n\r\n    public HomeFragment() {\r\n        // Required empty public constructor\r\n    }\r\n\r\n    /**\r\n     * Use this factory method to create a new instance of\r\n     * this fragment using the provided parameters.\r\n     *\r\n     * @param param1 Parameter 1.\r\n     * @param param2 Parameter 2.\r\n     * @return A new instance of fragment HomeFragment.\r\n     */\r\n    // TODO: Rename and change types and number of parameters\r\n    public static HomeFragment newInstance(String param1, String param2) {\r\n        HomeFragment fragment = new HomeFragment();\r\n        Bundle args = new Bundle();\r\n        args.putString(ARG_PARAM1, param1);\r\n        args.putString(ARG_PARAM2, param2);\r\n        fragment.setArguments(args);\r\n        return fragment;\r\n    }\r\n\r\n    @Override\r\n    public void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        if (getArguments() != null) {\r\n            mParam1 = getArguments().getString(ARG_PARAM1);\r\n            mParam2 = getArguments().getString(ARG_PARAM2);\r\n        }\r\n    }\r\n\r\n    @Override\r\n    public View onCreateView(LayoutInflater inflater, ViewGroup container,\r\n                             Bundle savedInstanceState) {\r\n        // Inflate the layout for this fragment\r\n        View v = inflater.inflate(R.layout.home_layout, container, false);\r\n\r\n        btcCard = (CardView) v.findViewById(R.id.BitcoinInfo);\r\n        ethCard = (CardView) v.findViewById(R.id.EthereumInfo);\r\n        usdtCard = (CardView) v.findViewById(R.id.TetherInfo);\r\n        xrpCard = (CardView) v.findViewById(R.id.XrpInfo);\r\n        ltcCard = (CardView) v.findViewById(R.id.LitecoinInfo);\r\n\r\n\r\n        bottom_bar = v.findViewById(R.id.bottom_bar);\r\n\r\n        BtcPrice = (TextView) v.findViewById(R.id.BtcPrice);\r\n        EthPrice = (TextView) v.findViewById(R.id.EthPrice);\r\n        UsdtPrice = (TextView) v.findViewById(R.id.UsdtPrice);\r\n        XrpPrice = (TextView) v.findViewById(R.id.XrpPrice);\r\n        LtcPrice = (TextView) v.findViewById(R.id.LtcPrice);\r\n\r\n        BtcPercentage1hr = (TextView) v.findViewById(R.id.btc_perc_text_1hour);\r\n        BtcPercentage1day = (TextView) v.findViewById(R.id.btc_perc_text_1day);\r\n        BtcPercentage1week = (TextView) v.findViewById(R.id.btc_perc_text_1week);\r\n\r\n\r\n        BtcLogoPercentage1hr = (ImageView) v.findViewById(R.id.btc_perc_logo_1hour);\r\n        BtcLogoPercentage1day = (ImageView) v.findViewById(R.id.btc_perc_logo_1day);\r\n        BtcLogoPercentage1week = (ImageView) v.findViewById(R.id.btc_perc_logo_1week);\r\n\r\n        EthPercentage1hr = (TextView) v.findViewById(R.id.eth_perc_text_1hour);\r\n        EthPercentage1day = (TextView) v.findViewById(R.id.eth_perc_text_1day);\r\n        EthPercentage1week = (TextView) v.findViewById(R.id.eth_perc_text_1week);\r\n\r\n\r\n        EthLogoPercentage1hr = (ImageView) v.findViewById(R.id.eth_perc_logo_1hour);\r\n        EthLogoPercentage1day = (ImageView) v.findViewById(R.id.eth_perc_logo_1day);\r\n        EthLogoPercentage1week = (ImageView) v.findViewById(R.id.eth_perc_logo_1week);\r\n\r\n        USDTPercentage1hr = (TextView) v.findViewById(R.id.usdt_perc_text_1hour);\r\n        USDTPercentage1day = (TextView) v.findViewById(R.id.usdt_perc_text_1day);\r\n        USDTPercentage1week = (TextView) v.findViewById(R.id.usdt_perc_text_1week);\r\n\r\n\r\n        USDTLogoPercentage1hr = (ImageView) v.findViewById(R.id.usdt_perc_logo_1hour);\r\n        USDTLogoPercentage1day = (ImageView) v.findViewById(R.id.usdt_perc_logo_1day);\r\n        USDTLogoPercentage1week = (ImageView) v.findViewById(R.id.usdt_perc_logo_1week);\r\n\r\n        XRPPercentage1hr = (TextView) v.findViewById(R.id.xrp_perc_text_1hour);\r\n        XRPPercentage1day = (TextView) v.findViewById(R.id.xrp_perc_text_1day);\r\n        XRPPercentage1week = (TextView) v.findViewById(R.id.xrp_perc_text_1week);\r\n\r\n\r\n        XRPLogoPercentage1hr = (ImageView) v.findViewById(R.id.xrp_perc_logo_1hour);\r\n        XRPLogoPercentage1day = (ImageView) v.findViewById(R.id.xrp_perc_logo_1day);\r\n        XRPLogoPercentage1week = (ImageView) v.findViewById(R.id.xrp_perc_logo_1week);\r\n\r\n        LTCPercentage1hr = (TextView) v.findViewById(R.id.ltc_perc_text_1hour);\r\n        LTCPercentage1day = (TextView) v.findViewById(R.id.ltc_perc_text_1day);\r\n        LTCPercentage1week = (TextView) v.findViewById(R.id.ltc_perc_text_1week);\r\n\r\n\r\n        LTCLogoPercentage1hr = (ImageView) v.findViewById(R.id.ltc_perc_logo_1hour);\r\n        LTCLogoPercentage1day = (ImageView) v.findViewById(R.id.ltc_perc_logo_1day);\r\n        LTCLogoPercentage1week = (ImageView) v.findViewById(R.id.ltc_perc_logo_1week);\r\n\r\n        progressDialog = new ProgressDialog(getActivity());\r\n        progressDialog.setTitle(\"BPI Loading\");\r\n        progressDialog.setMessage(\"Wait...\");\r\n        loadPrice(btcCard);\r\n        loadPercentage(btcCard);\r\n\r\n        loadPrice(ethCard);\r\n        loadPercentage(ethCard);\r\n\r\n        loadPrice(usdtCard);\r\n        loadPercentage(usdtCard);\r\n\r\n        loadPrice(xrpCard);\r\n        loadPercentage(xrpCard);\r\n\r\n        loadPrice(ltcCard);\r\n        loadPercentage(ltcCard);\r\n\r\n        btcCard.setOnClickListener(this);\r\n        ethCard.setOnClickListener(this);\r\n        ltcCard.setOnClickListener(this);\r\n        usdtCard.setOnClickListener(this);\r\n        xrpCard.setOnClickListener(this);\r\n        return v;\r\n    }\r\n\r\n    private void loadPrice(final CardView cv) {\r\n        Request request = new Request.Builder().url(MARKET_UPDATES_URL).build();\r\n        progressDialog.show();\r\n        okHttpClient.newCall(request).enqueue(new Callback() {\r\n            @Override\r\n            public void onFailure(Call call, IOException e) {\r\n                Toast.makeText(getActivity(), \"Error during BPI loading:\" + e.getMessage(), Toast.LENGTH_SHORT).show();\r\n            }\r\n\r\n            @Override\r\n            public void onResponse(Call call, Response response) throws IOException {\r\n                final String body = response.body().string();\r\n\r\n                getActivity().runOnUiThread(new Runnable() {\r\n                    @Override\r\n                    public void run() {\r\n                        progressDialog.dismiss();\r\n                        switch (cv.getId()) {\r\n                            case R.id.BitcoinInfo:\r\n                                parseBpiResponse(body, 0, BtcPrice);\r\n                                break;\r\n                            case R.id.EthereumInfo:\r\n                                parseBpiResponse(body, 1, EthPrice);\r\n                                break;\r\n                            case R.id.TetherInfo:\r\n                                parseBpiResponse(body, 2, UsdtPrice);\r\n                                break;\r\n                            case R.id.XrpInfo:\r\n                                parseBpiResponse(body, 3, XrpPrice);\r\n                                break;\r\n                            case R.id.LitecoinInfo:\r\n                                parseBpiResponse(body, 4, LtcPrice);\r\n                                break;\r\n                        }\r\n                    }\r\n                });\r\n            }\r\n        });\r\n    }\r\n\r\n    private void parseBpiResponse(String body, int currencyIndex, TextView price) {\r\n        try {\r\n            JSONObject jsonObject = new JSONObject(body);\r\n            JSONArray bpis = jsonObject.getJSONArray(\"data\");\r\n            JSONObject btc_info = bpis.getJSONObject(currencyIndex);\r\n            double btc_price = btc_info.getJSONObject(\"quote\").getJSONObject(\"USD\").getDouble(\"price\");\r\n            NumberFormat defaultFormat = NumberFormat.getCurrencyInstance(new Locale(\"en\", \"US\"));\r\n            price.setText(\"US\" + defaultFormat.format(btc_price));\r\n        } catch (Exception e) {\r\n        }\r\n    }\r\n\r\n    private void loadPercentage(final CardView cv) {\r\n        Request request = new Request.Builder().url(MARKET_UPDATES_URL).build();\r\n        progressDialog.show();\r\n        okHttpClient.newCall(request).enqueue(new Callback() {\r\n            @Override\r\n            public void onFailure(Call call, IOException e) {\r\n                Toast.makeText(getActivity(), \"Error during BPI loading:\" + e.getMessage(), Toast.LENGTH_SHORT).show();\r\n            }\r\n\r\n            @Override\r\n            public void onResponse(Call call, Response response) throws IOException {\r\n                final String body = response.body().string();\r\n\r\n                getActivity().runOnUiThread(new Runnable() {\r\n                    @Override\r\n                    public void run() {\r\n\r\n                        switch (cv.getId()) {\r\n                            case R.id.BitcoinInfo:\r\n                                parseBpiPercResponse(body, 0, BtcPercentage1hr, BtcPercentage1day, BtcPercentage1week,\r\n                                        BtcLogoPercentage1hr, BtcLogoPercentage1day, BtcLogoPercentage1week);\r\n                                break;\r\n                            case R.id.EthereumInfo:\r\n                                parseBpiPercResponse(body, 1, EthPercentage1hr, EthPercentage1day, EthPercentage1week,\r\n                                        EthLogoPercentage1hr, EthLogoPercentage1day, EthLogoPercentage1week);\r\n                                break;\r\n                            case R.id.TetherInfo:\r\n                                parseBpiPercResponse(body, 2, USDTPercentage1hr, USDTPercentage1day, USDTPercentage1week,\r\n                                        USDTLogoPercentage1hr, USDTLogoPercentage1day, USDTLogoPercentage1week);\r\n                                break;\r\n                            case R.id.XrpInfo:\r\n                                parseBpiPercResponse(body, 3, XRPPercentage1hr, XRPPercentage1day, XRPPercentage1week,\r\n                                        XRPLogoPercentage1hr, XRPLogoPercentage1day, XRPLogoPercentage1week);\r\n                                break;\r\n                            case R.id.LitecoinInfo:\r\n                                parseBpiPercResponse(body, 4, LTCPercentage1hr, LTCPercentage1day, LTCPercentage1week,\r\n                                        LTCLogoPercentage1hr, LTCLogoPercentage1day, LTCLogoPercentage1week);\r\n                                break;\r\n                        }\r\n                        progressDialog.dismiss();\r\n                    }\r\n                });\r\n            }\r\n        });\r\n    }\r\n\r\n    private void parseBpiPercResponse(String body, int currencyIndex, TextView percentage1hr,\r\n                                      TextView percentage1day, TextView percentage1week,\r\n                                      ImageView logo1hr, ImageView logo1day, ImageView logo1week) {\r\n        try {\r\n            JSONObject jsonObject = new JSONObject(body);\r\n            JSONArray bpis = jsonObject.getJSONArray(\"data\");\r\n            JSONObject btc_info = bpis.getJSONObject(currencyIndex);\r\n            double curr_percentage_1hr = btc_info.getJSONObject(\"quote\").getJSONObject(\"USD\").getDouble(\"percent_change_1h\");\r\n            double curr_percentage_1day = btc_info.getJSONObject(\"quote\").getJSONObject(\"USD\").getDouble(\"percent_change_24h\");\r\n            double curr_percentage_1week = btc_info.getJSONObject(\"quote\").getJSONObject(\"USD\").getDouble(\"percent_change_7d\");\r\n            String curr_perc_1hr = Double.toString(curr_percentage_1hr);\r\n            String curr_perc_1day = Double.toString(curr_percentage_1day);\r\n            String curr_perc_1week = Double.toString(curr_percentage_1week);\r\n\r\n            Double curr_perc_1hr_double = Double.parseDouble(curr_perc_1hr);\r\n            Double curr_perc_1day_double = Double.parseDouble(curr_perc_1day);\r\n            Double curr_perc_1week_double = Double.parseDouble(curr_perc_1week);\r\n\r\n            curr_perc_1hr_double = ((double) Math.round(curr_perc_1hr_double * 100)) / 100.0;\r\n            curr_perc_1day_double = ((double) Math.round(curr_perc_1day_double * 100)) / 100.0;\r\n            curr_perc_1week_double = ((double) Math.round(curr_perc_1week_double * 100)) / 100.0;\r\n\r\n            percentage1hr.setText(curr_perc_1hr_double + \"%\");\r\n            percentage1day.setText(curr_perc_1day_double + \"%\");\r\n            percentage1week.setText(curr_perc_1week_double + \"%\");\r\n\r\n            if (curr_perc_1hr_double >= 0) {\r\n                percentage1hr.setTextColor(Color.GREEN);\r\n                logo1hr.setImageResource(R.drawable.increase);\r\n                logo1hr.invalidate();\r\n            } else {\r\n                percentage1hr.setTextColor(Color.RED);\r\n                logo1hr.setImageResource(R.drawable.decrease);\r\n                logo1hr.invalidate();\r\n\r\n            }\r\n            if (curr_perc_1day_double >= 0) {\r\n                percentage1day.setTextColor(Color.GREEN);\r\n                logo1day.setImageResource(R.drawable.increase);\r\n                logo1day.invalidate();\r\n            } else {\r\n                percentage1day.setTextColor(Color.RED);\r\n                logo1day.setImageResource(R.drawable.decrease);\r\n                logo1day.invalidate();\r\n            }\r\n            if (curr_perc_1week_double >= 0) {\r\n                percentage1week.setTextColor(Color.GREEN);\r\n                logo1week.setImageResource(R.drawable.increase);\r\n                logo1week.invalidate();\r\n            } else {\r\n                percentage1week.setTextColor(Color.RED);\r\n                logo1week.setImageResource(R.drawable.decrease);\r\n                logo1week.invalidate();\r\n            }\r\n        } catch (Exception e) {\r\n        }\r\n    }\r\n\r\n    @Override\r\n    public void onClick(View v) {\r\n        Intent i;\r\n        i = new Intent(getActivity(), CryptoInfo.class);\r\n        switch (v.getId()) {\r\n            case R.id.BitcoinInfo:\r\n                CryptoInfo.CryptoIndex = 0;\r\n                break;\r\n            case R.id.EthereumInfo:\r\n                CryptoInfo.CryptoIndex = 1;\r\n                break;\r\n            case R.id.TetherInfo:\r\n                CryptoInfo.CryptoIndex = 2;\r\n                break;\r\n            case R.id.XrpInfo:\r\n                CryptoInfo.CryptoIndex = 3;\r\n                break;\r\n            case R.id.LitecoinInfo:\r\n                CryptoInfo.CryptoIndex = 4;\r\n                break;\r\n            default:\r\n                CryptoInfo.CryptoIndex = -1;\r\n        }\r\n        startActivity(i);\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/ewallet/HomeFragment.java	(revision f6af141f68d462c6b193e41c86893b3fb574b55a)
++++ app/src/main/java/com/example/ewallet/HomeFragment.java	(date 1609887465323)
+@@ -3,6 +3,8 @@
+ import android.app.ProgressDialog;
+ import android.content.Intent;
+ import android.graphics.Color;
++import android.graphics.drawable.Drawable;
++import android.media.Image;
+ import android.os.Bundle;
+ 
+ import androidx.cardview.widget.CardView;
+@@ -10,15 +12,20 @@
+ import androidx.fragment.app.FragmentManager;
+ 
+ import android.view.LayoutInflater;
++import android.view.MenuItem;
+ import android.view.View;
+ import android.view.ViewGroup;
+ import android.widget.Button;
++import android.widget.HorizontalScrollView;
+ import android.widget.ImageView;
++import android.widget.LinearLayout;
++import android.widget.PopupMenu;
+ import android.widget.TextView;
+ import android.widget.Toast;
+ 
+ import org.json.JSONArray;
+ import org.json.JSONObject;
++import org.w3c.dom.Text;
+ 
+ import java.io.IOException;
+ import java.text.NumberFormat;
+@@ -37,14 +44,18 @@
+  * Use the {@link HomeFragment#newInstance} factory method to
+  * create an instance of this fragment.
+  */
+-public class HomeFragment extends Fragment implements View.OnClickListener {
++public class HomeFragment extends Fragment implements View.OnClickListener{
+     // TODO: Rename parameter arguments, choose names that match
+     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+     private static final String ARG_PARAM1 = "param1";
+     private static final String ARG_PARAM2 = "param2";
++    private View walletView ;  //wallet_layout
+ 
+     private static final String TAG = MainActivity.class.getSimpleName();
+     public CardView btcCard, ethCard, usdtCard, xrpCard, ltcCard;
++    public CardView btcWallet;
++
++    private LinearLayout walletList ; // Linear layout where we will add the wallets.
+ 
+     private static final String MARKET_UPDATES_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=3ea268be-397d-4d62-8127-644e8c4f84d3";
+     private OkHttpClient okHttpClient = new OkHttpClient();
+@@ -110,6 +121,51 @@
+         // Inflate the layout for this fragment
+         View v = inflater.inflate(R.layout.home_layout, container, false);
+ 
++        walletView = getLayoutInflater().inflate(R.layout.wallet,null,false); //wallet layout
++
++
++        ImageView addWallet_menu = (ImageView) v.findViewById(R.id.addWallet_menu);
++        addWallet_menu.setOnClickListener(new View.OnClickListener() {
++            @Override
++            public void onClick(View v) {
++                final PopupMenu popup = new PopupMenu(getActivity(),v);
++                popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
++                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
++                    @Override
++                    public boolean onMenuItemClick(MenuItem item) {
++                        switch (item.getItemId()) {
++                            case R.id.menu_ethereum:
++                                addWalletView(walletView, R.drawable.ethereum, "ETH");
++                                return true;
++                            case R.id.menu_tether:
++                                addWalletView(walletView, R.drawable.tether, "USD-T");
++                                return true;
++                            case R.id.menu_xrp:
++                                addWalletView(walletView, R.drawable.xrp, "XRP");
++                                return true;
++                            case R.id.menu_litecoin:
++                                addWalletView(walletView, R.drawable.litecoin, "LTC");
++                                return true;
++                            default:
++                                return false;
++                        }
++                    }
++                });
++                popup.show();
++            }
++        });
++
++        ImageView removeWallet = (ImageView)walletView.findViewById(R.id.removeWallet);    //remove wallet
++        removeWallet.setOnClickListener(new View.OnClickListener() {
++            @Override
++            public void onClick(View v) {
++                removeWalletView(walletView);
++            }
++        });
++
++        walletList= (LinearLayout)v.findViewById(R.id.wallets);   //wallet List
++
++
+         btcCard = (CardView) v.findViewById(R.id.BitcoinInfo);
+         ethCard = (CardView) v.findViewById(R.id.EthereumInfo);
+         usdtCard = (CardView) v.findViewById(R.id.TetherInfo);
+@@ -377,4 +433,18 @@
+         }
+         startActivity(i);
+     }
++
++
++    public void addWalletView(View v , int image , String currencyType){
++        ImageView walletLogo = (ImageView)walletView.findViewById(R.id.wallet_logo);
++        TextView wallet_balance= (TextView)walletView.findViewById(R.id.wallet_balance);
++
++        walletLogo.setImageResource(image);
++        wallet_balance.setText("0 "+ currencyType);
++        walletList.addView(v);
++    }
++
++    public void removeWalletView(View v){
++        walletList.removeView(v);
++    }
+ }
+Index: gradle/wrapper/gradle-wrapper.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>#Tue Dec 29 14:27:11 EET 2020\r\ndistributionBase=GRADLE_USER_HOME\r\ndistributionPath=wrapper/dists\r\nzipStoreBase=GRADLE_USER_HOME\r\nzipStorePath=wrapper/dists\r\ndistributionUrl=https\\://services.gradle.org/distributions/gradle-5.6.4-all.zip\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>windows-1252
+===================================================================
+--- gradle/wrapper/gradle-wrapper.properties	(revision f6af141f68d462c6b193e41c86893b3fb574b55a)
++++ gradle/wrapper/gradle-wrapper.properties	(date 1609868089344)
+@@ -1,6 +1,6 @@
+-#Tue Dec 29 14:27:11 EET 2020
++#Tue Jan 05 19:34:47 EET 2021
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+ zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-5.6.4-all.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-6.5-bin.zip
+Index: app/src/main/res/layout/home_layout.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n\r\n<LinearLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\r\n    android:layout_width=\"match_parent\"\r\n    android:layout_height=\"match_parent\"\r\n    android:background=\"#181530\"\r\n    android:orientation=\"vertical\">\r\n\r\n    <TextView\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:text=\"EWallet\"\r\n        android:textAlignment=\"center\"\r\n        android:textColor=\"@color/white\"\r\n        android:textSize=\"20dp\" />\r\n\r\n    <TextView\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginLeft=\"20dp\"\r\n        android:layout_marginTop=\"20dp\"\r\n        android:text=\"my wallets:\"\r\n        android:textColor=\"@color/white\"\r\n        android:textSize=\"15sp\" />\r\n\r\n    <LinearLayout\r\n        android:layout_width=\"wrap_content\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:layout_marginTop=\"5dp\"\r\n        android:orientation=\"horizontal\">\r\n\r\n        <androidx.cardview.widget.CardView\r\n            android:id=\"@+id/wallet1\"\r\n            android:layout_width=\"150dp\"\r\n            android:layout_height=\"250dp\"\r\n            android:layout_marginLeft=\"15dp\"\r\n            android:layout_marginRight=\"15dp\"\r\n            android:layout_marginBottom=\"20dp\"\r\n            app:cardBackgroundColor=\"#2C2C53\"\r\n            app:cardCornerRadius=\"20dp\" />\r\n\r\n        <androidx.cardview.widget.CardView\r\n            android:id=\"@+id/wallet2\"\r\n            android:layout_width=\"150dp\"\r\n            android:layout_height=\"250dp\"\r\n            android:layout_marginLeft=\"15dp\"\r\n            android:layout_marginRight=\"15dp\"\r\n            android:layout_marginBottom=\"20dp\"\r\n            app:cardBackgroundColor=\"#2C2C53\"\r\n            app:cardCornerRadius=\"20dp\" />\r\n\r\n    </LinearLayout>\r\n\r\n    <RelativeLayout\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"wrap_content\"\r\n        android:orientation=\"horizontal\">\r\n\r\n        <TextView\r\n            android:id=\"@+id/coin\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_marginLeft=\"25dp\"\r\n            android:layout_marginTop=\"20dp\"\r\n            android:text=\"Coin\"\r\n            android:textColor=\"@color/white\"\r\n            android:textSize=\"15dp\" />\r\n\r\n        <TextView\r\n            android:id=\"@+id/price\"\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"wrap_content\"\r\n            android:layout_alignBottom=\"@+id/coin\"\r\n            android:layout_marginRight=\"25dp\"\r\n            android:gravity=\"right\"\r\n            android:text=\"Price\"\r\n            android:textColor=\"@color/white\"\r\n            android:textSize=\"15dp\" />\r\n    </RelativeLayout>\r\n\r\n    <androidx.core.widget.NestedScrollView\r\n        android:layout_width=\"match_parent\"\r\n        android:layout_height=\"match_parent\"\r\n        android:orientation=\"vertical\">\r\n\r\n        <LinearLayout\r\n            android:layout_width=\"match_parent\"\r\n            android:layout_height=\"match_parent\"\r\n            android:orientation=\"vertical\">\r\n\r\n            <androidx.cardview.widget.CardView\r\n                android:id=\"@+id/BitcoinInfo\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"80dp\"\r\n                android:layout_gravity=\"center\"\r\n                android:layout_marginLeft=\"15dp\"\r\n                android:layout_marginRight=\"15dp\"\r\n                android:layout_marginBottom=\"5dp\"\r\n                app:cardBackgroundColor=\"#2C2C53\"\r\n                app:cardCornerRadius=\"20dp\">\r\n\r\n                <RelativeLayout\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"wrap_content\">\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/logo\"\r\n                        android:layout_width=\"44dp\"\r\n                        android:layout_height=\"50dp\"\r\n                        android:layout_marginLeft=\"5dp\"\r\n                        android:layout_marginTop=\"10dp\"\r\n                        android:src=\"@drawable/bitcoin\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/Bitcoin\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_alignTop=\"@id/logo\"\r\n                        android:layout_marginLeft=\"10dp\"\r\n                        android:layout_marginTop=\"12dp\"\r\n                        android:layout_toEndOf=\"@id/logo\"\r\n                        android:text=\"Bitcoin BTC\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textSize=\"18sp\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/BtcPrice\"\r\n                        android:layout_width=\"match_parent\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_alignTop=\"@id/Bitcoin\"\r\n                        android:layout_marginRight=\"35dp\"\r\n                        android:layout_toRightOf=\"@id/Bitcoin\"\r\n                        android:gravity=\"right\"\r\n                        android:text=\"hello world\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textSize=\"15sp\" />\r\n                </RelativeLayout>\r\n\r\n                <RelativeLayout\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_gravity=\"bottom\"\r\n                    >\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/onehour\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_alignParentStart=\"true\"\r\n                        android:layout_marginLeft=\"40dp\"\r\n                        android:text=\"1 hour:\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textStyle=\"bold\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/btc_perc_text_1hour\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_marginLeft=\"5dp\"\r\n                        android:layout_toRightOf=\"@id/onehour\"\r\n                        android:textColor=\"@color/white\" />\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/btc_perc_logo_1hour\"\r\n                        android:layout_width=\"25dp\"\r\n                        android:layout_height=\"9dp\"\r\n\r\n                        android:layout_marginTop=\"3dp\"\r\n                       android:layout_toRightOf=\"@id/btc_perc_text_1hour\"\r\n                        android:src=\"@drawable/increase\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/oneday\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_centerHorizontal=\"true\"\r\n                        android:text=\"1 day:\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textStyle=\"bold\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/btc_perc_text_1day\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_marginLeft=\"5dp\"\r\n                        android:layout_toRightOf=\"@id/oneday\"\r\n                        android:textColor=\"@color/white\" />\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/btc_perc_logo_1day\"\r\n                        android:layout_width=\"25dp\"\r\n                        android:layout_height=\"9dp\"\r\n                        android:layout_marginTop=\"3dp\"\r\n                        android:layout_toRightOf=\"@id/btc_perc_text_1day\"\r\n                        android:src=\"@drawable/increase\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/week\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_toLeftOf=\"@id/btc_perc_text_1week\"\r\n                        android:text=\"1 week:\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textStyle=\"bold\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/btc_perc_text_1week\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_marginLeft=\"5dp\"\r\n                        android:layout_toStartOf=\"@id/btc_perc_logo_1week\"\r\n                        android:textColor=\"@color/white\" />\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/btc_perc_logo_1week\"\r\n                        android:layout_width=\"25dp\"\r\n                        android:layout_height=\"9dp\"\r\n                        android:layout_alignParentEnd=\"true\"\r\n                        android:layout_marginTop=\"3dp\"\r\n                        android:src=\"@drawable/increase\" />\r\n                </RelativeLayout>\r\n            </androidx.cardview.widget.CardView>\r\n\r\n            <androidx.cardview.widget.CardView\r\n                android:id=\"@+id/EthereumInfo\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"80dp\"\r\n                android:layout_gravity=\"center\"\r\n                android:layout_marginLeft=\"15dp\"\r\n                android:layout_marginRight=\"15dp\"\r\n                android:layout_marginBottom=\"5dp\"\r\n                app:cardBackgroundColor=\"#2C2C53\"\r\n                app:cardCornerRadius=\"20dp\">\r\n\r\n                <RelativeLayout\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"match_parent\">\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/ETHlogo\"\r\n                        android:layout_width=\"44dp\"\r\n                        android:layout_height=\"50dp\"\r\n                        android:layout_marginStart=\"5dp\"\r\n                        android:layout_marginTop=\"10dp\"\r\n                        android:src=\"@drawable/ethereum\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/Etherum\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_alignTop=\"@id/ETHlogo\"\r\n                        android:layout_marginLeft=\"10dp\"\r\n                        android:layout_marginTop=\"12dp\"\r\n                        android:layout_toEndOf=\"@id/ETHlogo\"\r\n                        android:text=\"Etherum ETH\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textSize=\"18sp\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/EthPrice\"\r\n                        android:layout_width=\"match_parent\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_alignTop=\"@id/Etherum\"\r\n                        android:layout_marginRight=\"35dp\"\r\n                        android:layout_toRightOf=\"@id/Etherum\"\r\n                        android:gravity=\"right\"\r\n                        android:text=\"hello world\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textSize=\"15sp\" />\r\n                </RelativeLayout>\r\n\r\n                <RelativeLayout\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_gravity=\"bottom\"\r\n                    >\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/eth_onehour\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_alignParentStart=\"true\"\r\n                        android:layout_marginLeft=\"40dp\"\r\n                        android:text=\"1 hour:\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textStyle=\"bold\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/eth_perc_text_1hour\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_marginLeft=\"5dp\"\r\n                        android:layout_toRightOf=\"@id/eth_onehour\"\r\n                        android:textColor=\"@color/white\" />\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/eth_perc_logo_1hour\"\r\n                        android:layout_width=\"25dp\"\r\n                        android:layout_height=\"9dp\"\r\n                        android:layout_marginTop=\"3dp\"\r\n                        android:layout_toRightOf=\"@id/eth_perc_text_1hour\"\r\n                        android:src=\"@drawable/increase\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/eth_oneday\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_centerHorizontal=\"true\"\r\n                        android:text=\"1 day:\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textStyle=\"bold\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/eth_perc_text_1day\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_marginLeft=\"5dp\"\r\n                        android:layout_toRightOf=\"@id/eth_oneday\"\r\n                        android:textColor=\"@color/white\" />\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/eth_perc_logo_1day\"\r\n                        android:layout_width=\"25dp\"\r\n                        android:layout_height=\"9dp\"\r\n                        android:layout_marginTop=\"3dp\"\r\n                        android:layout_toRightOf=\"@id/eth_perc_text_1day\"\r\n                        android:src=\"@drawable/increase\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/eth_week\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_toLeftOf=\"@id/eth_perc_text_1week\"\r\n                        android:text=\"1 week:\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textStyle=\"bold\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/eth_perc_text_1week\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_marginLeft=\"5dp\"\r\n                        android:layout_toStartOf=\"@id/eth_perc_logo_1week\"\r\n                        android:textColor=\"@color/white\" />\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/eth_perc_logo_1week\"\r\n                        android:layout_width=\"25dp\"\r\n                        android:layout_height=\"9dp\"\r\n                        android:layout_alignParentEnd=\"true\"\r\n                        android:layout_marginTop=\"3dp\"\r\n                        android:src=\"@drawable/increase\" />\r\n                </RelativeLayout>\r\n            </androidx.cardview.widget.CardView>\r\n\r\n            <androidx.cardview.widget.CardView\r\n                android:id=\"@+id/TetherInfo\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"80dp\"\r\n                android:layout_gravity=\"center\"\r\n                android:layout_marginLeft=\"15dp\"\r\n                android:layout_marginRight=\"15dp\"\r\n                android:layout_marginBottom=\"5dp\"\r\n                app:cardBackgroundColor=\"#2C2C53\"\r\n                app:cardCornerRadius=\"20dp\">\r\n\r\n                <RelativeLayout\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"match_parent\">\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/USDTlogo\"\r\n                        android:layout_width=\"44dp\"\r\n                        android:layout_height=\"50dp\"\r\n                        android:layout_marginLeft=\"5dp\"\r\n                        android:layout_marginTop=\"10dp\"\r\n                        android:src=\"@drawable/tether\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/Tether\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_alignTop=\"@id/USDTlogo\"\r\n                        android:layout_marginLeft=\"10dp\"\r\n                        android:layout_marginTop=\"12dp\"\r\n                        android:layout_toEndOf=\"@id/USDTlogo\"\r\n                        android:text=\"USD-T\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textSize=\"18sp\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/UsdtPrice\"\r\n                        android:layout_width=\"match_parent\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_alignTop=\"@id/Tether\"\r\n                        android:layout_marginRight=\"35dp\"\r\n                        android:layout_toRightOf=\"@id/Tether\"\r\n                        android:gravity=\"right\"\r\n                        android:text=\"hello world\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textSize=\"15sp\" />\r\n                </RelativeLayout>\r\n\r\n                <RelativeLayout\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_gravity=\"bottom\"\r\n                    >\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/usdt_onehour\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_alignParentStart=\"true\"\r\n                        android:layout_marginLeft=\"40dp\"\r\n                        android:text=\"1 hour:\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textStyle=\"bold\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/usdt_perc_text_1hour\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_marginLeft=\"5dp\"\r\n                        android:layout_toRightOf=\"@id/usdt_onehour\"\r\n                        android:textColor=\"@color/white\" />\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/usdt_perc_logo_1hour\"\r\n                        android:layout_width=\"25dp\"\r\n                        android:layout_height=\"9dp\"\r\n                        android:layout_marginTop=\"3dp\"\r\n                        android:layout_toRightOf=\"@id/usdt_perc_text_1hour\"\r\n                        android:src=\"@drawable/increase\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/usdt_oneday\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_centerHorizontal=\"true\"\r\n                        android:text=\"1 day:\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textStyle=\"bold\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/usdt_perc_text_1day\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_marginLeft=\"5dp\"\r\n                        android:layout_toRightOf=\"@id/usdt_oneday\"\r\n                        android:textColor=\"@color/white\" />\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/usdt_perc_logo_1day\"\r\n                        android:layout_width=\"25dp\"\r\n                        android:layout_height=\"9dp\"\r\n                        android:layout_marginTop=\"3dp\"\r\n                        android:layout_toRightOf=\"@id/usdt_perc_text_1day\"\r\n                        android:src=\"@drawable/increase\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/usdt_week\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_toLeftOf=\"@id/usdt_perc_text_1week\"\r\n                        android:text=\"1 week:\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textStyle=\"bold\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/usdt_perc_text_1week\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_marginLeft=\"5dp\"\r\n                        android:layout_toStartOf=\"@id/usdt_perc_logo_1week\"\r\n                        android:textColor=\"@color/white\" />\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/usdt_perc_logo_1week\"\r\n                        android:layout_width=\"25dp\"\r\n                        android:layout_height=\"9dp\"\r\n                        android:layout_alignParentEnd=\"true\"\r\n                        android:layout_marginTop=\"3dp\"\r\n                        android:src=\"@drawable/increase\" />\r\n                </RelativeLayout>\r\n            </androidx.cardview.widget.CardView>\r\n\r\n            <androidx.cardview.widget.CardView\r\n                android:id=\"@+id/XrpInfo\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"80dp\"\r\n                android:layout_gravity=\"center\"\r\n                android:layout_marginLeft=\"15dp\"\r\n                android:layout_marginRight=\"15dp\"\r\n                android:layout_marginBottom=\"5dp\"\r\n                app:cardBackgroundColor=\"#2C2C53\"\r\n                app:cardCornerRadius=\"20dp\">\r\n\r\n                <RelativeLayout\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"match_parent\">\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/XRPlogo\"\r\n                        android:layout_width=\"44dp\"\r\n                        android:layout_height=\"50dp\"\r\n                        android:layout_marginLeft=\"5dp\"\r\n                        android:layout_marginTop=\"10dp\"\r\n                        android:src=\"@drawable/xrp\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/XRP\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_alignTop=\"@id/XRPlogo\"\r\n                        android:layout_marginLeft=\"10dp\"\r\n                        android:layout_marginTop=\"12dp\"\r\n                        android:layout_toEndOf=\"@id/XRPlogo\"\r\n                        android:text=\"XRP\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textSize=\"18sp\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/XrpPrice\"\r\n                        android:layout_width=\"match_parent\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_alignTop=\"@id/XRP\"\r\n                        android:layout_marginRight=\"35dp\"\r\n                        android:layout_toRightOf=\"@id/XRP\"\r\n                        android:gravity=\"right\"\r\n                        android:text=\"hello world\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textSize=\"15sp\" />\r\n                </RelativeLayout>\r\n\r\n                <RelativeLayout\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_gravity=\"bottom\"\r\n                    >\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/xrp_onehour\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_alignParentStart=\"true\"\r\n                        android:layout_marginLeft=\"40dp\"\r\n                        android:text=\"1 hour:\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textStyle=\"bold\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/xrp_perc_text_1hour\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_marginLeft=\"5dp\"\r\n                        android:layout_toRightOf=\"@id/xrp_onehour\"\r\n                        android:textColor=\"@color/white\" />\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/xrp_perc_logo_1hour\"\r\n                        android:layout_width=\"25dp\"\r\n                        android:layout_height=\"9dp\"\r\n                        android:layout_marginTop=\"3dp\"\r\n                        android:layout_toRightOf=\"@id/xrp_perc_text_1hour\"\r\n                        android:src=\"@drawable/increase\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/xrp_oneday\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_centerHorizontal=\"true\"\r\n                        android:text=\"1 day:\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textStyle=\"bold\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/xrp_perc_text_1day\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_marginLeft=\"5dp\"\r\n                        android:layout_toRightOf=\"@id/xrp_oneday\"\r\n                        android:textColor=\"@color/white\" />\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/xrp_perc_logo_1day\"\r\n                        android:layout_width=\"25dp\"\r\n                        android:layout_height=\"9dp\"\r\n                        android:layout_marginTop=\"3dp\"\r\n                        android:layout_toRightOf=\"@id/xrp_perc_text_1day\"\r\n                        android:src=\"@drawable/increase\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/xrp_week\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_toLeftOf=\"@id/xrp_perc_text_1week\"\r\n                        android:text=\"1 week:\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textStyle=\"bold\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/xrp_perc_text_1week\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_marginLeft=\"5dp\"\r\n                        android:layout_toStartOf=\"@id/xrp_perc_logo_1week\"\r\n                        android:textColor=\"@color/white\" />\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/xrp_perc_logo_1week\"\r\n                        android:layout_width=\"25dp\"\r\n                        android:layout_height=\"9dp\"\r\n                        android:layout_alignParentEnd=\"true\"\r\n                        android:layout_marginTop=\"3dp\"\r\n                        android:src=\"@drawable/increase\" />\r\n                </RelativeLayout>\r\n            </androidx.cardview.widget.CardView>\r\n\r\n            <androidx.cardview.widget.CardView\r\n                android:id=\"@+id/LitecoinInfo\"\r\n                android:layout_width=\"match_parent\"\r\n                android:layout_height=\"75dp\"\r\n                android:layout_gravity=\"center\"\r\n                android:layout_marginLeft=\"15dp\"\r\n                android:layout_marginRight=\"15dp\"\r\n                android:layout_marginBottom=\"5dp\"\r\n                app:cardBackgroundColor=\"#2C2C53\"\r\n                app:cardCornerRadius=\"20dp\">\r\n\r\n                <RelativeLayout\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"wrap_content\">\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/LITECOINlogo\"\r\n                        android:layout_width=\"44dp\"\r\n                        android:layout_height=\"50dp\"\r\n                        android:layout_marginLeft=\"5dp\"\r\n                        android:layout_marginTop=\"10dp\"\r\n                        android:src=\"@drawable/litecoin\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/Litecoin\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_alignTop=\"@id/LITECOINlogo\"\r\n                        android:layout_marginLeft=\"10dp\"\r\n                        android:layout_marginTop=\"12dp\"\r\n                        android:layout_toEndOf=\"@id/LITECOINlogo\"\r\n                        android:text=\"Litecoin\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textSize=\"18sp\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/LtcPrice\"\r\n                        android:layout_width=\"match_parent\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_alignTop=\"@id/Litecoin\"\r\n                        android:layout_marginRight=\"35dp\"\r\n                        android:layout_toRightOf=\"@id/Litecoin\"\r\n                        android:gravity=\"right\"\r\n                        android:text=\"hello world\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textSize=\"15sp\" />\r\n                </RelativeLayout>\r\n\r\n                <RelativeLayout\r\n                    android:layout_width=\"match_parent\"\r\n                    android:layout_height=\"wrap_content\"\r\n                    android:layout_gravity=\"bottom\"\r\n                    >\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/ltc_onehour\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_alignParentStart=\"true\"\r\n                        android:layout_marginLeft=\"40dp\"\r\n                        android:text=\"1 hour:\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textStyle=\"bold\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/ltc_perc_text_1hour\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_marginLeft=\"5dp\"\r\n                        android:layout_toRightOf=\"@id/ltc_onehour\"\r\n                        android:textColor=\"@color/white\" />\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/ltc_perc_logo_1hour\"\r\n                        android:layout_width=\"25dp\"\r\n                        android:layout_height=\"9dp\"\r\n                        android:layout_marginTop=\"3dp\"\r\n                        android:layout_toRightOf=\"@id/ltc_perc_text_1hour\"\r\n                        android:src=\"@drawable/increase\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/ltc_oneday\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_centerHorizontal=\"true\"\r\n                        android:text=\"1 day:\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textStyle=\"bold\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/ltc_perc_text_1day\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_marginLeft=\"5dp\"\r\n                        android:layout_toRightOf=\"@id/ltc_oneday\"\r\n                        android:textColor=\"@color/white\" />\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/ltc_perc_logo_1day\"\r\n                        android:layout_width=\"25dp\"\r\n                        android:layout_height=\"9dp\"\r\n                        android:layout_marginTop=\"3dp\"\r\n                        android:layout_toRightOf=\"@id/ltc_perc_text_1day\"\r\n                        android:src=\"@drawable/increase\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/usd_week\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_toLeftOf=\"@id/ltc_perc_text_1week\"\r\n                        android:text=\"1 week:\"\r\n                        android:textColor=\"@color/white\"\r\n                        android:textStyle=\"bold\" />\r\n\r\n                    <TextView\r\n                        android:id=\"@+id/ltc_perc_text_1week\"\r\n                        android:layout_width=\"wrap_content\"\r\n                        android:layout_height=\"wrap_content\"\r\n                        android:layout_marginLeft=\"5dp\"\r\n                        android:layout_toStartOf=\"@id/ltc_perc_logo_1week\"\r\n                        android:textColor=\"@color/white\" />\r\n\r\n                    <ImageView\r\n                        android:id=\"@+id/ltc_perc_logo_1week\"\r\n                        android:layout_width=\"25dp\"\r\n                        android:layout_height=\"9dp\"\r\n                        android:layout_alignParentEnd=\"true\"\r\n                        android:layout_marginTop=\"3dp\"\r\n                        android:src=\"@drawable/increase\" />\r\n                </RelativeLayout>\r\n            </androidx.cardview.widget.CardView>\r\n        </LinearLayout>\r\n    </androidx.core.widget.NestedScrollView>\r\n</LinearLayout>\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/home_layout.xml	(revision f6af141f68d462c6b193e41c86893b3fb574b55a)
++++ app/src/main/res/layout/home_layout.xml	(date 1609886765519)
+@@ -8,50 +8,108 @@
+     android:orientation="vertical">
+ 
+     <TextView
+-        android:layout_width="match_parent"
++        android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="EWallet"
+-        android:textAlignment="center"
++        android:layout_gravity="center"
+         android:textColor="@color/white"
++        android:background="#2C2C53"
+         android:textSize="20dp" />
+ 
+-    <TextView
+-        android:layout_width="match_parent"
+-        android:layout_height="wrap_content"
+-        android:layout_marginLeft="20dp"
+-        android:layout_marginTop="20dp"
+-        android:text="my wallets:"
+-        android:textColor="@color/white"
+-        android:textSize="15sp" />
++    <RelativeLayout
++        android:layout_width="match_parent"
++        android:layout_height="wrap_content"
++        android:orientation="horizontal">
++        <TextView
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:layout_marginLeft="20dp"
++            android:layout_marginTop="20dp"
++            android:text="my wallets:"
++            android:textColor="@color/white"
++            android:textSize="20sp" />
++
++        <ImageView
++            android:id="@+id/addWallet_menu"
++            android:layout_width="wrap_content"
++            android:layout_height="50dp"
++            android:layout_alignParentEnd="true"
++            android:layout_marginTop="10dp"
++            android:clickable="true"
++            android:onClick="addWalletMenu"
++            android:src="@drawable/addicon" />
++    </RelativeLayout>
++
++    <HorizontalScrollView
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content">
+ 
+-    <LinearLayout
+-        android:layout_width="wrap_content"
+-        android:layout_height="wrap_content"
+-        android:layout_marginTop="5dp"
+-        android:orientation="horizontal">
++        <LinearLayout
++            android:id="@+id/wallets"
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:layout_marginTop="5dp"
++            android:orientation="horizontal">
+ 
+-        <androidx.cardview.widget.CardView
+-            android:id="@+id/wallet1"
+-            android:layout_width="150dp"
+-            android:layout_height="250dp"
+-            android:layout_marginLeft="15dp"
+-            android:layout_marginRight="15dp"
+-            android:layout_marginBottom="20dp"
+-            app:cardBackgroundColor="#2C2C53"
+-            app:cardCornerRadius="20dp" />
+-
+-        <androidx.cardview.widget.CardView
+-            android:id="@+id/wallet2"
+-            android:layout_width="150dp"
+-            android:layout_height="250dp"
+-            android:layout_marginLeft="15dp"
+-            android:layout_marginRight="15dp"
+-            android:layout_marginBottom="20dp"
+-            app:cardBackgroundColor="#2C2C53"
+-            app:cardCornerRadius="20dp" />
++            <androidx.cardview.widget.CardView
++                android:id="@+id/default_wallet"
++                android:layout_width="150dp"
++                android:layout_height="250dp"
++                android:layout_marginLeft="15dp"
++                android:layout_marginRight="15dp"
++                android:layout_marginBottom="20dp"
++                app:cardBackgroundColor="#2C2C53"
++                app:cardCornerRadius="20dp" >
++
++                <RelativeLayout
++                    android:layout_width="match_parent"
++                    android:layout_height="match_parent">
++
++                    <ImageView
++                        android:id="@+id/btc_wallet_logo"
++                        android:layout_width="44dp"
++                        android:layout_height="50dp"
++                        android:layout_marginLeft="5dp"
++                        android:layout_marginTop="10dp"
++                        android:layout_centerHorizontal="true"
++                        android:src="@drawable/bitcoin" />
++
++                    <TextView
++                        android:id="@+id/wallet_balance_text"
++                        android:layout_width="wrap_content"
++                        android:layout_height="wrap_content"
++                        android:layout_below="@id/btc_wallet_logo"
++                        android:text="Balance:"
++                        android:layout_centerHorizontal="true"
++                        android:textColor="@color/white"
++                        android:textSize="20sp" />
++
++                    <TextView
++                        android:id="@+id/wallet_balance"
++                        android:layout_width="wrap_content"
++                        android:layout_height="wrap_content"
++                        android:layout_below="@id/wallet_balance_text"
++                        android:text="0 BTC"
++                        android:textColor="@color/white"
++                        android:textSize="15sp" />
++
++                    <TextView
++                        android:id="@+id/wallet_balance_usd"
++                        android:layout_width="wrap_content"
++                        android:layout_height="wrap_content"
++                        android:layout_below="@id/wallet_balance"
++                        android:text="(0 USD)"
++                        android:textColor="#00FF0A"
++                        android:textSize="15sp" />
++
++                </RelativeLayout>
++
++            </androidx.cardview.widget.CardView>
+ 
+-    </LinearLayout>
++        </LinearLayout>
+ 
++    </HorizontalScrollView>
++
+     <RelativeLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+@@ -83,10 +141,9 @@
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:orientation="vertical">
+-
+         <LinearLayout
+             android:layout_width="match_parent"
+-            android:layout_height="match_parent"
++            android:layout_height="wrap_content"
+             android:orientation="vertical">
+ 
+             <androidx.cardview.widget.CardView
+@@ -122,7 +179,7 @@
+                         android:layout_toEndOf="@id/logo"
+                         android:text="Bitcoin BTC"
+                         android:textColor="@color/white"
+-                        android:textSize="18sp" />
++                        android:textSize="20sp" />
+ 
+                     <TextView
+                         android:id="@+id/BtcPrice"
+@@ -134,13 +191,14 @@
+                         android:gravity="right"
+                         android:text="hello world"
+                         android:textColor="@color/white"
+-                        android:textSize="15sp" />
++                        android:textSize="20sp" />
+                 </RelativeLayout>
+ 
+                 <RelativeLayout
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:layout_gravity="bottom"
++                    android:layout_marginBottom="10dp"
+                     >
+ 
+                     <TextView
+@@ -255,7 +313,7 @@
+                         android:layout_toEndOf="@id/ETHlogo"
+                         android:text="Etherum ETH"
+                         android:textColor="@color/white"
+-                        android:textSize="18sp" />
++                        android:textSize="20sp" />
+ 
+                     <TextView
+                         android:id="@+id/EthPrice"
+@@ -267,14 +325,14 @@
+                         android:gravity="right"
+                         android:text="hello world"
+                         android:textColor="@color/white"
+-                        android:textSize="15sp" />
++                        android:textSize="20sp" />
+                 </RelativeLayout>
+ 
+                 <RelativeLayout
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:layout_gravity="bottom"
+-                    >
++                    android:layout_marginBottom="10dp">
+ 
+                     <TextView
+                         android:id="@+id/eth_onehour"
+@@ -387,7 +445,7 @@
+                         android:layout_toEndOf="@id/USDTlogo"
+                         android:text="USD-T"
+                         android:textColor="@color/white"
+-                        android:textSize="18sp" />
++                        android:textSize="20sp" />
+ 
+                     <TextView
+                         android:id="@+id/UsdtPrice"
+@@ -399,14 +457,14 @@
+                         android:gravity="right"
+                         android:text="hello world"
+                         android:textColor="@color/white"
+-                        android:textSize="15sp" />
++                        android:textSize="20sp" />
+                 </RelativeLayout>
+ 
+                 <RelativeLayout
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:layout_gravity="bottom"
+-                    >
++                    android:layout_marginBottom="10dp">
+ 
+                     <TextView
+                         android:id="@+id/usdt_onehour"
+@@ -519,26 +577,28 @@
+                         android:layout_toEndOf="@id/XRPlogo"
+                         android:text="XRP"
+                         android:textColor="@color/white"
+-                        android:textSize="18sp" />
++                        android:textSize="20sp" />
+ 
+                     <TextView
+                         android:id="@+id/XrpPrice"
+-                        android:layout_width="match_parent"
++                        android:layout_width="86dp"
+                         android:layout_height="wrap_content"
+                         android:layout_alignTop="@id/XRP"
++                        android:layout_marginLeft="164dp"
++                        android:layout_marginTop="0dp"
+                         android:layout_marginRight="35dp"
+                         android:layout_toRightOf="@id/XRP"
+                         android:gravity="right"
+                         android:text="hello world"
+                         android:textColor="@color/white"
+-                        android:textSize="15sp" />
++                        android:textSize="20sp" />
+                 </RelativeLayout>
+ 
+                 <RelativeLayout
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:layout_gravity="bottom"
+-                    >
++                    android:layout_marginBottom="10dp">
+ 
+                     <TextView
+                         android:id="@+id/xrp_onehour"
+@@ -651,7 +711,7 @@
+                         android:layout_toEndOf="@id/LITECOINlogo"
+                         android:text="Litecoin"
+                         android:textColor="@color/white"
+-                        android:textSize="18sp" />
++                        android:textSize="20sp" />
+ 
+                     <TextView
+                         android:id="@+id/LtcPrice"
+@@ -663,14 +723,14 @@
+                         android:gravity="right"
+                         android:text="hello world"
+                         android:textColor="@color/white"
+-                        android:textSize="15sp" />
++                        android:textSize="20sp" />
+                 </RelativeLayout>
+ 
+                 <RelativeLayout
+                     android:layout_width="match_parent"
+                     android:layout_height="wrap_content"
+                     android:layout_gravity="bottom"
+-                    >
++                    android:layout_marginBottom="10dp">
+ 
+                     <TextView
+                         android:id="@+id/ltc_onehour"
+@@ -746,9 +806,19 @@
+                         android:layout_height="9dp"
+                         android:layout_alignParentEnd="true"
+                         android:layout_marginTop="3dp"
+-                        android:src="@drawable/increase" />
++                        android:src="@drawable/increase"/>
+                 </RelativeLayout>
+             </androidx.cardview.widget.CardView>
++
++            <androidx.cardview.widget.CardView
++                android:layout_width="match_parent"
++                android:layout_height="65dp"
++                android:layout_gravity="center"
++                android:layout_marginLeft="15dp"
++                android:layout_marginRight="15dp"
++                android:layout_marginBottom="5dp"
++                app:cardBackgroundColor="#181530"/>
++
+         </LinearLayout>
+     </androidx.core.widget.NestedScrollView>
+ </LinearLayout>
+Index: build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>// Top-level build file where you can add configuration options common to all sub-projects/modules.\r\n\r\nbuildscript {\r\n    \r\n    repositories {\r\n        google()\r\n        jcenter()\r\n        \r\n    }\r\n    dependencies {\r\n        classpath 'com.android.tools.build:gradle:3.6.3'\r\n        \r\n\r\n        // NOTE: Do not place your application dependencies here; they belong\r\n        // in the individual module build.gradle files\r\n    }\r\n}\r\n\r\nallprojects {\r\n    repositories {\r\n        google()\r\n        jcenter()\r\n        maven(){url \"https://maven.google.com\"}\r\n    }\r\n}\r\n\r\ntask clean(type: Delete) {\r\n    delete rootProject.buildDir\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- build.gradle	(revision f6af141f68d462c6b193e41c86893b3fb574b55a)
++++ build.gradle	(date 1609868087798)
+@@ -8,7 +8,7 @@
+         
+     }
+     dependencies {
+-        classpath 'com.android.tools.build:gradle:3.6.3'
++        classpath 'com.android.tools.build:gradle:4.1.1'
+         
+ 
+         // NOTE: Do not place your application dependencies here; they belong
+Index: .idea/jarRepositories.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"RemoteRepositoriesConfiguration\">\r\n    <remote-repository>\r\n      <option name=\"id\" value=\"central\" />\r\n      <option name=\"name\" value=\"Maven Central repository\" />\r\n      <option name=\"url\" value=\"https://repo1.maven.org/maven2\" />\r\n    </remote-repository>\r\n    <remote-repository>\r\n      <option name=\"id\" value=\"jboss.community\" />\r\n      <option name=\"name\" value=\"JBoss Community repository\" />\r\n      <option name=\"url\" value=\"https://repository.jboss.org/nexus/content/repositories/public/\" />\r\n    </remote-repository>\r\n    <remote-repository>\r\n      <option name=\"id\" value=\"BintrayJCenter\" />\r\n      <option name=\"name\" value=\"BintrayJCenter\" />\r\n      <option name=\"url\" value=\"https://jcenter.bintray.com/\" />\r\n    </remote-repository>\r\n    <remote-repository>\r\n      <option name=\"id\" value=\"Google\" />\r\n      <option name=\"name\" value=\"Google\" />\r\n      <option name=\"url\" value=\"https://dl.google.com/dl/android/maven2/\" />\r\n    </remote-repository>\r\n    <remote-repository>\r\n      <option name=\"id\" value=\"maven\" />\r\n      <option name=\"name\" value=\"maven\" />\r\n      <option name=\"url\" value=\"https://jitpack.io\" />\r\n    </remote-repository>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/jarRepositories.xml	(revision f6af141f68d462c6b193e41c86893b3fb574b55a)
++++ .idea/jarRepositories.xml	(date 1609864606999)
+@@ -26,5 +26,10 @@
+       <option name="name" value="maven" />
+       <option name="url" value="https://jitpack.io" />
+     </remote-repository>
++    <remote-repository>
++      <option name="id" value="maven" />
++      <option name="name" value="maven" />
++      <option name="url" value="https://maven.google.com" />
++    </remote-repository>
+   </component>
+ </project>
+\ No newline at end of file
+Index: .idea/gradle.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"GradleMigrationSettings\" migrationVersion=\"1\" />\r\n  <component name=\"GradleSettings\">\r\n    <option name=\"linkedExternalProjectsSettings\">\r\n      <GradleProjectSettings>\r\n        <option name=\"testRunner\" value=\"PLATFORM\" />\r\n        <option name=\"distributionType\" value=\"DEFAULT_WRAPPED\" />\r\n        <option name=\"externalProjectPath\" value=\"$PROJECT_DIR$\" />\r\n        <option name=\"modules\">\r\n          <set>\r\n            <option value=\"$PROJECT_DIR$\" />\r\n            <option value=\"$PROJECT_DIR$/app\" />\r\n          </set>\r\n        </option>\r\n        <option name=\"resolveModulePerSourceSet\" value=\"false\" />\r\n        <option name=\"useQualifiedModuleNames\" value=\"true\" />\r\n      </GradleProjectSettings>\r\n    </option>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/gradle.xml	(revision f6af141f68d462c6b193e41c86893b3fb574b55a)
++++ .idea/gradle.xml	(date 1609868203034)
+@@ -5,6 +5,7 @@
+     <option name="linkedExternalProjectsSettings">
+       <GradleProjectSettings>
+         <option name="testRunner" value="PLATFORM" />
++        <option name="disableWrapperSourceDistributionNotification" value="true" />
+         <option name="distributionType" value="DEFAULT_WRAPPED" />
+         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+         <option name="modules">
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>apply plugin: 'com.android.application'\r\n\r\nandroid {\r\n    compileSdkVersion 29\r\n    buildToolsVersion \"29.0.3\"\r\n\r\n    defaultConfig {\r\n        applicationId \"com.example.ewallet\"\r\n        minSdkVersion 19\r\n        targetSdkVersion 29\r\n        versionCode 1\r\n        versionName \"1.0\"\r\n        multiDexEnabled true\r\n        testInstrumentationRunner \"androidx.test.runner.AndroidJUnitRunner\"\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            minifyEnabled false\r\n            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'\r\n        }\r\n    }\r\n\r\n}\r\nrepositories {\r\n    maven { url \"https://jitpack.io\" }\r\n}\r\n\r\ndependencies {\r\n    implementation fileTree(dir: 'libs', include: ['*.jar'])\r\n\r\n    implementation 'androidx.appcompat:appcompat:1.2.0'\r\n    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'\r\n    implementation 'androidx.legacy:legacy-support-v4:1.0.0'\r\n    implementation 'com.google.android.material:material:1.2.1'\r\n    implementation 'com.google.android.material:material:1.3.0-alpha03'\r\n    testImplementation 'junit:junit:4.12'\r\n    androidTestImplementation 'androidx.test.ext:junit:1.1.2'\r\n    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'\r\n    implementation 'androidmads.library.qrgenearator:QRGenearator:1.0.3'\r\n    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.2'\r\n    //noinspection GradleCompatible\r\n    implementation 'com.android.support:appcompat-v7:25.3.1'\r\n    implementation 'com.squareup.okhttp3:okhttp:3.9.0'\r\n    implementation 'androidx.cardview:cardview:1.0.0'\r\n    implementation 'nl.joery.animatedbottombar:library:1.0.9'\r\n    compile'com.google.android.gms:play-services-vision:20.1.3'\r\n    implementation 'com.android.support:multidex:1.0.3'\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/build.gradle	(revision f6af141f68d462c6b193e41c86893b3fb574b55a)
++++ app/build.gradle	(date 1609867982149)
+@@ -44,6 +44,6 @@
+     implementation 'com.squareup.okhttp3:okhttp:3.9.0'
+     implementation 'androidx.cardview:cardview:1.0.0'
+     implementation 'nl.joery.animatedbottombar:library:1.0.9'
+-    compile'com.google.android.gms:play-services-vision:20.1.3'
++    implementation'com.google.android.gms:play-services-vision:20.1.3'
+     implementation 'com.android.support:multidex:1.0.3'
+ }
