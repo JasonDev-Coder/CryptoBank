@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,10 +53,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     public CardView btcCard, ethCard, usdtCard, xrpCard, ltcCard;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private View walletView;
-    private LinearLayout walletList;
 
-    private static final String MARKET_UPDATES_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=3ea268be-397d-4d62-8127-644e8c4f84d3";
+    // private View walletView;
+    private LinearLayout walletList;
+    //ImageView removeView;//wallet delete
+
+
     private OkHttpClient okHttpClient = new OkHttpClient();
     private ProgressDialog progressDialog;
 
@@ -118,32 +121,29 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.home_layout, container, false);
-
-        walletView = getLayoutInflater().inflate(R.layout.wallet,null,false);
-
-        walletList = (LinearLayout)v.findViewById(R.id.wallets);
-
-        ImageView addWalletMenu = (ImageView)v.findViewById(R.id.addWallet_menu);
+        walletList = (LinearLayout) v.findViewById(R.id.wallets);
+        addWalletView(R.drawable.bitcoin,"BTC");
+        ImageView addWalletMenu = (ImageView) v.findViewById(R.id.addWallet_menu);
         addWalletMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PopupMenu popup = new PopupMenu(getActivity(),v);
-                popup.getMenuInflater().inflate(R.menu.popup_menu,popup.getMenu());
+                PopupMenu popup = new PopupMenu(getActivity(), v);
+                popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        switch(item.getItemId()){
+                        switch (item.getItemId()) {
                             case R.id.menu_ethereum:
-                                addWalletView(walletView , R.drawable.ethereum , "ETH");
+                                addWalletView( R.drawable.ethereum, "ETH");
                                 return true;
                             case R.id.menu_tether:
-                                addWalletView(walletView , R.drawable.tether , "USD-T");
+                                addWalletView(R.drawable.tether, "USD-T");
                                 return true;
                             case R.id.menu_xrp:
-                                addWalletView(walletView , R.drawable.xrp , "XRP");
+                                addWalletView(R.drawable.xrp, "XRP");
                                 return true;
                             case R.id.menu_litecoin:
-                                addWalletView(walletView , R.drawable.litecoin , "LTC");
+                                addWalletView( R.drawable.litecoin, "LTC");
                                 return true;
                             default:
                                 return false;
@@ -153,16 +153,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 popup.show();
             }
         });
-
-
-        final ImageView removeView = (ImageView)walletView.findViewById(R.id.removeWallet);
-        removeView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                removeWalletView(walletView);
-            }
-        });
-        swipeRefreshLayout=v.findViewById(R.id.refresh_layout_home);
+        swipeRefreshLayout = v.findViewById(R.id.refresh_layout_home);
         btcCard = (CardView) v.findViewById(R.id.BitcoinInfo);
         ethCard = (CardView) v.findViewById(R.id.EthereumInfo);
         usdtCard = (CardView) v.findViewById(R.id.TetherInfo);
@@ -262,7 +253,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     public void run() {
                         swipeRefreshLayout.setRefreshing(false);
                     }
-                },3*1000);
+                }, 3 * 1000);
             }
         });
         btcCard.setOnClickListener(this);
@@ -274,22 +265,28 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         return v;
     }
 
-    private void addWalletView(View v , int image , String currency_type) {   //cutomize and add wallet to layout
-        ImageView wallet_logo = (ImageView)walletView.findViewById(R.id.wallet_logo);
-        TextView wallet_balance = (TextView)walletView.findViewById(R.id.wallet_balance);
-
+    private void addWalletView(int image, String currency_type) {   //customize and add wallet to layout
+        final View walletView = getLayoutInflater().inflate(R.layout.wallet, null, false);//inflate the xml layout which represents the wallet
+        ImageView wallet_logo = (ImageView) walletView.findViewById(R.id.wallet_logo);                      //change logo according to currency chosen
+        ImageView removeView = (ImageView) walletView.findViewById(R.id.removeWallet);
+        removeView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeWalletView(walletView);                                                                //remove view from the layout
+            }
+        });
+        TextView wallet_balance = (TextView) walletView.findViewById(R.id.wallet_balance);
         wallet_logo.setImageResource(image);
-        wallet_balance.setText("0 "+currency_type);
-
-        walletList.addView(v);
+        wallet_balance.setText("0 " + currency_type);
+        walletList.addView(walletView);
     }
 
-    private void removeWalletView(View v){   //remove wallet from layout
+    private void removeWalletView(View v) {   //remove wallet from layout
         walletList.removeView(v);
     }
 
     private void loadPrice(final CardView cv) {
-        Request request = new Request.Builder().url(MARKET_UPDATES_URL).build();
+        Request request = new Request.Builder().url(CONSTANTS.MARKET_UPDATES_URL).build();
         progressDialog.show();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
@@ -307,19 +304,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         progressDialog.dismiss();
                         switch (cv.getId()) {
                             case R.id.BitcoinInfo:
-                                parseBpiResponse(body, 0, BtcPrice);
+                                parseBpiResponse(body, CONSTANTS.BITCOIN_INDEX_JSON, BtcPrice);
                                 break;
                             case R.id.EthereumInfo:
-                                parseBpiResponse(body, 1, EthPrice);
+                                parseBpiResponse(body, CONSTANTS.ETHERUM_INDEX_JSON, EthPrice);
                                 break;
                             case R.id.TetherInfo:
-                                parseBpiResponse(body, 2, UsdtPrice);
+                                parseBpiResponse(body, CONSTANTS.TETHER_INDEX_JSON, UsdtPrice);
                                 break;
                             case R.id.XrpInfo:
-                                parseBpiResponse(body, 3, XrpPrice);
+                                parseBpiResponse(body, CONSTANTS.XRP_INDEX_JSON, XrpPrice);
                                 break;
                             case R.id.LitecoinInfo:
-                                parseBpiResponse(body, 4, LtcPrice);
+                                parseBpiResponse(body, CONSTANTS.LITECOIN_INDEX_JSON, LtcPrice);
                                 break;
                         }
                     }
@@ -330,8 +327,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void parseBpiResponse(String body, int currencyIndex, TextView price) {
         try {
-            JSONObject jsonObject = new JSONObject(body);
-            JSONArray bpis = jsonObject.getJSONArray("data");
+            JSONObject jsonObject = new JSONObject(body);                           //get the JSON body
+            JSONArray bpis = jsonObject.getJSONArray("data");                //get the array data which contains the currencies
             JSONObject crypto_info = bpis.getJSONObject(currencyIndex);
             double crypto_price = crypto_info.getJSONObject("quote").getJSONObject("USD").getDouble("price");
             NumberFormat defaultFormat = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
@@ -341,7 +338,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void loadPercentage(final CardView cv) {
-        Request request = new Request.Builder().url(MARKET_UPDATES_URL).build();
+        Request request = new Request.Builder().url(CONSTANTS.MARKET_UPDATES_URL).build();
         progressDialog.show();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
@@ -359,23 +356,23 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                         switch (cv.getId()) {
                             case R.id.BitcoinInfo:
-                                parseBpiPercResponse(body, 0, BtcPercentage1hr, BtcPercentage1day, BtcPercentage1week,
+                                parseBpiPercResponse(body, CONSTANTS.BITCOIN_INDEX_JSON, BtcPercentage1hr, BtcPercentage1day, BtcPercentage1week,
                                         BtcLogoPercentage1hr, BtcLogoPercentage1day, BtcLogoPercentage1week);
                                 break;
                             case R.id.EthereumInfo:
-                                parseBpiPercResponse(body, 1, EthPercentage1hr, EthPercentage1day, EthPercentage1week,
+                                parseBpiPercResponse(body, CONSTANTS.ETHERUM_INDEX_JSON, EthPercentage1hr, EthPercentage1day, EthPercentage1week,
                                         EthLogoPercentage1hr, EthLogoPercentage1day, EthLogoPercentage1week);
                                 break;
                             case R.id.TetherInfo:
-                                parseBpiPercResponse(body, 2, USDTPercentage1hr, USDTPercentage1day, USDTPercentage1week,
+                                parseBpiPercResponse(body, CONSTANTS.TETHER_INDEX_JSON, USDTPercentage1hr, USDTPercentage1day, USDTPercentage1week,
                                         USDTLogoPercentage1hr, USDTLogoPercentage1day, USDTLogoPercentage1week);
                                 break;
                             case R.id.XrpInfo:
-                                parseBpiPercResponse(body, 3, XRPPercentage1hr, XRPPercentage1day, XRPPercentage1week,
+                                parseBpiPercResponse(body, CONSTANTS.XRP_INDEX_JSON, XRPPercentage1hr, XRPPercentage1day, XRPPercentage1week,
                                         XRPLogoPercentage1hr, XRPLogoPercentage1day, XRPLogoPercentage1week);
                                 break;
                             case R.id.LitecoinInfo:
-                                parseBpiPercResponse(body, 4, LTCPercentage1hr, LTCPercentage1day, LTCPercentage1week,
+                                parseBpiPercResponse(body, CONSTANTS.LITECOIN_INDEX_JSON, LTCPercentage1hr, LTCPercentage1day, LTCPercentage1week,
                                         LTCLogoPercentage1hr, LTCLogoPercentage1day, LTCLogoPercentage1week);
                                 break;
                         }
@@ -450,19 +447,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         i = new Intent(getActivity(), CryptoInfo.class);
         switch (v.getId()) {
             case R.id.BitcoinInfo:
-                CryptoInfo.CryptoIndex = 0;
+                CryptoInfo.CryptoIndex = CONSTANTS.BITCOIN_INDEX_JSON;
                 break;
             case R.id.EthereumInfo:
-                CryptoInfo.CryptoIndex = 1;
+                CryptoInfo.CryptoIndex = CONSTANTS.ETHERUM_INDEX_JSON;
                 break;
             case R.id.TetherInfo:
-                CryptoInfo.CryptoIndex = 2;
+                CryptoInfo.CryptoIndex = CONSTANTS.TETHER_INDEX_JSON;
                 break;
             case R.id.XrpInfo:
-                CryptoInfo.CryptoIndex = 3;
+                CryptoInfo.CryptoIndex = CONSTANTS.XRP_INDEX_JSON;
                 break;
             case R.id.LitecoinInfo:
-                CryptoInfo.CryptoIndex = 4;
+                CryptoInfo.CryptoIndex = CONSTANTS.LITECOIN_INDEX_JSON;
                 break;
             default:
                 CryptoInfo.CryptoIndex = -1;

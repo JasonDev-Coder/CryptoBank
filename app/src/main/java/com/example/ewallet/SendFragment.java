@@ -49,7 +49,7 @@ public class SendFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     private static final String MARKET_UPDATES_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=3ea268be-397d-4d62-8127-644e8c4f84d3";
     private ImageButton button_scan;
-    private TextView send_address;
+    static TextView send_address;
     private Spinner spinner_choice;
     // TODO: Rename and change types of parameters
     private String mParam1;

@@ -37,8 +37,6 @@ import okhttp3.Response;
 public class CryptoInfo extends AppCompatActivity {
     static int CryptoIndex = -1;
     private LineChart myChart;
-    private static final String HIST_BPI_LINK = "https://api.coindesk.com/v1/bpi/historical/close.json";
-    private static final String MARKET_UPDATES_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=3ea268be-397d-4d62-8127-644e8c4f84d3";
     private OkHttpClient okHttpClient = new OkHttpClient();
     private ProgressDialog progressDialog;
     private static String apiKeyCMarket = "3ea268be-397d-4d62-8127-644e8c4f84d3";
@@ -84,31 +82,31 @@ public class CryptoInfo extends AppCompatActivity {
 
     private void load_crypto_about() {
         switch (CryptoIndex) {
-            case 0:
+            case CONSTANTS.BITCOIN_INDEX_JSON:
                 About_View.setText("About Bitcoin");
                 crypto_name.setText("Bitcoin");
                 crypto_logo.setImageResource(R.drawable.bitcoin);
                 About_Info.setText(R.string.btc_info);
                 break;
-            case 1:
+            case CONSTANTS.ETHERUM_INDEX_JSON:
                 About_View.setText("About Etherum");
                 crypto_name.setText("Etherum");
                 crypto_logo.setImageResource(R.drawable.ethereum);
                 About_Info.setText(R.string.eth_info);
                 break;
-            case 2:
+            case CONSTANTS.TETHER_INDEX_JSON:
                 About_View.setText("About Tether");
                 crypto_name.setText("USD-T");
                 crypto_logo.setImageResource(R.drawable.tether);
                 About_Info.setText(R.string.usdt_info);
                 break;
-            case 3:
+            case CONSTANTS.XRP_INDEX_JSON:
                 About_View.setText("About XRP");
                 crypto_name.setText("XRP");
                 crypto_logo.setImageResource(R.drawable.xrp);
                 About_Info.setText(R.string.xrp_info);
                 break;
-            case 4:
+            case CONSTANTS.LITECOIN_INDEX_JSON:
                 About_View.setText("About Litecoin");
                 crypto_name.setText("Litecoin");
                 crypto_logo.setImageResource(R.drawable.litecoin);
@@ -119,7 +117,7 @@ public class CryptoInfo extends AppCompatActivity {
     }
 
     public void load_data() {
-        Request request = new Request.Builder().url(HIST_BPI_LINK).build();
+        Request request = new Request.Builder().url(CONSTANTS.HIST_BPI_LINK).build();
         progressDialog.show();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
@@ -212,7 +210,7 @@ public class CryptoInfo extends AppCompatActivity {
     }
 
     public void load_market_stats() {
-        Request request = new Request.Builder().url(MARKET_UPDATES_URL).build();
+        Request request = new Request.Builder().url(CONSTANTS.MARKET_UPDATES_URL).build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -236,19 +234,19 @@ public class CryptoInfo extends AppCompatActivity {
     private void parseMarketResponse(String body) {
         String curr_name;
         switch (CryptoIndex) {
-            case 0:
+            case CONSTANTS.BITCOIN_INDEX_JSON:
                 curr_name = "Bitcoin";
                 break;
-            case 1:
+            case CONSTANTS.ETHERUM_INDEX_JSON:
                 curr_name = "Etherum";
                 break;
-            case 2:
+            case CONSTANTS.TETHER_INDEX_JSON:
                 curr_name = "USD-T";
                 break;
-            case 3:
+            case CONSTANTS.XRP_INDEX_JSON:
                 curr_name = "XRP";
                 break;
-            case 4:
+            case CONSTANTS.LITECOIN_INDEX_JSON:
                 curr_name = "Litecoin";
                 break;
             default:

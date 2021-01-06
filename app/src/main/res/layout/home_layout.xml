@@ -44,63 +44,69 @@
 
         </RelativeLayout>
 
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:id="@+id/wallets"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:orientation="horizontal">
+            <LinearLayout
+                android:id="@+id/wallets"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/wallet1"
-                android:layout_width="150dp"
-                android:layout_height="250dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginBottom="20dp"
-                app:cardBackgroundColor="#2C2C53"
-                app:cardCornerRadius="20dp">
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/wallet1"
+                    android:layout_width="150dp"
+                    android:layout_height="250dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginBottom="20dp"
+                    app:cardBackgroundColor="#2C2C53"
+                    app:cardCornerRadius="20dp">
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <ImageView
-                        android:id="@+id/default_wallet_logo"
-                        android:layout_width="44dp"
-                        android:layout_height="50dp"
-                        android:src="@drawable/bitcoin"
-                        android:layout_centerHorizontal="true"/>
-                    <TextView
-                        android:id="@+id/wallet_balance_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/default_wallet_logo"
-                        android:text="Balance:"
-                        android:textColor="@color/white"
-                        android:textSize="20sp"
-                        android:layout_centerHorizontal="true"/>
-                    <TextView
-                        android:id="@+id/wallet_balance"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/wallet_balance_text"
-                        android:text="0 BTC"
-                        android:textColor="@color/white"
-                        android:textSize="15sp"
-                        />
-                    <TextView
-                        android:id="@+id/wallet_balance_usd"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/wallet_balance"
-                        android:text="(US$ 0)"
-                        android:textColor="#00FF00"
-                        android:textSize="15sp"
-                        />
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-        </LinearLayout>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/default_wallet_logo"
+                            android:layout_width="44dp"
+                            android:layout_height="50dp"
+                            android:layout_centerHorizontal="true"
+                            android:src="@drawable/bitcoin" />
+
+                        <TextView
+                            android:id="@+id/wallet_balance_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/default_wallet_logo"
+                            android:layout_centerHorizontal="true"
+                            android:text="Balance:"
+                            android:textColor="@color/white"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:id="@+id/wallet_balance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/wallet_balance_text"
+                            android:text="0 BTC"
+                            android:textColor="@color/white"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/wallet_balance_usd"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/wallet_balance"
+                            android:text="(US$ 0)"
+                            android:textColor="#00FF00"
+                            android:textSize="15sp" />
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+        </HorizontalScrollView>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -190,8 +196,8 @@
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="7dp"
-                        android:layout_gravity="bottom">
+                        android:layout_gravity="bottom"
+                        android:layout_marginBottom="7dp">
 
                         <TextView
                             android:id="@+id/onehour"
@@ -807,7 +813,7 @@
                     android:layout_marginRight="15dp"
                     android:layout_marginBottom="5dp"
                     app:cardBackgroundColor="#181530"
-                    app:cardCornerRadius="20dp"/>
+                    app:cardCornerRadius="20dp" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </LinearLayout>

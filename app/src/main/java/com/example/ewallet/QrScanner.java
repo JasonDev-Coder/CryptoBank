@@ -96,9 +96,8 @@ public class QrScanner extends AppCompatActivity {
                     textView.post(new Runnable() {
                         @Override
                         public void run() {
-                            Vibrator vibrator = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-                            vibrator.vibrate(1000);
                             textView.setText(qrCodes.valueAt(0).displayValue);
+                            SendFragment.send_address.setText(qrCodes.valueAt(0).displayValue);
                         }
                     });
                 }
