@@ -231,6 +231,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerHorizontal="true"
                             android:text="1 day:"
+                            android:layout_marginRight="20dp"
                             android:textColor="@color/white"
                             android:textStyle="bold" />
 
