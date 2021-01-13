@@ -28,8 +28,7 @@ import java.util.Arrays;
 public class SignIn extends AppCompatActivity {
     private EditText email_in;
     private EditText password_in;
-    public static final int CONNECTION_TIMEOUT = 10000;
-    public static final int READ_TIMEOUT = 15000;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +44,13 @@ public class SignIn extends AppCompatActivity {
         new AsyncLogin().execute(email, password);
     }
 
+
     private class AsyncLogin extends AsyncTask<String, String, String> {
         ProgressDialog pdLoading = new ProgressDialog(SignIn.this);
         HttpURLConnection conn;
         URL url = null;
+        public static final int CONNECTION_TIMEOUT = 10000;
+        public static final int READ_TIMEOUT = 15000;
 
         @Override
         protected void onPreExecute() {
@@ -78,14 +80,14 @@ public class SignIn extends AppCompatActivity {
                 conn.setDoOutput(true);
                 //append parameters to url so that the script uses them
                 Uri.Builder builder = new Uri.Builder()
-                        .appendQueryParameter("username", params[0])//params[0] is the email from AsyncLogin().execute(email,password);
+                        .appendQueryParameter("email", params[0])//params[0] is the email from AsyncLogin().execute(email,password);
                         .appendQueryParameter("password", params[1]);//params[1] is the password AsyncLogin().execute(email,password);
                 //strings username and password must correspond with the written php code(in my case i used $_POST["username"]
                 String query = builder.build().getEncodedQuery();
                 OutputStream os;
                 os = conn.getOutputStream();//Open connection
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                if(query!=null)
+                if (query != null)
                     writer.write(query);//write the formed query to the output stream
                 writer.flush();
                 writer.close();
@@ -93,7 +95,7 @@ public class SignIn extends AppCompatActivity {
                 conn.connect();
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
-                Log.d("HOSTINGG",e1.getMessage());
+                Log.d("HOSTINGG", e1.getMessage());
                 Log.d("HOSTING", Arrays.toString(e1.getStackTrace()));
                 Log.d("HOSTING", "OK");
                 return "exception2";
@@ -146,7 +148,3 @@ public class SignIn extends AppCompatActivity {
 
     }
 }
-
-
-
-
