@@ -46,9 +46,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/wallet_balance_text"
-                android:text="0 BTC"
+                android:text="0"
+                android:layout_marginLeft="5dp"
                 android:textColor="@color/white"
                 android:textSize="15sp" />
+            <TextView
+                android:id="@+id/wallet_currency_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/wallet_balance_text"
+                android:layout_toRightOf="@id/wallet_balance"
+                android:layout_marginLeft="7dp"
+                android:text="BTC"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+
 
             <TextView
                 android:id="@+id/wallet_balance_usd"

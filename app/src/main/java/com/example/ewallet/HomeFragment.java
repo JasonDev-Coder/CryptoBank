@@ -1,6 +1,8 @@
 package com.example.ewallet;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.Image;
@@ -30,6 +32,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.Objects;
 
 import nl.joery.animatedbottombar.AnimatedBottomBar;
 import okhttp3.Call;
@@ -133,16 +136,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.menu_ethereum:
-                                addWalletView( R.drawable.ethereum, "ETH");
+                                addWalletView("Etherum",R.drawable.ethereum, "ETH");
                                 return true;
                             case R.id.menu_tether:
-                                addWalletView(R.drawable.tether, "USD-T");
+                                addWalletView("Tether",R.drawable.tether, "USD-T");
                                 return true;
                             case R.id.menu_xrp:
-                                addWalletView(R.drawable.xrp, "XRP");
+                                addWalletView("Ripple",R.drawable.xrp, "XRP");
                                 return true;
                             case R.id.menu_litecoin:
-                                addWalletView( R.drawable.litecoin, "LTC");
+                                addWalletView( "Litecoin",R.drawable.litecoin, "LTC");
                                 return true;
                             default:
                                 return false;
@@ -264,7 +267,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         return v;
     }
 
-    private void addWalletView(int image, String currency_type) {   //customize and add wallet to layout
+    private void addWalletView(String CurrencyName,int image, String currency_type) {   //customize and add wallet to layout
         final View walletView = getLayoutInflater().inflate(R.layout.wallet, null, false);//inflate the xml layout which represents the wallet
         ImageView wallet_logo = (ImageView) walletView.findViewById(R.id.wallet_logo);                      //change logo according to currency chosen
         ImageView removeView = (ImageView) walletView.findViewById(R.id.removeWallet);
@@ -275,13 +278,33 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
         });
         TextView wallet_balance = (TextView) walletView.findViewById(R.id.wallet_balance);
+        TextView wallet_balance_text = (TextView) walletView.findViewById(R.id.wallet_currency_name);
         wallet_logo.setImageResource(image);
-        wallet_balance.setText("0 " + currency_type);
+        wallet_balance.setText("0");
+        wallet_balance_text.setText(currency_type);
         walletList.addView(walletView);
     }
 
-    private void removeWalletView(View v) {   //remove wallet from layout
-        walletList.removeView(v);
+    private void removeWalletView(final View v) {   //remove wallet from layout
+
+        AlertDialog.Builder builder=new AlertDialog.Builder(getContext());
+        builder.setMessage("Deleting your wallet will result in the loss of your balance!\nWould you like to proceed?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                walletList.removeView(v);
+                dialog.cancel();
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog dialog=builder.create();
+        dialog.show();
     }
 
     private void loadPrice(final CardView cv) {
@@ -348,8 +371,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String body = response.body().string();
-
-                getActivity().runOnUiThread(new Runnable() {
+                Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
 

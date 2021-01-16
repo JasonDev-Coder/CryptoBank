@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +29,7 @@ import java.util.Arrays;
 public class SignIn extends AppCompatActivity {
     private EditText email_in;
     private EditText password_in;
+    private TextView ClickToSignUp;
 
 
     @Override
@@ -36,6 +38,14 @@ public class SignIn extends AppCompatActivity {
         setContentView(R.layout.sign_in);
         email_in = findViewById(R.id.email);
         password_in = findViewById(R.id.password);
+        ClickToSignUp=findViewById(R.id.sign_up_link);
+        ClickToSignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SignIn.this,SignUp.class);
+                startActivity(intent);
+            }
+        });
     }
 
     public void checkLogin(View v) {//Trigger

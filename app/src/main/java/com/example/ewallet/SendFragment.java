@@ -30,6 +30,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -169,7 +170,7 @@ public class SendFragment extends Fragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String body = response.body().string();
-                getActivity().runOnUiThread(new Runnable() {
+                Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         parseBpiResponse(body, index, CrypToUs);

@@ -98,7 +98,7 @@ public class RequestFragment extends Fragment implements AdapterView.OnItemSelec
             }
         });
         Spinner spinner_choice = v.findViewById(R.id.choice_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.currencies_array, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(Objects.requireNonNull(getActivity()), R.array.currencies_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_choice.setAdapter(adapter);
         spinner_choice.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
