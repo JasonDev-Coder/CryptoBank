@@ -20,7 +20,7 @@
         android:layout_height="300dp"
         android:layout_below="@id/choice_spinner"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="30dp"
         android:background="@color/black"
         android:gravity="center_horizontal" />
 
