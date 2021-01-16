@@ -74,7 +74,7 @@ public class SignIn extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             try {
-                url = new URL("http://10.0.2.2/WalletAppScripts/login.inc.php");
+                url = new URL("http://10.0.2.2/cryptoBank/html/login.inc.php");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 return "exception1";

@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="@color/colorPrimary">
     <ImageView
         android:id="@+id/backimg_scanner"
         android:layout_width="44dp"
@@ -12,7 +13,6 @@
         android:layout_marginStart="15dp"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="10dp"
-        android:background="@color/black"
         android:src="@drawable/ic_back" />
     <SurfaceView
         android:id="@+id/camerapreview"
@@ -28,5 +28,7 @@
         android:layout_marginTop="20dp"
         android:gravity="center"
         android:text="Focus on QR code"
-        android:textSize="18sp" />
+        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:fontFamily="@font/shortxurkit_2xdv" />
 </RelativeLayout>

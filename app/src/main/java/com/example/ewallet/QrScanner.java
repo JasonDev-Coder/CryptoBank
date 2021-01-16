@@ -83,10 +83,10 @@ public class QrScanner extends AppCompatActivity {
                         cameraSource.stop();
                     }
                 });
+
         barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
             @Override
             public void release() {
-
             }
 
             @Override
@@ -98,6 +98,7 @@ public class QrScanner extends AppCompatActivity {
                         public void run() {
                             textView.setText(qrCodes.valueAt(0).displayValue);
                             SendFragment.send_address.setText(qrCodes.valueAt(0).displayValue);
+                            finish();
                         }
                     });
                 }

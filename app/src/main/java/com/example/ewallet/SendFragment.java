@@ -89,6 +89,7 @@ public class SendFragment extends Fragment {
         }
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -218,5 +219,6 @@ public class SendFragment extends Fragment {
         int Cryp_index_spinner = spinner_choice.getSelectedItemPosition();
         ChangePrice(Cryp_index_spinner, cryoToUs);
     }
+
 
 }

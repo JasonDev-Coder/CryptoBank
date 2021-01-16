@@ -4,6 +4,7 @@
     <string name="send">Send</string>
     <string name="recent">Recent</string>
     <string name="request">Request</string>
+    <string name="help">Help</string>
     <string-array name="currencies_array">
         <item>Bitcoin</item>
         <item>Etherum</item>

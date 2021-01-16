@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".HelpFragment"
+    android:background="#181530"
+    android:orientation="vertical">
+
+    
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="HOW CAN WE HELP ?"
+        android:textColor="@color/white"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="30dp"
+        android:textSize="20sp"/>
+
+    <EditText
+        android:id="@+id/message"
+        android:layout_width="match_parent"
+        android:layout_height="219dp"
+        android:background="#2C2C53"
+        android:inputType="textMultiLine"
+        android:lines="9"
+        android:gravity="top"
+        android:textColor="@color/white"
+        android:padding="5dp"
+        android:layout_margin="20dp"
+        android:overScrollMode="always"
+        android:scrollbarStyle="insideInset"
+        android:scrollbars="vertical"
+        android:scrollHorizontally="false"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:id="@+id/sendMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:fontFamily="@font/shortxurkit_2xdv"
+        android:text="SEND"
+        android:textColor="@color/colorPrimary"
+        android:textSize="25sp"
+        android:theme="@style/My_button_style" />
+
+</LinearLayout>

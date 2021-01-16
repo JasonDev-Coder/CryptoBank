@@ -55,6 +55,12 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.tab_send:
                         fragment=new SendFragment();
                         break;
+                    case R.id.tab_help:
+                        fragment= new HelpFragment();
+                        break;
+                    case R.id.tab_recent:
+                        fragment= new RecentFragment();
+                        break;
                 }
                 if (fragment != null) {
                     fragmentManager = getSupportFragmentManager();

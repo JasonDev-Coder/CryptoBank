@@ -24,7 +24,8 @@
                 android:layout_marginTop="20dp"
                 android:text="My Wallets:"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:fontFamily="@font/shortxurkit_2xdv"/>
 
             <ImageView
                 android:id="@+id/addWallet_menu"
@@ -113,7 +114,8 @@
                 android:layout_marginTop="20dp"
                 android:text="Coin"
                 android:textColor="@color/white"
-                android:textSize="15dp" />
+                android:textSize="20dp"
+                android:fontFamily="@font/shortxurkit_2xdv"/>
 
             <TextView
                 android:id="@+id/price"
@@ -124,7 +126,8 @@
                 android:gravity="right"
                 android:text="Price"
                 android:textColor="@color/white"
-                android:textSize="15dp" />
+                android:textSize="20dp"
+                android:fontFamily="@font/shortxurkit_2xdv"/>
         </RelativeLayout>
 
         <androidx.core.widget.NestedScrollView
