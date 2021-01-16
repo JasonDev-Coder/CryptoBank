@@ -170,7 +170,9 @@ public class SendFragment extends Fragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String body = response.body().string();
-                Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                if(getActivity()==null)
+                    return;
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         parseBpiResponse(body, index, CrypToUs);

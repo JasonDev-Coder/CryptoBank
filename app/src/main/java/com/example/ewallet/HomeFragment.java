@@ -136,16 +136,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.menu_ethereum:
-                                addWalletView("Etherum",R.drawable.ethereum, "ETH");
+                                addWalletView("Etherum", R.drawable.ethereum, "ETH");
                                 return true;
                             case R.id.menu_tether:
-                                addWalletView("Tether",R.drawable.tether, "USD-T");
+                                addWalletView("Tether", R.drawable.tether, "USD-T");
                                 return true;
                             case R.id.menu_xrp:
-                                addWalletView("Ripple",R.drawable.xrp, "XRP");
+                                addWalletView("Ripple", R.drawable.xrp, "XRP");
                                 return true;
                             case R.id.menu_litecoin:
-                                addWalletView( "Litecoin",R.drawable.litecoin, "LTC");
+                                addWalletView("Litecoin", R.drawable.litecoin, "LTC");
                                 return true;
                             default:
                                 return false;
@@ -267,7 +267,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         return v;
     }
 
-    private void addWalletView(String CurrencyName,int image, String currency_type) {   //customize and add wallet to layout
+    private void addWalletView(String CurrencyName, int image, String currency_type) {   //customize and add wallet to layout
         final View walletView = getLayoutInflater().inflate(R.layout.wallet, null, false);//inflate the xml layout which represents the wallet
         ImageView wallet_logo = (ImageView) walletView.findViewById(R.id.wallet_logo);                      //change logo according to currency chosen
         ImageView removeView = (ImageView) walletView.findViewById(R.id.removeWallet);
@@ -287,7 +287,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void removeWalletView(final View v) {   //remove wallet from layout
 
-        AlertDialog.Builder builder=new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage("Deleting your wallet will result in the loss of your balance!\nWould you like to proceed?");
         builder.setCancelable(false);
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -303,7 +303,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 dialog.cancel();
             }
         });
-        AlertDialog dialog=builder.create();
+        AlertDialog dialog = builder.create();
         dialog.show();
     }
 
@@ -319,7 +319,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String body = response.body().string();
-
+                if (getActivity() == null)
+                    return;
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -371,7 +372,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String body = response.body().string();
-                Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                if (getActivity() == null)
+                    return;
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
 

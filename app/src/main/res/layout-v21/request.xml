@@ -69,7 +69,8 @@
         android:text="Copy Address"
         android:textSize="20sp"
         android:textAllCaps="true"
-        android:textColor="#181530"
+        android:textColor="@color/colorPrimary"
+        android:fontFamily="@font/shortxurkit_2xdv"
         android:theme="@style/My_button_style"
         />
 

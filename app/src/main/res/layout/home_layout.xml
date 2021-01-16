@@ -12,14 +12,6 @@
         android:background="#181530"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="EWallet"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="20dp" />
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -30,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
-                android:text="my wallets:"
+                android:text="My Wallets:"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
 
@@ -188,7 +180,7 @@
                             android:layout_marginRight="35dp"
                             android:layout_toRightOf="@id/Bitcoin"
                             android:gravity="right"
-                            android:text="hello world"
+                            android:text="price"
                             android:textColor="@color/white"
                             android:textSize="15sp" />
                     </RelativeLayout>
@@ -200,7 +192,7 @@
                         android:layout_marginBottom="7dp">
 
                         <TextView
-                            android:id="@+id/onehour"
+                            android:id="@+id/btc_onehour"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentStart="true"
@@ -214,7 +206,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="5dp"
-                            android:layout_toRightOf="@id/onehour"
+                            android:layout_toRightOf="@id/btc_onehour"
                             android:textColor="@color/white" />
 
                         <ImageView
@@ -226,7 +218,7 @@
                             android:src="@drawable/increase" />
 
                         <TextView
-                            android:id="@+id/oneday"
+                            android:id="@+id/btc_oneday"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerHorizontal="true"
@@ -239,8 +231,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="5dp"
-                            android:layout_toRightOf="@id/oneday"
-                            android:textSize="10sp"
+                            android:layout_toRightOf="@id/btc_oneday"
                             android:textColor="@color/white" />
 
                         <ImageView
@@ -252,9 +243,10 @@
                             android:src="@drawable/increase" />
 
                         <TextView
-                            android:id="@+id/week"
+                            android:id="@+id/btc_week"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:paddingLeft="10dp"
                             android:layout_toLeftOf="@id/btc_perc_text_1week"
                             android:text="1 week:"
                             android:textColor="@color/white"
@@ -276,6 +268,7 @@
                             android:layout_marginTop="3dp"
                             android:src="@drawable/increase" />
                     </RelativeLayout>
+
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
@@ -321,7 +314,7 @@
                             android:layout_marginRight="35dp"
                             android:layout_toRightOf="@id/Etherum"
                             android:gravity="right"
-                            android:text="hello world"
+                            android:text="price"
                             android:textColor="@color/white"
                             android:textSize="15sp" />
                     </RelativeLayout>
@@ -453,7 +446,7 @@
                             android:layout_marginRight="35dp"
                             android:layout_toRightOf="@id/Tether"
                             android:gravity="right"
-                            android:text="hello world"
+                            android:text="price"
                             android:textColor="@color/white"
                             android:textSize="15sp" />
                     </RelativeLayout>
@@ -585,7 +578,7 @@
                             android:layout_marginRight="35dp"
                             android:layout_toRightOf="@id/XRP"
                             android:gravity="right"
-                            android:text="hello world"
+                            android:text="price"
                             android:textColor="@color/white"
                             android:textSize="15sp" />
                     </RelativeLayout>
@@ -717,7 +710,7 @@
                             android:layout_marginRight="35dp"
                             android:layout_toRightOf="@id/Litecoin"
                             android:gravity="right"
-                            android:text="hello world"
+                            android:text="price"
                             android:textColor="@color/white"
                             android:textSize="15sp" />
                     </RelativeLayout>
