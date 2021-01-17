@@ -216,8 +216,23 @@ public class SendFragment extends Fragment {
     }
 
     private void Convert(boolean cryoToUs) {
-        int Cryp_index_spinner = spinner_choice.getSelectedItemPosition();
-        ChangePrice(Cryp_index_spinner, cryoToUs);
+        String Cryp_String_spinner = (String)spinner_choice.getSelectedItem();
+        switch (Cryp_String_spinner){
+            case "Bitcoin":
+                ChangePrice(CONSTANTS.BITCOIN_INDEX_JSON, cryoToUs);
+                break;
+            case "Etherum":
+                ChangePrice(CONSTANTS.ETHERUM_INDEX_JSON,cryoToUs);
+                break;
+            case "USD-T":
+                ChangePrice(CONSTANTS.TETHER_INDEX_JSON,cryoToUs);
+                break;
+            case "XRP":
+                ChangePrice(CONSTANTS.XRP_INDEX_JSON,cryoToUs);
+            case "Litecoin":
+                ChangePrice(CONSTANTS.LITECOIN_INDEX_JSON,cryoToUs);
+                break;
+        }
     }
 
 

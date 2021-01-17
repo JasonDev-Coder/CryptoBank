@@ -102,7 +102,7 @@ public class HelpFragment extends Fragment {
                         public void run() {
                             message.setEnabled(true);
                         }
-                    }, 86400000);
+                    }, 86400000);//24hrs
                 }
             }
         });
