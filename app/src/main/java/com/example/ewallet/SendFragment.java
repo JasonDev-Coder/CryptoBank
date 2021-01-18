@@ -187,11 +187,11 @@ public class SendFragment extends Fragment {
     }
 
     private void sendMoney() {
-        String walletName = (String) spinner_choice.getSelectedItem();
+        String walletName = (String) spinner_choice.getSelectedItem();//depending on the wallet name we will query the wallet type
         Log.v("WALLETNAME", walletName);
         String amount_send;
         try {
-            amount_send = Double.toString(Double.parseDouble(cryptoInput.getText().toString()));
+            amount_send = Double.toString(Double.parseDouble(cryptoInput.getText().toString()));//get the send amount parse it tp double to make sure only numbers are entered then parse it string to send it in post
         } catch (NumberFormatException e1) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setMessage("Error in send amount");
@@ -205,7 +205,7 @@ public class SendFragment extends Fragment {
             dialog.show();
             return;
         }
-        String sendAddress = send_address.getText().toString();
+        String sendAddress = send_address.getText().toString();//get the address to send to
         if (sendAddress.isEmpty()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setMessage("Input an address");
