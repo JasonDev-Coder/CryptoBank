@@ -1,7 +1,10 @@
 package com.example.ewallet;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.cardview.widget.CardView;
@@ -25,10 +28,20 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -57,6 +70,7 @@ public class SendFragment extends Fragment {
     private String mParam2;
     private EditText cryptoInput, usdInput;
     private OkHttpClient okHttpClient = new OkHttpClient();
+    private Button sendButton;
 
     public SendFragment() {
         // Required empty public constructor
@@ -157,7 +171,18 @@ public class SendFragment extends Fragment {
                 startActivity(i);
             }
         });
+        sendButton = v.findViewById(R.id.send_button);
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendMoney();
+            }
+        });
         return v;
+    }
+
+    private void sendMoney() {
+
     }
 
     private void ChangePrice(final int index, final boolean CrypToUs) {
@@ -171,7 +196,7 @@ public class SendFragment extends Fragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String body = response.body().string();
-                if(getActivity()==null)
+                if (getActivity() == null)
                     return;
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -216,21 +241,21 @@ public class SendFragment extends Fragment {
     }
 
     private void Convert(boolean cryoToUs) {
-        String Cryp_String_spinner = (String)spinner_choice.getSelectedItem();
-        switch (Cryp_String_spinner){
+        String Cryp_String_spinner = (String) spinner_choice.getSelectedItem();
+        switch (Cryp_String_spinner) {
             case "Bitcoin":
                 ChangePrice(CONSTANTS.BITCOIN_INDEX_JSON, cryoToUs);
                 break;
             case "Etherum":
-                ChangePrice(CONSTANTS.ETHERUM_INDEX_JSON,cryoToUs);
+                ChangePrice(CONSTANTS.ETHERUM_INDEX_JSON, cryoToUs);
                 break;
             case "USD-T":
-                ChangePrice(CONSTANTS.TETHER_INDEX_JSON,cryoToUs);
+                ChangePrice(CONSTANTS.TETHER_INDEX_JSON, cryoToUs);
                 break;
             case "XRP":
-                ChangePrice(CONSTANTS.XRP_INDEX_JSON,cryoToUs);
+                ChangePrice(CONSTANTS.XRP_INDEX_JSON, cryoToUs);
             case "Litecoin":
-                ChangePrice(CONSTANTS.LITECOIN_INDEX_JSON,cryoToUs);
+                ChangePrice(CONSTANTS.LITECOIN_INDEX_JSON, cryoToUs);
                 break;
         }
     }

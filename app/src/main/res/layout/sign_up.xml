@@ -39,6 +39,7 @@
             android:background="@drawable/rounded_edit_text"
             android:inputType="textPersonName"
             android:layout_marginEnd="20dp"
+            android:textColor="@color/white"
             android:textAlignment="center" />
     </TableRow>
 
@@ -55,6 +56,7 @@
         <EditText
             android:id="@+id/username_form"
             android:layout_width="match_parent"
+            android:textColor="@color/white"
             android:layout_height="35dp"
             android:background="@drawable/rounded_edit_text"
             android:inputType="text"
@@ -79,6 +81,7 @@
             android:background="@drawable/rounded_edit_text"
             android:inputType="textEmailAddress"
             android:layout_marginEnd="20dp"
+            android:textColor="@color/white"
             android:textAlignment="center" />
     </TableRow>
 
@@ -99,6 +102,7 @@
             android:background="@drawable/rounded_edit_text"
             android:inputType="textPassword"
             android:layout_marginEnd="20dp"
+            android:textColor="@color/white"
             android:textAlignment="center" />
     </TableRow>
 
@@ -122,6 +126,7 @@
             android:inputType="date"
             android:textAlignment="center"
             android:textColorHint="@color/white"
+            android:textColor="@color/white"
             android:textSize="17sp" />
     </TableRow>
 

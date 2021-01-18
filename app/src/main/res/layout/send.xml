@@ -110,6 +110,7 @@
         android:src="@drawable/qr_scan"
         android:contentDescription="Click to scan" />
     <Button
+        android:id="@+id/send_button"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/qr_button"
