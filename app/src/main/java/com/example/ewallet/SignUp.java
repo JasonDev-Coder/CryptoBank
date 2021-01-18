@@ -92,7 +92,7 @@ public class SignUp extends AppCompatActivity {
                 //append parameters to url so that the script uses them
                 Uri.Builder builder = new Uri.Builder()
                         .appendQueryParameter("name", params[0])//params[0] is the email from AsyncLogin().execute(email,password);
-                        .appendQueryParameter("username", params[1])//params[1] is the password AsyncLogin().execute(email,password);
+                        .appendQueryParameter("username", params[1])//params[1] is the username AsyncLogin().execute(email,username....);
                         .appendQueryParameter("email", params[2])
                         .appendQueryParameter("password", params[3])
                         .appendQueryParameter("birthdate", params[4]);

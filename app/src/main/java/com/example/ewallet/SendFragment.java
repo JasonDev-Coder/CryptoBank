@@ -1,7 +1,10 @@
 package com.example.ewallet;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -10,6 +13,8 @@ import android.os.Bundle;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -63,7 +68,7 @@ public class SendFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     private ImageButton button_scan;
-    static TextView send_address;
+    static EditText send_address;
     private Spinner spinner_choice;
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -182,7 +187,38 @@ public class SendFragment extends Fragment {
     }
 
     private void sendMoney() {
-
+        String walletName = (String) spinner_choice.getSelectedItem();
+        Log.v("WALLETNAME", walletName);
+        String amount_send;
+        try {
+            amount_send = Double.toString(Double.parseDouble(cryptoInput.getText().toString()));
+        } catch (NumberFormatException e1) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setMessage("Error in send amount");
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            return;
+        }
+        String sendAddress = send_address.getText().toString();
+        if (sendAddress.isEmpty()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setMessage("Input an address");
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } else
+            new AsyncSend().execute(walletName, amount_send, sendAddress);
     }
 
     private void ChangePrice(final int index, final boolean CrypToUs) {
@@ -261,4 +297,175 @@ public class SendFragment extends Fragment {
     }
 
 
+    private class AsyncSend extends AsyncTask<String, String, String> {
+        ProgressDialog pdLoading = new ProgressDialog(getActivity());
+        HttpURLConnection conn;
+        URL url = null;
+        public static final int CONNECTION_TIMEOUT = 10000;
+        public static final int READ_TIMEOUT = 15000;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // this method runs on same UI thread
+            pdLoading.setMessage("\tLoading...");
+            pdLoading.setCancelable(false);
+            pdLoading.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                url = new URL("http://10.0.2.2/cryptoBank/send.inc.php");
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                Log.d("CONNECTPHP", "error in connection1");
+                return "exception1";
+            }
+            try {
+                //here we will setup HttpURLConnection to connect with php scripts to send and receive data
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(READ_TIMEOUT);
+                conn.setConnectTimeout(CONNECTION_TIMEOUT);
+                conn.setRequestMethod("POST");//the request method must correspond with the written php code
+
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                String session_id = null;
+                if (getActivity() != null) {//We get the stores session id to use the current session
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                    session_id = prefs.getString("session_id", null);
+                    Log.v("SESS_ID", session_id);
+                }
+                //append parameters to url so that the script uses them
+                Uri.Builder builder = new Uri.Builder()
+                        .appendQueryParameter("session_id", session_id)
+                        .appendQueryParameter("wallet_name", params[0])//params[0] is the message from AsyncLogin().execute(help_message);
+                        .appendQueryParameter("amount", params[1])//amount to send
+                        .appendQueryParameter("recv_addr", params[2]);//receiver address
+
+                String query = builder.build().getEncodedQuery();
+                OutputStream os;
+                os = conn.getOutputStream();//Open connection
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                if (query != null)
+                    writer.write(query);//write the formed query to the output stream
+                writer.flush();
+                writer.close();
+                os.close();
+                conn.connect();
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                Log.d("CONNECTPHP", Arrays.toString(e1.getStackTrace()));
+                return "exception2";
+            }
+
+            try {
+                int response_code = conn.getResponseCode();
+                if (response_code == HttpURLConnection.HTTP_OK) {
+                    InputStream input = conn.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                    StringBuilder result = new StringBuilder();
+                    String line;
+
+                    while ((line = reader.readLine()) != null) {
+                        result.append(line);//the result here will be what the echo from the php script
+                    }
+                    return result.toString();//result will be used in onPostExecute method
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setMessage("Connection Failed");
+                    builder.setCancelable(false);
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                    Log.d("CONNECTPHP", "error in connection3");
+                    return "unsuccesful";
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d("CONNECTPHP", "error in connection4");
+                return "exception3";
+            } finally {
+                conn.disconnect();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            //this method will be running on UI thread
+
+            pdLoading.dismiss();
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+
+            if (result.equalsIgnoreCase("true")) {
+                builder.setMessage("Send transaction is on the way!");
+                builder.setCancelable(false);
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                send_address.setText("");
+                cryptoInput.setText("");
+            } else if (result.equalsIgnoreCase("Insufficent balance")) {
+                builder.setMessage("Insufficient Balance");
+                builder.setCancelable(false);
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+            } else if (result.equalsIgnoreCase("You don't have the current wallet")) {
+                builder.setMessage("You don't have the current wallet");
+                builder.setCancelable(false);
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            } else if (result.equalsIgnoreCase("Receiver Wallet doesn't exist")) {
+                builder.setMessage("Receiver Wallet doesn't exist");
+                builder.setCancelable(false);
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            } else {
+                builder.setMessage("Unknown error");
+                builder.setCancelable(false);
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+            }
+        }
+
+    }
 }
