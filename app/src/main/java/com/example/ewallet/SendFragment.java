@@ -316,7 +316,7 @@ public class SendFragment extends Fragment {
         @Override
         protected String doInBackground(String... params) {
             try {
-                url = new URL("http://10.0.2.2/cryptoBank/send.inc.php");
+                url = new URL("http://10.0.2.2/cryptoBank/views/send.inc.php");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 Log.d("CONNECTPHP", "error in connection1");
@@ -335,7 +335,7 @@ public class SendFragment extends Fragment {
                 if (getActivity() != null) {//We get the stores session id to use the current session
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
                     session_id = prefs.getString("session_id", null);
-                    Log.v("SESS_ID", session_id);
+                    Log.v("sessionid_id", session_id);
                 }
                 //append parameters to url so that the script uses them
                 Uri.Builder builder = new Uri.Builder()
@@ -452,7 +452,7 @@ public class SendFragment extends Fragment {
                 });
                 AlertDialog dialog = builder.create();
                 dialog.show();
-            } else {
+            } else if(result.equalsIgnoreCase("NO")){
                 builder.setMessage("Unknown error");
                 builder.setCancelable(false);
                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {

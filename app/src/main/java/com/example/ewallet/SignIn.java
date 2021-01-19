@@ -77,7 +77,7 @@ public class SignIn extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             try {
-                url = new URL("http://10.0.2.2/cryptoBank/login.inc.php");
+                url = new URL("http://10.0.2.2/cryptoBank/views/login.inc.php");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 return "exception1";
@@ -143,17 +143,17 @@ public class SignIn extends AppCompatActivity {
             pdLoading.dismiss();
 
             if (result.contains("true")) {//if the php echoed true meaning the query from the table user gave a result meaning the user exist and can sign in
-                String session_id=result.substring(0,result.indexOf("true"));
+                String session_id=result.substring(4);
                 SharedPreferences saved_values = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 SharedPreferences.Editor editor=saved_values.edit();
                 editor.putString("session_id",session_id);/*In the php script if the log in is successful we echo the session id to store it in android because the session is being closed after finishing executing the script in android only*/
                 editor.commit();
-                Log.v("SESS_ID", session_id);
+                Log.d("sessionid_id", session_id);
                 Intent intent = new Intent(SignIn.this, MainActivity.class);
                 startActivity(intent);
                 SignIn.this.finish();
 
-            } else if (result.equalsIgnoreCase("false")) {
+            } else if (result.contains("false")) {
 
                 // If username and password does not match display a error message
                 Toast.makeText(SignIn.this, "Invalid email or password", Toast.LENGTH_LONG).show();
