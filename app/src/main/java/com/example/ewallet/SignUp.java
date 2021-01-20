@@ -16,6 +16,8 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.simple.parser.JSONParser;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -75,7 +77,7 @@ public class SignUp extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             try {
-                url = new URL("http://10.0.2.2/cryptoBank/views/signup.inc.php");
+                url = new URL("http://10.0.2.2/cryptoBank/views/signup.php");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 return "exception1";

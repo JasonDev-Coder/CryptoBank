@@ -134,7 +134,7 @@ public class HelpFragment extends Fragment {
         @Override
         protected String doInBackground(String... params) {
             try {
-                url = new URL("http://10.0.2.2/cryptoBank/helpMessage.inc.php");
+                url = new URL("http://10.0.2.2/cryptoBank/views/helpMessage.php");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 Log.d("CONNECTPHP", "error in connection1");
@@ -270,29 +270,3 @@ public class HelpFragment extends Fragment {
 
     }
 }
-
-
-
-   /* String help_message = message.getText().toString();
-                if(help_message.isEmpty()){
-                        Toast.makeText(getActivity(),"Please enter a message !", Toast.LENGTH_SHORT).show();
-                        }else {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                        builder.setMessage("Thank you for contacting us !\n Please wait 24 hours before sending another  message.");
-                        builder.setCancelable(false);
-                        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-@Override
-public void onClick(DialogInterface dialog, int which) {
-        dialog.cancel();
-        }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-        message.setText("");
-        message.setEnabled(false);
-        new Handler().postDelayed(new Runnable() {
-@Override
-public void run() {
-        message.setEnabled(true);
-        }
-        }, 86400000); */
