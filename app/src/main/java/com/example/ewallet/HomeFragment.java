@@ -109,7 +109,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private String mParam1;
     private String mParam2;
     private static boolean addWalletBoolean = false;
-    private static boolean locked = true;
 
     public HomeFragment() {
         // Required empty public constructor
