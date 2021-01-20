@@ -257,7 +257,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         loadPercentage(ltcCard);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onRefresh() {
+            public void onRefresh() {//reload everything that contains live values
                 loadPrice(btcCard);
                 loadPercentage(btcCard);
 
@@ -272,6 +272,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                 loadPrice(ltcCard);
                 loadPercentage(ltcCard);
+                loadWallets();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -292,12 +293,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void addWallet(final String CurrencyName, final int image, final String currency_type, final String balance) {
         try {
-            new AsyncAddWallet().execute(CurrencyName).get();
+            new AsyncAddWallet().execute(CurrencyName).get();/*here i put .get() just because i want the thread to wait until AsyncAddWallet finishes execution
+                  so we don't enter the if statment before the boolean changes its value*/
         } catch (Exception e) {
         }
-        if (addWalletBoolean) {
+        if (addWalletBoolean) {//if addWalletBoolean was true meaning the user doesnt have the wallet and everything is okay we can add the wallet
             addWalletView(CurrencyName, image, currency_type, balance);
-            addWalletBoolean = false;
+            addWalletBoolean = false;//after adding the wallet we have to reset the boolean
         }
 
     }
@@ -326,12 +328,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             new LoadWallets().execute().get();
         } catch (Exception e) {
         }
-        if (!walletListMaps.isEmpty()) {
+        if (!walletListMaps.isEmpty()) {//walletListMaps will contain hash maps  containing the user's wallets
             for (HashMap<String, String> wallet : walletListMaps) {
                 String wallet_name = wallet.get("type_name");
                 String wallet_balance = wallet.get("balance");
                 String wallet_type_symbol = wallet.get("type_symbol");
-                switch (wallet_name) {
+                switch (wallet_name) {//depending on wallet name add an xml layout of the wallet
                     case "Bitcoin":
                         addWalletView(wallet_name, R.drawable.bitcoin, wallet_type_symbol, wallet_balance);
                         break;
@@ -595,14 +597,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 conn.setDoInput(true);
                 conn.setDoOutput(true);
                 String session_id = null;
-                if (getActivity() != null) {//We get the stores session id to use the current session
+                if (getActivity() != null) {//We get the stored session id to use the current session
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
                     session_id = prefs.getString("session_id", null);
                     Log.d("sessionid_id", session_id);
                 }
                 //append parameters to url so that the script uses them
                 Uri.Builder builder = new Uri.Builder()
-                        .appendQueryParameter("cryptoName", params[0])//params[0] is the message from AsyncLogin().execute(help_message);
+                        .appendQueryParameter("cryptoName", params[0])//params[0] is the message from AsyncAddWallet().execute(wallet name);
                         .appendQueryParameter("session_id", session_id);
                 String query = builder.build().getEncodedQuery();
                 OutputStream os;
@@ -632,7 +634,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         result.append(line);//the result here will be what the echo from the php script
                     }
                     if (result.toString().contains("true")) {
-                        addWalletBoolean = true;
+                        addWalletBoolean = true;/*When we get the result from php telling us if the user wallet was added to the DB
+                         then we change addWalletBoolean to true meaning we can inflate now an xml layout containing the wallet view*/
+                        /*i didnt put this in post execute because then when ths method finishes the thread continues and the if statement in addWallet will not be changed*/
                     }
                     return result.toString();//result will be used in onPostExecute method
                 } else {
