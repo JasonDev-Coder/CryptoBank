@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -97,7 +98,9 @@ public class QrScanner extends AppCompatActivity {
                         @Override
                         public void run() {
                             textView.setText(qrCodes.valueAt(0).displayValue);
-                            SendFragment.send_address.setText(qrCodes.valueAt(0).displayValue);
+                            Intent data = new Intent();
+                            data.putExtra("QRaddress", qrCodes.valueAt(0).displayValue);
+                            setResult(RESULT_OK, data);
                             finish();
                         }
                     });

@@ -101,7 +101,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private AnimatedBottomBar bottom_bar;
 
     private Button home, send, recent, receive;
-    ArrayList<HashMap<String, String>> walletListMaps = new ArrayList<>();
+    private ArrayList<HashMap<String, String>> walletListMaps = new ArrayList<>();
+    private HashMap<String, Double> cryptoPrices = new HashMap<>();//save crypto prices here
     FragmentManager fragmentManager;
 
 
@@ -294,7 +295,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private void addWallet(final String CurrencyName, final int image, final String currency_type, final String balance) {
         try {
             new AsyncAddWallet().execute(CurrencyName).get();/*here i put .get() just because i want the thread to wait until AsyncAddWallet finishes execution
-                  so we don't enter the if statment before the boolean changes its value*/
+                  so we don't enter the if statement before the boolean changes its value*/
         } catch (Exception e) {
         }
         if (addWalletBoolean) {//if addWalletBoolean was true meaning the user doesnt have the wallet and everything is okay we can add the wallet
@@ -304,7 +305,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    private void addWalletView(String CurrencyName, int image, String currency_type, String balance) {   //customize and add wallet to layout
+    private void addWalletView(final String CurrencyName, int image, String currency_type, String balance) {   //customize and add wallet to layout
 
         final View walletView = getLayoutInflater().inflate(R.layout.wallet, null, false);//inflate the xml layout which represents the wallet
         ImageView wallet_logo = (ImageView) walletView.findViewById(R.id.wallet_logo);                      //change logo according to currency chosen
@@ -320,7 +321,59 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         wallet_logo.setImageResource(image);
         wallet_balance.setText(balance);
         wallet_balance_text.setText(currency_type);
+
+        final TextView wallet_usd_balance = walletView.findViewById(R.id.wallet_balance_usd);
+        final double current_crypto_balance = Double.parseDouble(balance);
+        Request request = new Request.Builder().url(CONSTANTS.MARKET_UPDATES_URL2).build();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Toast.makeText(getActivity(), "Error during BPI loading:" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String body = response.body().string();
+                if (getActivity() == null)
+                    return;
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        switch (CurrencyName) {
+                            case "Bitcoin":
+                                parseLoad(body, current_crypto_balance,wallet_usd_balance,CONSTANTS.BITCOIN_INDEX_JSON);
+                                break;
+                            case "Etherum":
+                                parseLoad(body,current_crypto_balance,wallet_usd_balance, CONSTANTS.ETHERUM_INDEX_JSON);
+                                break;
+                            case "Tether":
+                                parseLoad(body,current_crypto_balance,wallet_usd_balance, CONSTANTS.TETHER_INDEX_JSON);
+                                break;
+                            case "Ripple":
+                                parseLoad(body,current_crypto_balance,wallet_usd_balance, CONSTANTS.XRP_INDEX_JSON);
+                                break;
+                            case "Litecoin":
+                                parseLoad(body,current_crypto_balance,wallet_usd_balance, CONSTANTS.LITECOIN_INDEX_JSON);
+                                break;
+                        }
+                    }
+                });
+            }
+        });
         walletList.addView(walletView);
+    }
+    /*This function loads the current balance of a wallet in USD(it's done by retreiving the current price from the JSON)*/
+    private void parseLoad(String body,double crypto_balance,TextView usdBalance,int apiJsonIndex){
+        try {
+            JSONObject jsonObject = new JSONObject(body);                           //get the JSON body
+            JSONArray bpis = jsonObject.getJSONArray("data");                //get the array data which contains the currencies
+            JSONObject crypto_info = bpis.getJSONObject(apiJsonIndex);
+            double crypto_price = crypto_info.getJSONObject("quote").getJSONObject("USD").getDouble("price");
+            double current_usd_balance=crypto_balance*crypto_price;
+            current_usd_balance=Math.round(current_usd_balance*1000)/1000.0;
+            usdBalance.setText(Double.toString(current_usd_balance));
+        } catch (Exception e) {
+        }
     }
 
     private void loadWallets() {
@@ -397,19 +450,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         progressDialog.dismiss();
                         switch (cv.getId()) {
                             case R.id.BitcoinInfo:
-                                parseBpiResponse(body, CONSTANTS.BITCOIN_INDEX_JSON, BtcPrice);
+                                parseBpiResponse(body, CONSTANTS.BITCOIN_INDEX_JSON, BtcPrice, "Bitcoin");
                                 break;
                             case R.id.EthereumInfo:
-                                parseBpiResponse(body, CONSTANTS.ETHERUM_INDEX_JSON, EthPrice);
+                                parseBpiResponse(body, CONSTANTS.ETHERUM_INDEX_JSON, EthPrice, "Etherum");
                                 break;
                             case R.id.TetherInfo:
-                                parseBpiResponse(body, CONSTANTS.TETHER_INDEX_JSON, UsdtPrice);
+                                parseBpiResponse(body, CONSTANTS.TETHER_INDEX_JSON, UsdtPrice, "Tether");
                                 break;
                             case R.id.XrpInfo:
-                                parseBpiResponse(body, CONSTANTS.XRP_INDEX_JSON, XrpPrice);
+                                parseBpiResponse(body, CONSTANTS.XRP_INDEX_JSON, XrpPrice, "Ripple");
                                 break;
                             case R.id.LitecoinInfo:
-                                parseBpiResponse(body, CONSTANTS.LITECOIN_INDEX_JSON, LtcPrice);
+                                parseBpiResponse(body, CONSTANTS.LITECOIN_INDEX_JSON, LtcPrice, "Litecoin");
                                 break;
                         }
                     }
@@ -418,12 +471,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    private void parseBpiResponse(String body, int currencyIndex, TextView price) {
+    private void parseBpiResponse(String body, int currencyIndex, TextView price, String cryptoName) {
         try {
             JSONObject jsonObject = new JSONObject(body);                           //get the JSON body
             JSONArray bpis = jsonObject.getJSONArray("data");                //get the array data which contains the currencies
             JSONObject crypto_info = bpis.getJSONObject(currencyIndex);
             double crypto_price = crypto_info.getJSONObject("quote").getJSONObject("USD").getDouble("price");
+            cryptoPrices.put(cryptoName, crypto_price);
             NumberFormat defaultFormat = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
             price.setText("US" + defaultFormat.format(crypto_price));
         } catch (Exception e) {
@@ -431,7 +485,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void loadPercentage(final CardView cv) {
-        Request request = new Request.Builder().url(CONSTANTS.MARKET_UPDATES_URL).build();
+        Request request = new Request.Builder().url(CONSTANTS.MARKET_UPDATES_URL2).build();
         progressDialog.show();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override

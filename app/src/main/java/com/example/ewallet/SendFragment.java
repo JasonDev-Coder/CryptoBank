@@ -1,5 +1,6 @@
 package com.example.ewallet;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -175,6 +176,7 @@ public class SendFragment extends Fragment {
                 Intent i = new Intent(getActivity(), QrScanner.class);
                 startActivity(i);
             }
+
         });
         sendButton = v.findViewById(R.id.send_button);
         sendButton.setOnClickListener(new View.OnClickListener() {
@@ -184,6 +186,15 @@ public class SendFragment extends Fragment {
             }
         });
         return v;
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        getActivity();
+        if (resultCode == Activity.RESULT_OK) {
+            if (data.hasExtra("QRaddress")) {
+                send_address.setText(data.getExtras().getString("QRaddress"));
+            }
+        }
     }
 
     private void sendMoney() {
