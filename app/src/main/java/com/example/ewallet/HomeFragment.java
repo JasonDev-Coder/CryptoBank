@@ -101,7 +101,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private AnimatedBottomBar bottom_bar;
 
     private Button home, send, recent, receive;
-    JSONParser jParser = new JSONParser();
     ArrayList<HashMap<String, String>> walletListMaps = new ArrayList<>();
     FragmentManager fragmentManager;
 
