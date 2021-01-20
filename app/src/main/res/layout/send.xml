@@ -39,11 +39,10 @@
 
     <EditText
         android:id="@+id/input_amount_crypto"
-        android:layout_width="120dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/amount_crypto"
         android:layout_alignTop="@+id/amount_crypto"
-        android:layout_marginLeft="10dp"
         android:backgroundTint="#FFBD00"
         android:inputType="numberDecimal"
         android:textColor="@color/white"
@@ -53,34 +52,32 @@
         android:id="@+id/amount_usd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_below="@id/choose_cur"
-        android:layout_marginTop="30dp"
-        android:layout_toRightOf="@id/input_amount_crypto"
+        android:layout_marginStart="15dp"
+        android:layout_below="@id/input_amount_crypto"
+        android:layout_marginTop="10dp"
         android:text="USD$"
         android:textColor="@color/white"
         android:textSize="25sp"
         android:fontFamily="@font/shortxurkit_2xdv" />
-
     <EditText
         android:id="@+id/input_amount_usd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/amount_usd"
-        android:layout_marginLeft="19dp"
         android:layout_toRightOf="@id/amount_usd"
+        android:layout_alignTop="@+id/amount_usd"
+        android:layout_alignStart="@id/input_amount_crypto"
         android:backgroundTint="#FFBD00"
         android:inputType="numberDecimal"
         android:textColor="@color/white"
-        android:textSize="20sp" />
+        android:textSize="20sp"/>
 
     <TextView
         android:id="@+id/to_address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/amount_crypto"
+        android:layout_below="@id/amount_usd"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="50dp"
         android:text="To:"
         android:textColor="@color/white"
         android:textSize="25sp"
