@@ -17,6 +17,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -41,11 +44,11 @@ public class SignIn extends AppCompatActivity {
         setContentView(R.layout.sign_in);
         email_in = findViewById(R.id.email);
         password_in = findViewById(R.id.password);
-        ClickToSignUp=findViewById(R.id.sign_up_link);
+        ClickToSignUp = findViewById(R.id.sign_up_link);
         ClickToSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SignIn.this,SignUp.class);
+                Intent intent = new Intent(SignIn.this, SignUp.class);
                 startActivity(intent);
             }
         });
@@ -77,7 +80,7 @@ public class SignIn extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             try {
-                url = new URL("http://10.0.2.2/cryptoBank/views/login.php");
+                url = new URL("http://10.0.2.2/cryptoBank/public/UserController/LogIn");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 return "exception1";
@@ -142,26 +145,29 @@ public class SignIn extends AppCompatActivity {
 
             pdLoading.dismiss();
 
-            if (result.contains("true")) {//if the php echoed true meaning the query from the table user gave a result meaning the user exist and can sign in
-                String session_id=result.substring(4);
-                SharedPreferences saved_values = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                SharedPreferences.Editor editor=saved_values.edit();
-                editor.putString("session_id",session_id);/*In the php script if the log in is successful we echo the session id to store it in android because the session is being closed after finishing executing the script in android only*/
-                editor.commit();
-                Log.d("sessionid_id", session_id);
-                Intent intent = new Intent(SignIn.this, MainActivity.class);
-                startActivity(intent);
-                SignIn.this.finish();
+            try {
+                JSONObject jsonResponse = new JSONObject(result);
+                Log.v("JSONresLog",result.toString());
+                String error_type=jsonResponse.getString("error_type");
+                if (error_type.equalsIgnoreCase("true")){//if the php echoed true meaning the query from the table user gave a result meaning the user exist and can sign in
+                    String session_id = jsonResponse.getString("session_id");
+                    SharedPreferences saved_values = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = saved_values.edit();
+                    editor.putString("session_id", session_id);/*In the php script if the log in is successful we echo the session id to store it in android because the session is being closed after finishing executing the script in android only*/
+                    editor.commit();
+                    Log.d("sessionid_id", session_id);
+                    Intent intent = new Intent(SignIn.this, MainActivity.class);
+                    startActivity(intent);
+                    SignIn.this.finish();
 
-            } else if (result.contains("false")) {
-
-                // If username and password does not match display a error message
-                Toast.makeText(SignIn.this, "Invalid email or password", Toast.LENGTH_LONG).show();
-
-            } else if (result.equalsIgnoreCase("exception2")) {
-
+                } else if (error_type.equalsIgnoreCase("false")) {
+                    // If username and password does not match display a error message
+                    Toast.makeText(SignIn.this, "Invalid email or password", Toast.LENGTH_LONG).show();
+                }
+            } catch (JSONException j1) {
+                Log.d("JsonResponse", Arrays.toString(j1.getStackTrace()));
+                j1.printStackTrace();
                 Toast.makeText(SignIn.this, "OOPs! Something went wrong. Connection Problem.", Toast.LENGTH_LONG).show();
-
             }
         }
 

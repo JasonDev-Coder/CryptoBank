@@ -134,7 +134,7 @@ public class HelpFragment extends Fragment {
         @Override
         protected String doInBackground(String... params) {
             try {
-                url = new URL("http://10.0.2.2/cryptoBank/views/helpMessage.php");
+                url = new URL("http://10.0.2.2/cryptoBank/public/MessageController/sendMessage");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 Log.d("CONNECTPHP", "error in connection1");
@@ -186,7 +186,13 @@ public class HelpFragment extends Fragment {
                     while ((line = reader.readLine()) != null) {
                         result.append(line);//the result here will be what the echo from the php script
                     }
-                    return result.toString();//result will be used in onPostExecute method
+                    try{
+                        JSONObject jsonResponse=new JSONObject(result.toString());
+                        return jsonResponse.getString("error_type"); //result will be used in onPostExecute method
+                    }catch (JSONException j1) {
+                        Log.d("JsonResponse", Arrays.toString(j1.getStackTrace()));
+                        return "false";
+                    }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setMessage("Connection Failed");
@@ -200,7 +206,7 @@ public class HelpFragment extends Fragment {
                     AlertDialog dialog = builder.create();
                     dialog.show();
                     Log.d("CONNECTPHP", "error in connection3");
-                    return "unsuccesful";
+                    return "unsuccessful";
                 }
             } catch (IOException e) {
                 e.printStackTrace();

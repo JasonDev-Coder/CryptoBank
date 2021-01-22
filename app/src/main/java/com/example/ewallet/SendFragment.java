@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -187,6 +188,7 @@ public class SendFragment extends Fragment {
         });
         return v;
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         getActivity();
@@ -327,7 +329,7 @@ public class SendFragment extends Fragment {
         @Override
         protected String doInBackground(String... params) {
             try {
-                url = new URL("http://10.0.2.2/cryptoBank/views/send.php");
+                url = new URL("http://10.0.2.2/cryptoBank/public/WalletController/sendMoney");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 Log.d("CONNECTPHP", "error in connection1");
@@ -350,10 +352,10 @@ public class SendFragment extends Fragment {
                 }
                 //append parameters to url so that the script uses them
                 Uri.Builder builder = new Uri.Builder()
-                        .appendQueryParameter("session_id", session_id)
-                        .appendQueryParameter("wallet_name", params[0])//params[0] is the message from AsyncLogin().execute(help_message);
+                        .appendQueryParameter("wallet_name", params[0])//params[0] is the wallet name from AsyncLogin().execute();
                         .appendQueryParameter("amount", params[1])//amount to send
-                        .appendQueryParameter("recv_addr", params[2]);//receiver address
+                        .appendQueryParameter("recv_addr", params[2])//receiver address
+                        .appendQueryParameter("session_id", session_id);
 
                 String query = builder.build().getEncodedQuery();
                 OutputStream os;
@@ -382,7 +384,13 @@ public class SendFragment extends Fragment {
                     while ((line = reader.readLine()) != null) {
                         result.append(line);//the result here will be what the echo from the php script
                     }
-                    return result.toString();//result will be used in onPostExecute method
+                    try {
+                        JSONObject jsonResponse = new JSONObject(result.toString());
+                        return jsonResponse.getString("error_type");//result will be used in onPostExecute method
+                    }catch (JSONException j1){
+                        Log.d("JSONresponse",Arrays.toString(j1.getStackTrace()));
+                        return "false";
+                    }
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setMessage("Connection Failed");
@@ -417,7 +425,7 @@ public class SendFragment extends Fragment {
 
 
             if (result.equalsIgnoreCase("true")) {
-                builder.setMessage("Send transaction is on the way!");
+                builder.setMessage("Transaction is on the way!");
                 builder.setCancelable(false);
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
@@ -463,7 +471,7 @@ public class SendFragment extends Fragment {
                 });
                 AlertDialog dialog = builder.create();
                 dialog.show();
-            } else if(result.equalsIgnoreCase("NO")){
+            } else{
                 builder.setMessage("Unknown error");
                 builder.setCancelable(false);
                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -474,7 +482,6 @@ public class SendFragment extends Fragment {
                 });
                 AlertDialog dialog = builder.create();
                 dialog.show();
-
             }
         }
 

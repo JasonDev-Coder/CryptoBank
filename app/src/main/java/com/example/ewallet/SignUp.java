@@ -16,6 +16,8 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.BufferedReader;
@@ -51,8 +53,8 @@ public class SignUp extends AppCompatActivity {
         final String email_str = email.getText().toString();
         final String password_str = password.getText().toString();
         final String birthdate_str = birthdate.getText().toString();
-        if(name_str.isEmpty() || username_str.isEmpty() || email_str.isEmpty() || password_str.isEmpty() || birthdate_str.isEmpty()){
-            Toast.makeText(SignUp.this,"Missing Field",Toast.LENGTH_LONG).show();
+        if (name_str.isEmpty() || username_str.isEmpty() || email_str.isEmpty() || password_str.isEmpty() || birthdate_str.isEmpty()) {
+            Toast.makeText(SignUp.this, "Missing Field", Toast.LENGTH_LONG).show();
             return;
         }
         new AsyncLogin().execute(name_str, username_str, email_str, password_str, birthdate_str);
@@ -77,7 +79,7 @@ public class SignUp extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             try {
-                url = new URL("http://10.0.2.2/cryptoBank/views/signup.php");
+                url = new URL("http://10.0.2.2/cryptoBank/public/UserController/createUser");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 return "exception1";
@@ -144,30 +146,31 @@ public class SignUp extends AppCompatActivity {
             //this method will be running on UI thread
 
             pdLoading.dismiss();
+            try {
+                JSONObject jsonResponse = new JSONObject(result);
+                String jsonErrorType=jsonResponse.getString("error_type");
+                if (jsonErrorType.equalsIgnoreCase("true")) {//if the php echoed true meaning the query from the table user gave a result meaning the user exist and can sign in
+                    String session_id = jsonResponse.getString("session_id");
+                    SharedPreferences saved_values = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = saved_values.edit();
+                    editor.putString("session_id", session_id);/*In the php script if the log in is successful we echo the session id to store it in android because the session is being closed after finishing executing the script in android only*/
+                    editor.commit();
+                    Intent intent = new Intent(SignUp.this, MainActivity.class);
+                    startActivity(intent);
+                    SignUp.this.finish();
 
-            if (result.contains("true")) {//if the php echoed true meaning the query from the table user gave a result meaning the user exist and can sign in
-                String session_id=result.substring(4);
-                SharedPreferences saved_values = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                SharedPreferences.Editor editor=saved_values.edit();
-                editor.putString("session_id",session_id);/*In the php script if the log in is successful we echo the session id to store it in android because the session is being closed after finishing executing the script in android only*/
-                editor.commit();
-                Intent intent = new Intent(SignUp.this, MainActivity.class);
-                startActivity(intent);
-                SignUp.this.finish();
-
-            } else if (result.equalsIgnoreCase("Missing Field")) {
-                //If field is missing
-                Toast.makeText(SignUp.this, "Missing Field", Toast.LENGTH_LONG).show();
-            } else if (result.equalsIgnoreCase("Already Exists")) {
-                Toast.makeText(SignUp.this, "Email already used", Toast.LENGTH_LONG).show();
-            }else if(result.equalsIgnoreCase("Invalid Email")){
-                Toast.makeText(SignUp.this, "Invalid Email", Toast.LENGTH_LONG).show();
-            }
-            else{
+                } else if (jsonErrorType.equalsIgnoreCase("Missing Field")) {
+                    //If field is missing
+                    Toast.makeText(SignUp.this, "Missing Field", Toast.LENGTH_LONG).show();
+                } else if (jsonErrorType.equalsIgnoreCase("Already Exists")) {
+                    Toast.makeText(SignUp.this, "Email already used", Toast.LENGTH_LONG).show();
+                } else if (jsonErrorType.equalsIgnoreCase("Invalid Email")) {
+                    Toast.makeText(SignUp.this, "Invalid Email", Toast.LENGTH_LONG).show();
+                }
+            } catch (JSONException j1) {
+                Log.d("JsonResponse", Arrays.toString(j1.getStackTrace()));
                 Toast.makeText(SignUp.this, "OOPs! Something went wrong. Connection Problem.", Toast.LENGTH_LONG).show();
             }
         }
-
     }
-
 }

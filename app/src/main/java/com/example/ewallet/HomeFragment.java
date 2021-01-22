@@ -379,6 +379,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private void loadWallets() {
         try {
             new LoadWallets().execute().get();
+            walletList.removeAllViews();
         } catch (Exception e) {
         }
         if (!walletListMaps.isEmpty()) {//walletListMaps will contain hash maps  containing the user's wallets
@@ -635,7 +636,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         @Override
         protected String doInBackground(String... params) {
             try {
-                url = new URL("http://10.0.2.2/cryptoBank/views/insertWallet.php");
+                url = new URL("http://10.0.2.2/cryptoBank/public/WalletController/addWallet");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 Log.d("CONNECTPHP", "error in connection1");
@@ -687,6 +688,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     while ((line = reader.readLine()) != null) {
                         result.append(line);//the result here will be what the echo from the php script
                     }
+
                     if (result.toString().contains("true")) {
                         addWalletBoolean = true;/*When we get the result from php telling us if the user wallet was added to the DB
                          then we change addWalletBoolean to true meaning we can inflate now an xml layout containing the wallet view*/
@@ -721,33 +723,39 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         protected void onPostExecute(String result) {
             //this method will be running on UI thread
             pdLoading.dismiss();
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            if (result.equalsIgnoreCase("true")) {
+            try {
+                JSONObject jsonResponse = new JSONObject(result);
+                String error_type=jsonResponse.getString("error_type");
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                if (error_type.equalsIgnoreCase("true")) {
 
-            } else if (result.equalsIgnoreCase("Wallet Exist")) {
-                builder.setMessage("Wallet Already Exist");
-                builder.setCancelable(false);
-                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                } else if (error_type.equalsIgnoreCase("Wallet Exist")) {
+                    builder.setMessage("Wallet Already Exist");
+                    builder.setCancelable(false);
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
 
-            } else {
-                builder.setMessage("Unknown error");
-                builder.setCancelable(false);
-                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                } else {
+                    builder.setMessage("Unknown error");
+                    builder.setCancelable(false);
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
 
+                }
+            }catch (JSONException j1){
+                Log.d("JsonResponse",Arrays.toString(j1.getStackTrace()));
             }
         }
 
@@ -770,7 +778,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         @Override
         protected String doInBackground(String... args) {
             try {
-                url = new URL("http://10.0.2.2/cryptoBank/views/getWallets.php");
+                url = new URL("http://10.0.2.2/cryptoBank/public/WalletController/getWallets");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 Log.d("CONNECTPHP", "error in connection1");
@@ -841,7 +849,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         }
 
                     } catch (JSONException e1) {
-                        Log.d("JSonError", Arrays.toString(e1.getStackTrace()));
+                        Log.v("JSonError", Arrays.toString(e1.getStackTrace()));
+                        e1.printStackTrace();
                     }
                     return result.toString();//result will be used in onPostExecute method
                 } else {
@@ -870,7 +879,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         @Override
         protected void onPostExecute(String result) {
-            //this method will be running on UI thread
 
         }
 
