@@ -147,7 +147,7 @@ public class SignIn extends AppCompatActivity {
 
             try {
                 JSONObject jsonResponse = new JSONObject(result);
-                Log.v("JSONresLog",result.toString());
+                Log.v("JSONresponse",result);
                 String error_type=jsonResponse.getString("error_type");
                 if (error_type.equalsIgnoreCase("true")){//if the php echoed true meaning the query from the table user gave a result meaning the user exist and can sign in
                     String session_id = jsonResponse.getString("session_id");

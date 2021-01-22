@@ -188,6 +188,7 @@ public class HelpFragment extends Fragment {
                     }
                     try{
                         JSONObject jsonResponse=new JSONObject(result.toString());
+                        Log.v("JSONresponse",result.toString());
                         return jsonResponse.getString("error_type"); //result will be used in onPostExecute method
                     }catch (JSONException j1) {
                         Log.d("JsonResponse", Arrays.toString(j1.getStackTrace()));

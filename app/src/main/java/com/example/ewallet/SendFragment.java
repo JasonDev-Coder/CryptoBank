@@ -386,6 +386,7 @@ public class SendFragment extends Fragment {
                     }
                     try {
                         JSONObject jsonResponse = new JSONObject(result.toString());
+                        Log.v("JSONresponse",result.toString());
                         return jsonResponse.getString("error_type");//result will be used in onPostExecute method
                     }catch (JSONException j1){
                         Log.d("JSONresponse",Arrays.toString(j1.getStackTrace()));

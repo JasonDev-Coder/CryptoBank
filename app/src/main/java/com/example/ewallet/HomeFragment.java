@@ -725,6 +725,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             pdLoading.dismiss();
             try {
                 JSONObject jsonResponse = new JSONObject(result);
+                Log.v("JSONresponsee",result);
                 String error_type=jsonResponse.getString("error_type");
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 if (error_type.equalsIgnoreCase("true")) {
@@ -831,6 +832,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     }
                     try {
                         JSONObject json = new JSONObject(result.toString());
+                        Log.v("JSONresponse",result.toString());
                         int success = json.getInt("success");
                         if (success == 1) {
                             walletListMaps.clear();

@@ -147,6 +147,7 @@ public class SignUp extends AppCompatActivity {
 
             pdLoading.dismiss();
             try {
+                Log.v("JSONresponse",result);
                 JSONObject jsonResponse = new JSONObject(result);
                 String jsonErrorType=jsonResponse.getString("error_type");
                 if (jsonErrorType.equalsIgnoreCase("true")) {//if the php echoed true meaning the query from the table user gave a result meaning the user exist and can sign in
