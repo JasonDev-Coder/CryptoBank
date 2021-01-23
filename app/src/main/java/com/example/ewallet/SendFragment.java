@@ -202,9 +202,10 @@ public class SendFragment extends Fragment {
     private void sendMoney() {
         String walletName = (String) spinner_choice.getSelectedItem();//depending on the wallet name we will query the wallet type
         Log.v("WALLETNAME", walletName);
-        String amount_send;
+        String amount_send_crypto,amount_send_us;
         try {
-            amount_send = Double.toString(Double.parseDouble(cryptoInput.getText().toString()));//get the send amount parse it tp double to make sure only numbers are entered then parse it string to send it in post
+            amount_send_crypto = Double.toString(Double.parseDouble(cryptoInput.getText().toString()));//get the send amount parse it tp double to make sure only numbers are entered then parse it string to send it in post
+            amount_send_us=Double.toString(Double.parseDouble(usdInput.getText().toString()));
         } catch (NumberFormatException e1) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setMessage("Error in send amount");
@@ -231,11 +232,11 @@ public class SendFragment extends Fragment {
             AlertDialog dialog = builder.create();
             dialog.show();
         } else
-            new AsyncSend().execute(walletName, amount_send, sendAddress);
+            new AsyncSend().execute(walletName, amount_send_crypto,amount_send_us, sendAddress);
     }
 
     private void ChangePrice(final int index, final boolean CrypToUs) {
-        Request request = new Request.Builder().url(CONSTANTS.MARKET_UPDATES_URL).build();
+        Request request = new Request.Builder().url(CONSTANTS.MARKET_UPDATES_URL2).build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -353,8 +354,9 @@ public class SendFragment extends Fragment {
                 //append parameters to url so that the script uses them
                 Uri.Builder builder = new Uri.Builder()
                         .appendQueryParameter("wallet_name", params[0])//params[0] is the wallet name from AsyncLogin().execute();
-                        .appendQueryParameter("amount", params[1])//amount to send
-                        .appendQueryParameter("recv_addr", params[2])//receiver address
+                        .appendQueryParameter("amount_crypto", params[1])//amount to send
+                        .appendQueryParameter("amount_us", params[2])//amount to send
+                        .appendQueryParameter("recv_addr", params[3])//receiver address
                         .appendQueryParameter("session_id", session_id);
 
                 String query = builder.build().getEncodedQuery();
@@ -438,6 +440,7 @@ public class SendFragment extends Fragment {
                 dialog.show();
                 send_address.setText("");
                 cryptoInput.setText("");
+                usdInput.setText("");
             } else if (result.equalsIgnoreCase("Insufficent balance")) {
                 builder.setMessage("Insufficient Balance");
                 builder.setCancelable(false);
