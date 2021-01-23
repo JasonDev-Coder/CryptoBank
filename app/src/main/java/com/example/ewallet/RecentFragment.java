@@ -117,6 +117,7 @@ public class RecentFragment extends Fragment {
                 ImageView transaction_logo = cardView.findViewById(R.id.transaction_type_img);
                 if (model.getType() == TransactionModel.typeTransaction.SEND) {
                     transaction_logo.setImageResource(R.drawable.send);
+                    transaction_logo.setColorFilter(getResources().getColor(R.color.green));
                 } else transaction_logo.setImageResource(R.drawable.receive);
                 TextView crypto_amount = cardView.findViewById(R.id.transaction_amount_value);
                 model.setAmount_crypto(model.getAmount_crypto().setScale(2, BigDecimal.ROUND_DOWN));
