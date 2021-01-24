@@ -101,7 +101,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private AnimatedBottomBar bottom_bar;
 
     private Button home, send, recent, receive;
-    private ArrayList<HashMap<String, String>> walletListMaps = new ArrayList<>();
+    private ArrayList<HashMap<String, String>> walletListMaps = new ArrayList<>();//store the wallets of the user here
     private HashMap<String, Double> cryptoPrices = new HashMap<>();//save crypto prices here
     FragmentManager fragmentManager;
 
@@ -424,7 +424,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             public void onClick(DialogInterface dialog, int which) {
                 try {
                     new DeleteWallets().execute(CurrencyName).get();
-                    walletList.removeView(v);
                 }catch (Exception e){
                     Log.v("DeleteWallet",Arrays.toString(e.getStackTrace()));
                 }
