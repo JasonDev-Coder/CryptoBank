@@ -110,6 +110,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private String mParam1;
     private String mParam2;
     private static boolean addWalletBoolean = false;
+    private static boolean deleteWalletSuccess=false;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -313,7 +314,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         removeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                removeWalletView(walletView);                                                                //remove view from the layout
+                removeWalletView(walletView, CurrencyName);                                                                //remove view from the layout
             }
         });
         TextView wallet_balance = (TextView) walletView.findViewById(R.id.wallet_balance);
@@ -341,19 +342,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     public void run() {
                         switch (CurrencyName) {
                             case "Bitcoin":
-                                parseLoad(body, current_crypto_balance,wallet_usd_balance,CONSTANTS.BITCOIN_INDEX_JSON);
+                                parseLoad(body, current_crypto_balance, wallet_usd_balance, CONSTANTS.BITCOIN_INDEX_JSON);
                                 break;
                             case "Etherum":
-                                parseLoad(body,current_crypto_balance,wallet_usd_balance, CONSTANTS.ETHERUM_INDEX_JSON);
+                                parseLoad(body, current_crypto_balance, wallet_usd_balance, CONSTANTS.ETHERUM_INDEX_JSON);
                                 break;
                             case "Tether":
-                                parseLoad(body,current_crypto_balance,wallet_usd_balance, CONSTANTS.TETHER_INDEX_JSON);
+                                parseLoad(body, current_crypto_balance, wallet_usd_balance, CONSTANTS.TETHER_INDEX_JSON);
                                 break;
                             case "Ripple":
-                                parseLoad(body,current_crypto_balance,wallet_usd_balance, CONSTANTS.XRP_INDEX_JSON);
+                                parseLoad(body, current_crypto_balance, wallet_usd_balance, CONSTANTS.XRP_INDEX_JSON);
                                 break;
                             case "Litecoin":
-                                parseLoad(body,current_crypto_balance,wallet_usd_balance, CONSTANTS.LITECOIN_INDEX_JSON);
+                                parseLoad(body, current_crypto_balance, wallet_usd_balance, CONSTANTS.LITECOIN_INDEX_JSON);
                                 break;
                         }
                     }
@@ -362,15 +363,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
         walletList.addView(walletView);
     }
+
     /*This function loads the current balance of a wallet in USD(it's done by retreiving the current price from the JSON)*/
-    private void parseLoad(String body,double crypto_balance,TextView usdBalance,int apiJsonIndex){
+    private void parseLoad(String body, double crypto_balance, TextView usdBalance, int apiJsonIndex) {
         try {
             JSONObject jsonObject = new JSONObject(body);                           //get the JSON body
             JSONArray bpis = jsonObject.getJSONArray("data");                //get the array data which contains the currencies
             JSONObject crypto_info = bpis.getJSONObject(apiJsonIndex);
             double crypto_price = crypto_info.getJSONObject("quote").getJSONObject("USD").getDouble("price");
-            double current_usd_balance=crypto_balance*crypto_price;
-            current_usd_balance=Math.round(current_usd_balance*1000)/1000.0;
+            double current_usd_balance = crypto_balance * crypto_price;
+            current_usd_balance = Math.round(current_usd_balance * 1000) / 1000.0;
             usdBalance.setText(Double.toString(current_usd_balance));
         } catch (Exception e) {
         }
@@ -409,7 +411,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void removeWalletView(final View v) {   //remove wallet from layout
+    private void removeWalletView(final View v, final String CurrencyName) {   //remove wallet from layout
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage("Deleting your wallet will result in the loss of your balance!\nWould you like to proceed?");
@@ -417,7 +419,17 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                walletList.removeView(v);
+                try {
+                    new DeleteWallets().execute(CurrencyName).get();
+                    walletList.removeView(v);
+                }catch (Exception e){
+                    Log.v("DeleteWallet",Arrays.toString(e.getStackTrace()));
+                }
+                if(deleteWalletSuccess){
+                    walletList.removeView(v);
+                    deleteWalletSuccess=false;
+                }
+
                 dialog.cancel();
             }
         });
@@ -725,8 +737,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             pdLoading.dismiss();
             try {
                 JSONObject jsonResponse = new JSONObject(result);
-                Log.v("JSONresponsee",result);
-                String error_type=jsonResponse.getString("error_type");
+                Log.v("JSONresponsee", result);
+                String error_type = jsonResponse.getString("error_type");
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 if (error_type.equalsIgnoreCase("true")) {
 
@@ -755,8 +767,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     dialog.show();
 
                 }
-            }catch (JSONException j1){
-                Log.d("JsonResponse",Arrays.toString(j1.getStackTrace()));
+            } catch (JSONException j1) {
+                Log.d("JsonResponse", Arrays.toString(j1.getStackTrace()));
             }
         }
 
@@ -832,7 +844,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     }
                     try {
                         JSONObject json = new JSONObject(result.toString());
-                        Log.v("JSONresponse",result.toString());
+                        Log.v("JSONresponse", result.toString());
                         int success = json.getInt("success");
                         if (success == 1) {
                             walletListMaps.clear();
@@ -884,5 +896,110 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         }
 
+    }
+
+    private class DeleteWallets extends AsyncTask<String, String, String> {
+        ProgressDialog pdLoading = new ProgressDialog(getActivity());
+        HttpURLConnection conn;
+        URL url = null;
+        public static final int CONNECTION_TIMEOUT = 10000;
+        public static final int READ_TIMEOUT = 15000;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                url = new URL("http://10.0.2.2/cryptoBank/public/WalletController/DeleteWallet");
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                Log.d("CONNECTPHP", "error in connection1");
+                return "exception1";
+            }
+            try {
+                //here we will setup HttpURLConnection to connect with php scripts to send and receive data
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(READ_TIMEOUT);
+                conn.setConnectTimeout(CONNECTION_TIMEOUT);
+                conn.setRequestMethod("POST");//the request method must correspond with the written php code
+
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                String session_id = null;
+                if (getActivity() != null) {//We get the stores session id to use the current session
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                    session_id = prefs.getString("session_id", null);
+                    Log.v("sessionid_id", session_id);
+                }
+                //append parameters to url so that the script uses them
+                Uri.Builder builder = new Uri.Builder()
+                        .appendQueryParameter("wallet_name", params[0])//wallet name in post
+                        .appendQueryParameter("session_id", session_id);
+                String query = builder.build().getEncodedQuery();
+                OutputStream os;
+                os = conn.getOutputStream();//Open connection
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                if (query != null)
+                    writer.write(query);//write the formed query to the output stream
+                writer.flush();
+                writer.close();
+                os.close();
+                conn.connect();
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                Log.d("CONNECTPHP", Arrays.toString(e1.getStackTrace()));
+                return "exception2";
+            }
+
+            try {
+                int response_code = conn.getResponseCode();
+                if (response_code == HttpURLConnection.HTTP_OK) {
+                    InputStream input = conn.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                    StringBuilder result = new StringBuilder();
+                    String line;
+
+                    while ((line = reader.readLine()) != null) {
+                        result.append(line);//the result here will be what the echo from the php script
+                    }
+                    try {
+                        JSONObject json = new JSONObject(result.toString());
+                        Log.v("JSONresponse", result.toString());
+                        int success = json.getInt("success");
+                        if (success == 1) {
+                            deleteWalletSuccess=true;
+                        }
+                    } catch (JSONException e1) {
+                        Log.v("JSonError", Arrays.toString(e1.getStackTrace()));
+                        e1.printStackTrace();
+                    }
+                    return result.toString();//result will be used in onPostExecute method
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setMessage("Connection Failed");
+                    builder.setCancelable(false);
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                    Log.d("CONNECTPHP", "error in connection3");
+                    return "unsuccesful";
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d("CONNECTPHP", "error in connection4");
+                return "exception3";
+            } finally {
+                conn.disconnect();
+            }
+        }
     }
 }

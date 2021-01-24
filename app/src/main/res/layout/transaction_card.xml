@@ -4,7 +4,9 @@
     android:id="@+id/wallets2"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="5dp"
+    >
 
     <androidx.cardview.widget.CardView
         android:id="@+id/transaction"
@@ -13,8 +15,7 @@
         android:layout_gravity="center"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        android:layout_marginBottom="5dp"
-        app:cardBackgroundColor="#2C2C53"
+        app:cardBackgroundColor="@color/cardColor"
         app:cardCornerRadius="20dp">
 
         <RelativeLayout

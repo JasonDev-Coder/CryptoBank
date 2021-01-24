@@ -4,14 +4,17 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -134,7 +137,7 @@ public class RecentFragment extends Fragment {
                 crypto_Type.setText(model.getType_symbol());
                 TextView usd_amount = cardView.findViewById(R.id.transaction_amount_usd);
                 NumberFormat defaultFormat = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
-                usd_amount.setText("US"+defaultFormat.format(model.getAmount_us()));
+                usd_amount.setText("US" + defaultFormat.format(model.getAmount_us()));
                 TextView dateTransac = cardView.findViewById(R.id.transaction_date);
                 Date date = model.getDate();
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -147,14 +150,15 @@ public class RecentFragment extends Fragment {
                 cardView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                       TransactionBottomSheet bottomSheet=new TransactionBottomSheet(model.getWallet_addr_sender(),model.getWallet_addr_receiver());
-                       bottomSheet.show(getFragmentManager(),"transactionSheet");
+                        TransactionBottomSheet bottomSheet = new TransactionBottomSheet(model.getWallet_addr_sender(), model.getWallet_addr_receiver());
+                        bottomSheet.show(getFragmentManager(), "transactionSheet");
                     }
                 });
                 transactionsView.addView(cardView);
             }
-        }catch (Exception e) {
-                Log.v("ExceptionLoad", Arrays.toString(e.getStackTrace()));
+
+        } catch (Exception e) {
+            Log.v("ExceptionLoad", Arrays.toString(e.getStackTrace()));
         }
     }
 
@@ -242,7 +246,7 @@ public class RecentFragment extends Fragment {
                             model.setWallet_addr_receiver(sentTransac.getString("wallet_address_receiver"));
                             model.setAmount_crypto(new BigDecimal(sentTransac.getDouble("amount_crypto")));
                             model.setAmount_us(sentTransac.getDouble("amount_us"));
-                            Log.v("dateJSon",sentTransac.getString("date"));
+                            Log.v("dateJSon", sentTransac.getString("date"));
                             Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(sentTransac.getString("date"));
                             model.setDate(date);
                             model.setType_symbol(sentTransac.getString("type_symbol"));
@@ -303,6 +307,7 @@ public class RecentFragment extends Fragment {
         }
 
     }
+
     public String truncateNumber(float floatNumber) {
         long million = 1000000L;
         long billion = 1000000000L;

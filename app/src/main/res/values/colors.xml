@@ -8,5 +8,6 @@
     <color name="white">#FFFFFF</color>
     <color name="yellow">#FFBD00</color>
     <color name="green">#00FF00</color>
+    <color name="cardColor">#2C2C53</color>
 
 </resources>

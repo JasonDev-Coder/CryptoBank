@@ -209,7 +209,7 @@ public class CryptoInfo extends AppCompatActivity {
     }
 
     public void load_market_stats() {
-        Request request = new Request.Builder().url(CONSTANTS.MARKET_UPDATES_URL).build();
+        Request request = new Request.Builder().url(CONSTANTS.MARKET_UPDATES_URL2).build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

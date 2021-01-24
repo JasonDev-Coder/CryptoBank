@@ -14,16 +14,17 @@
         android:textColor="@color/white"
         android:textSize="25sp"
         android:fontFamily="@font/shortxurkit_2xdv"
-        android:layout_marginTop="50dp"/>
+        android:layout_marginTop="20dp"/>
 
     <Spinner
         android:id="@+id/currrency_spinner"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="35dp"
         android:layout_toRightOf="@id/choose_cur"
         android:layout_alignBottom= "@+id/choose_cur"
-        android:background="#2C2C53"
-        android:popupBackground="#2C2C53"/>
+        android:popupBackground="@color/yellow"
+        android:background="@drawable/select_crypto_spinner"
+        />
 
     <TextView
         android:id="@+id/amount_crypto"

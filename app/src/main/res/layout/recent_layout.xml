@@ -16,8 +16,6 @@
         android:textColor="@color/white"
         android:textSize="25sp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="30dp"
         android:fontFamily="@font/shortxurkit_2xdv"
         tools:ignore="MissingConstraints" />
     <androidx.core.widget.NestedScrollView
@@ -33,5 +31,4 @@
             android:orientation="vertical"
             />
     </androidx.core.widget.NestedScrollView>
-
 </LinearLayout>
