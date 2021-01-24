@@ -159,6 +159,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
+                            case R.id.menu_bitcoin:
+                                addWallet("Bitcoin", R.drawable.bitcoin, "BTC", "0.01");
+                                return true;
                             case R.id.menu_ethereum:
                                 addWallet("Etherum", R.drawable.ethereum, "ETH", "0.01");
                                 return true;
