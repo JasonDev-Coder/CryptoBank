@@ -1,6 +1,8 @@
 package com.example.ewallet;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -57,7 +59,7 @@ public class SignUp extends AppCompatActivity {
             Toast.makeText(SignUp.this, "Missing Field", Toast.LENGTH_LONG).show();
             return;
         }
-        new AsyncLogin().execute(name_str, username_str, email_str, password_str, birthdate_str);
+        new AsyncLogin().execute(name_str, username_str, password_str, email_str, birthdate_str);
     }
 
     private class AsyncLogin extends AsyncTask<String, String, String> {
@@ -97,8 +99,8 @@ public class SignUp extends AppCompatActivity {
                 Uri.Builder builder = new Uri.Builder()
                         .appendQueryParameter("name", params[0])//params[0] is the email from AsyncLogin().execute(email,password);
                         .appendQueryParameter("username", params[1])//params[1] is the username AsyncLogin().execute(email,username....);
-                        .appendQueryParameter("email", params[2])
-                        .appendQueryParameter("password", params[3])
+                        .appendQueryParameter("password", params[2])
+                        .appendQueryParameter("email", params[3])
                         .appendQueryParameter("birthdate", params[4]);
                 //strings username and password must correspond with the written php code(in my case i used $_POST["username"]
                 String query = builder.build().getEncodedQuery();
@@ -146,10 +148,17 @@ public class SignUp extends AppCompatActivity {
             //this method will be running on UI thread
 
             pdLoading.dismiss();
+            AlertDialog.Builder builder = new AlertDialog.Builder(SignUp.this);
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
             try {
-                Log.v("JSONresponse",result);
+                Log.v("JSONresponse", result);
                 JSONObject jsonResponse = new JSONObject(result);
-                String jsonErrorType=jsonResponse.getString("error_type");
+                String jsonErrorType = jsonResponse.getString("error_type");
                 if (jsonErrorType.equalsIgnoreCase("true")) {//if the php echoed true meaning the query from the table user gave a result meaning the user exist and can sign in
                     String session_id = jsonResponse.getString("session_id");
                     SharedPreferences saved_values = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -166,7 +175,14 @@ public class SignUp extends AppCompatActivity {
                 } else if (jsonErrorType.equalsIgnoreCase("Already Exists")) {
                     Toast.makeText(SignUp.this, "Email already used", Toast.LENGTH_LONG).show();
                 } else if (jsonErrorType.equalsIgnoreCase("Invalid Email")) {
-                    Toast.makeText(SignUp.this, "Invalid Email", Toast.LENGTH_LONG).show();
+                    builder.setMessage("Invalid Email");
+                    builder.create().show();
+                } else if (jsonErrorType.equalsIgnoreCase("Invalid Password")) {
+                    builder.setMessage("Password must contains at least 1 capital letter,1 small letter,1 digit and length not less than 6");
+                    builder.create().show();
+                } else {
+                    builder.setMessage("Unknown error occureed");
+                    builder.create().show();
                 }
             } catch (JSONException j1) {
                 Log.d("JsonResponse", Arrays.toString(j1.getStackTrace()));

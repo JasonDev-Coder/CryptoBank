@@ -446,7 +446,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void loadPrice(final CardView cv) {
-        Request request = new Request.Builder().url(CONSTANTS.MARKET_UPDATES_URL).build();
+        Request request = new Request.Builder().url(CONSTANTS.MARKET_UPDATES_URL2).build();
         progressDialog.show();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
