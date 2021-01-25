@@ -1,6 +1,7 @@
 package com.example.ewallet;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -32,11 +34,15 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class SignUp extends AppCompatActivity {
     EditText name, username, email, password, birthdate;
-
+    final Calendar myCalendar = Calendar.getInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,9 +52,39 @@ public class SignUp extends AppCompatActivity {
         email = findViewById(R.id.email_form);
         password = findViewById(R.id.password_form);
         birthdate = findViewById(R.id.datebirth_form);
+        EditText edittext= (EditText) findViewById(R.id.datebirth_form);
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                // TODO Auto-generated method stub
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel();
+            }
+
+        };
+
+        birthdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                new DatePickerDialog(SignUp.this, date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
 
     }
+    private void updateLabel() {
+        String myFormat = "yyyy/MM/dd"; //In which you need put here
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
+        if(myCalendar.getTime().before(new Date()))
+            birthdate.setText(sdf.format(myCalendar.getTime()));
+    }
     public void SignUp(View v) {
         final String name_str = name.getText().toString();
         final String username_str = username.getText().toString();
@@ -59,6 +95,7 @@ public class SignUp extends AppCompatActivity {
             Toast.makeText(SignUp.this, "Missing Field", Toast.LENGTH_LONG).show();
             return;
         }
+        Date d = new Date(birthdate_str);
         new AsyncLogin().execute(name_str, username_str, password_str, email_str, birthdate_str);
     }
 

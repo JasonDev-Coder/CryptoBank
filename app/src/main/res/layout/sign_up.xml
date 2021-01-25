@@ -23,98 +23,109 @@
         android:contentDescription="crypto_icon"
         android:src="@drawable/crypto_icons" />
 
-    <TableRow android:layout_marginStart="10dp" android:paddingBottom="10dp">
+    <TableRow
+        android:layout_marginStart="10dp"
+        android:paddingBottom="10dp">
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Name:"
-            android:textStyle="bold"
             android:textColor="@color/white"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/name_form"
             android:layout_width="match_parent"
             android:layout_height="35dp"
+            android:layout_marginEnd="20dp"
             android:background="@drawable/rounded_edit_text"
             android:inputType="textPersonName"
-            android:layout_marginEnd="20dp"
-            android:textColor="@color/white"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textColor="@color/white" />
     </TableRow>
 
-    <TableRow android:layout_marginStart="10dp" android:paddingBottom="10dp">
+    <TableRow
+        android:layout_marginStart="10dp"
+        android:paddingBottom="10dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Username:"
-            android:textStyle="bold"
             android:textColor="@color/white"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/username_form"
             android:layout_width="match_parent"
-            android:textColor="@color/white"
             android:layout_height="35dp"
+            android:layout_marginEnd="20dp"
             android:background="@drawable/rounded_edit_text"
             android:inputType="text"
-            android:layout_marginEnd="20dp"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textColor="@color/white" />
     </TableRow>
 
-    <TableRow android:layout_marginStart="10dp" android:paddingBottom="10dp">
+    <TableRow
+        android:layout_marginStart="10dp"
+        android:paddingBottom="10dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Email:"
-            android:textStyle="bold"
             android:textColor="@color/white"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/email_form"
             android:layout_width="match_parent"
             android:layout_height="35dp"
+            android:layout_marginEnd="20dp"
             android:background="@drawable/rounded_edit_text"
             android:inputType="textEmailAddress"
-            android:layout_marginEnd="20dp"
-            android:textColor="@color/white"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textColor="@color/white" />
     </TableRow>
 
-    <TableRow android:layout_marginStart="10dp" android:paddingBottom="10dp">
+    <TableRow
+        android:layout_marginStart="10dp"
+        android:paddingBottom="10dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Password:"
-            android:textStyle="bold"
             android:textColor="@color/white"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/password_form"
             android:layout_width="match_parent"
             android:layout_height="35dp"
+            android:layout_marginEnd="20dp"
             android:background="@drawable/rounded_edit_text"
             android:inputType="textPassword"
-            android:layout_marginEnd="20dp"
-            android:textColor="@color/white"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textColor="@color/white" />
     </TableRow>
 
-    <TableRow android:layout_marginStart="10dp" android:paddingBottom="10dp">
+    <TableRow
+        android:layout_marginStart="10dp"
+        android:paddingBottom="10dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Date of Birth:"
             android:textColor="@color/white"
-            android:textStyle="bold"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <EditText
             android:id="@+id/datebirth_form"
@@ -123,23 +134,24 @@
             android:layout_marginEnd="20dp"
             android:background="@drawable/rounded_edit_text"
             android:hint="@string/date_format"
-            android:inputType="date"
+            android:editable="false"
             android:textAlignment="center"
-            android:textColorHint="@color/white"
             android:textColor="@color/white"
+            android:textColorHint="@color/white"
             android:textSize="17sp" />
+
     </TableRow>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
         android:fontFamily="@font/shortxurkit_2xdv"
         android:onClick="SignUp"
         android:text="Sign up"
         android:textAllCaps="true"
         android:textColor="@color/colorPrimary"
         android:textSize="25sp"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp"
         android:theme="@style/My_button_style" />
 </TableLayout>
