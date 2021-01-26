@@ -191,7 +191,8 @@ public class HomeFragment extends Fragment {
         try {
             new GetCurrencies().execute();//wait until it's done
         } catch (Exception e) {
-        };
+        }
+        ;
         new loadCryptoPrices().execute();
         loadWallets();
         Log.v("HIIII", "HIIIII");
@@ -205,8 +206,8 @@ public class HomeFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         //Code executes EVERY TIME user views the fragment
 
-            // Code executes ONLY THE FIRST TIME fragment is viewed.
-        }
+        // Code executes ONLY THE FIRST TIME fragment is viewed.
+    }
 
     private void addWallet(final String CurrencyName, final int image, final String currency_type, final String balance) {
         try {
@@ -956,6 +957,7 @@ public class HomeFragment extends Fragment {
                         curr_perc_1hr_double = usd_object.getDouble("percent_change_1h");
                         curr_perc_1day_double = usd_object.getDouble("percent_change_24h");
                         curr_perc_1week_double = usd_object.getDouble("percent_change_7d");
+                        break;
                     }
                 } catch (JSONException j) {
 
@@ -1005,10 +1007,10 @@ public class HomeFragment extends Fragment {
                 CryptoOneWeekLogo.setImageResource(R.drawable.decrease);
                 CryptoOneWeekLogo.invalidate();
             }
-
             cryptoCardsLayout.addView(cardView);
         }
         final View cardViewEmpty = getLayoutInflater().inflate(R.layout.empty_card, null, false);
         cryptoCardsLayout.addView(cardViewEmpty);
     }
+
 }

@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:text="sender"
         android:textColor="@color/white"
-        android:textSize="20sp"
+        android:textSize="15sp"
         android:layout_toRightOf="@id/from"
         android:layout_alignTop="@id/from"
         />
@@ -46,7 +46,8 @@
         android:layout_height="wrap_content"
         android:text="receiver"
         android:textColor="@color/white"
-        android:textSize="20sp"
+        android:textSize="15sp"
+        android:layout_alignBottom="@id/to"
         android:layout_toRightOf="@id/to"
         android:layout_alignTop="@id/to"
         />
