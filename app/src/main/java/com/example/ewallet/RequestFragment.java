@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.google.zxing.WriterException;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,6 +47,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -68,6 +70,7 @@ public class RequestFragment extends Fragment implements AdapterView.OnItemSelec
     private ImageView QRImageView;
     private TextView address_view;
     private Button button_copy;
+    private ArrayList<CurrencyType> SupportedCurrencies = new ArrayList<>();
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -109,6 +112,10 @@ public class RequestFragment extends Fragment implements AdapterView.OnItemSelec
         // Inflate the layout for this fragment
 
         View v = inflater.inflate(R.layout.request, container, false);
+        try {
+            new GetCurrencies().execute().get();//wait until it's done
+        } catch (Exception e) {
+        }
         QRImageView = v.findViewById(R.id.Qr_image);
         address_view = v.findViewById(R.id.address_view);
         button_copy = v.findViewById(R.id.copy_button);
@@ -119,9 +126,16 @@ public class RequestFragment extends Fragment implements AdapterView.OnItemSelec
             }
         });
         Spinner spinner_choice = v.findViewById(R.id.choice_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(Objects.requireNonNull(getActivity()), R.array.currencies_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner_choice.setAdapter(adapter);
+        ArrayList<String> spinnerArray = new ArrayList<>();
+        for (CurrencyType cur : SupportedCurrencies) {
+            spinnerArray.add(cur.getCurrencyName());
+        }
+        String []adapterStrings=new String[SupportedCurrencies.size()];
+        for(int i=0;i<SupportedCurrencies.size();i++)
+            adapterStrings[i]=SupportedCurrencies.get(i).getCurrencyName();
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item,adapterStrings); //selected item will look like a spinner set from XML
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner_choice.setAdapter(spinnerArrayAdapter);
         spinner_choice.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -140,6 +154,7 @@ public class RequestFragment extends Fragment implements AdapterView.OnItemSelec
         loadAddress(spinner_choice.getAdapter().getItem(0).toString());
         return v;
     }
+
     private void loadAddress(String WalletName) {
         try {
             new GetWalletAddress().execute(WalletName).get();
@@ -147,6 +162,7 @@ public class RequestFragment extends Fragment implements AdapterView.OnItemSelec
 
         }
     }
+
     public void generateQR() {
         float dip = 300f;
         Resources r = getResources();
@@ -168,7 +184,7 @@ public class RequestFragment extends Fragment implements AdapterView.OnItemSelec
 
     public void copyToClipBoard() {
         ClipboardManager clipboard = (ClipboardManager) Objects.requireNonNull(getActivity()).getSystemService(Context.CLIPBOARD_SERVICE);
-        String wallet_address=address_view.getText().toString();
+        String wallet_address = address_view.getText().toString();
         ClipData clip = ClipData.newPlainText("Copied Text", wallet_address);
         if (clipboard != null) {
             clipboard.setPrimaryClip(clip);
@@ -282,16 +298,127 @@ public class RequestFragment extends Fragment implements AdapterView.OnItemSelec
         protected void onPostExecute(String result) {
             try {
                 JSONObject jsonResponse = new JSONObject(result);
-                int success=jsonResponse.getInt("success");
-                String wallet_address="";
-                if(success==1){
-                    wallet_address=jsonResponse.getString("wallet_address");
+                int success = jsonResponse.getInt("success");
+                String wallet_address = "";
+                if (success == 1) {
+                    wallet_address = jsonResponse.getString("wallet_address");
                 }
                 address_view.setText(wallet_address);
                 generateQR();
 
             } catch (JSONException j) {
 
+            }
+        }
+    }
+
+
+    private class GetCurrencies extends AsyncTask<String, String, String> {
+        ProgressDialog pdLoading = new ProgressDialog(getActivity());
+        HttpURLConnection conn;
+        URL url = null;
+        public static final int CONNECTION_TIMEOUT = 10000;
+        public static final int READ_TIMEOUT = 15000;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                url = new URL("http://10.0.2.2/cryptoBank/public/WalletController/getSupportedWallets");
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                Log.d("CONNECTPHP", "error in connection1");
+                return "exception1";
+            }
+            try {
+                //here we will setup HttpURLConnection to connect with php scripts to send and receive data
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(READ_TIMEOUT);
+                conn.setConnectTimeout(CONNECTION_TIMEOUT);
+                conn.setRequestMethod("POST");//the request method must correspond with the written php code
+
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                //append parameters to url so that the script uses them
+                Uri.Builder builder = new Uri.Builder();
+                String query = builder.build().getEncodedQuery();
+                OutputStream os;
+                os = conn.getOutputStream();//Open connection
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                if (query != null)
+                    writer.write(query);//write the formed query to the output stream
+                writer.flush();
+                writer.close();
+                os.close();
+                conn.connect();
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                Log.d("CONNECTPHP", Arrays.toString(e1.getStackTrace()));
+                return "exception2";
+            }
+
+            try {
+                int response_code = conn.getResponseCode();
+                if (response_code == HttpURLConnection.HTTP_OK) {
+                    InputStream input = conn.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                    StringBuilder result = new StringBuilder();
+                    String line;
+
+                    while ((line = reader.readLine()) != null) {
+                        result.append(line);//the result here will be what the echo from the php script
+                    }
+                    try {
+                        JSONObject json = new JSONObject(result.toString());
+                        Log.v("JSONresponse", result.toString());
+                        int success = json.getInt("success");
+                        if (success == 1) {
+                            try {
+                                JSONObject jsonResponse = new JSONObject(result.toString());
+                                SupportedCurrencies.clear();
+                                JSONArray currencies = jsonResponse.getJSONArray("supported_wallets");
+                                for (int i = 0; i < currencies.length(); i++) {
+                                    JSONObject currency = currencies.getJSONObject(i);
+                                    String cur_name = currency.getString("type_name");
+                                    String cur_symbol = currency.getString("type_symbol");
+                                    int id = currency.getInt("type_id");
+                                    SupportedCurrencies.add(new CurrencyType(cur_name, cur_symbol, id));
+                                }
+                            } catch (JSONException j) {
+
+                            }
+                        }
+                    } catch (JSONException e1) {
+                        Log.v("JSonError", Arrays.toString(e1.getStackTrace()));
+                        e1.printStackTrace();
+                    }
+                    return result.toString();//result will be used in onPostExecute method
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setMessage("Connection Failed");
+                    builder.setCancelable(false);
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                    Log.d("CONNECTPHP", "error in connection3");
+                    return "unsuccesful";
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d("CONNECTPHP", "error in connection4");
+                return "exception3";
+            } finally {
+                conn.disconnect();
             }
         }
     }

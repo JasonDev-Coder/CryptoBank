@@ -42,18 +42,24 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.sql.Array;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 
 import nl.joery.animatedbottombar.AnimatedBottomBar;
 import okhttp3.Call;
@@ -68,41 +74,22 @@ import okhttp3.Response;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment implements View.OnClickListener {
+public class HomeFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    public CardView btcCard, ethCard, usdtCard, xrpCard, ltcCard;
     private SwipeRefreshLayout swipeRefreshLayout;
-
-    // private View walletView;
     private LinearLayout walletList;
-    //ImageView removeView;//wallet delete
-
-
-    private OkHttpClient okHttpClient = new OkHttpClient();
-    private ProgressDialog progressDialog;
-
-    private TextView BtcPrice, BtcPercentage1hr, BtcPercentage1day, BtcPercentage1week;
-    private TextView EthPrice, EthPercentage1hr, EthPercentage1day, EthPercentage1week;
-    private TextView UsdtPrice, USDTPercentage1hr, USDTPercentage1day, USDTPercentage1week;
-    private TextView XrpPrice, XRPPercentage1hr, XRPPercentage1day, XRPPercentage1week;
-    private TextView LtcPrice, LTCPercentage1hr, LTCPercentage1day, LTCPercentage1week;
-
-    private ImageView BtcLogoPercentage1hr, BtcLogoPercentage1day, BtcLogoPercentage1week;
-    private ImageView EthLogoPercentage1hr, EthLogoPercentage1day, EthLogoPercentage1week;
-    private ImageView XRPLogoPercentage1hr, XRPLogoPercentage1day, XRPLogoPercentage1week;
-    private ImageView USDTLogoPercentage1hr, USDTLogoPercentage1day, USDTLogoPercentage1week;
-    private ImageView LTCLogoPercentage1hr, LTCLogoPercentage1day, LTCLogoPercentage1week;
-
+    private LinearLayout cryptoCardsLayout;
     private AnimatedBottomBar bottom_bar;
 
     private Button home, send, recent, receive;
     private ArrayList<HashMap<String, String>> walletListMaps = new ArrayList<>();//store the wallets of the user here
-    private HashMap<String, Double> cryptoPrices = new HashMap<>();//save crypto prices here
+    public static HashMap<String, Double> cryptoPrices = new HashMap<>();//save crypto prices here
+    private ArrayList<CurrencyType> SupportedCurrencies = new ArrayList<>();
     FragmentManager fragmentManager;
 
 
@@ -110,7 +97,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private String mParam1;
     private String mParam2;
     private static boolean addWalletBoolean = false;
-    private static boolean deleteWalletSuccess=false;
+    private static boolean deleteWalletSuccess = false;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -148,31 +135,40 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.home_layout, container, false);
+        cryptoCardsLayout = v.findViewById(R.id.cards_layout);
+        try {
+            new GetCurrencies().execute().get();//wait until it's done
+        } catch (Exception e) {
+        }
+        Log.v("SuppPrices", Integer.toString(cryptoPrices.size()));
+
         walletList = (LinearLayout) v.findViewById(R.id.wallets);
         ImageView addWalletMenu = (ImageView) v.findViewById(R.id.addWallet_menu);
         addWalletMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 PopupMenu popup = new PopupMenu(getActivity(), v);
-                popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
+                for (CurrencyType currency : SupportedCurrencies) {
+                    popup.getMenu().add(0, currency.getId(), 0, currency.getCurrencyName());
+                }
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
-                            case R.id.menu_bitcoin:
-                                addWallet("Bitcoin", R.drawable.bitcoin, "BTC", "0.01");
+                            case 1:
+                                addWallet(SupportedCurrencies.get(item.getItemId() - 1).getCurrencyName(), R.drawable.bitcoin, SupportedCurrencies.get(item.getItemId() - 1).getCurrencySymbol(), "0.01");
                                 return true;
-                            case R.id.menu_ethereum:
-                                addWallet("Etherum", R.drawable.ethereum, "ETH", "0.01");
+                            case 2:
+                                addWallet(SupportedCurrencies.get(item.getItemId() - 1).getCurrencyName(), R.drawable.ethereum, SupportedCurrencies.get(item.getItemId() - 1).getCurrencySymbol(), "0.01");
                                 return true;
-                            case R.id.menu_tether:
-                                addWallet("Tether", R.drawable.tether, "USD-T", "0.01");
+                            case 3:
+                                addWallet(SupportedCurrencies.get(item.getItemId() - 1).getCurrencyName(), R.drawable.tether, SupportedCurrencies.get(item.getItemId() - 1).getCurrencySymbol(), "0.01");
                                 return true;
-                            case R.id.menu_xrp:
-                                addWallet("Ripple", R.drawable.xrp, "XRP", "0.01");
+                            case 4:
+                                addWallet(SupportedCurrencies.get(item.getItemId() - 1).getCurrencyName(), R.drawable.xrp, SupportedCurrencies.get(item.getItemId() - 1).getCurrencySymbol(), "0.01");
                                 return true;
-                            case R.id.menu_litecoin:
-                                addWallet("Litecoin", R.drawable.litecoin, "LTC", "0.01");
+                            case 5:
+                                addWallet(SupportedCurrencies.get(item.getItemId() - 1).getCurrencyName(), R.drawable.litecoin, SupportedCurrencies.get(item.getItemId() - 1).getCurrencySymbol(), "0.01");
                                 return true;
                             default:
                                 return false;
@@ -183,100 +179,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
         });
         swipeRefreshLayout = v.findViewById(R.id.refresh_layout_home);
-        btcCard = (CardView) v.findViewById(R.id.BitcoinInfo);
-        ethCard = (CardView) v.findViewById(R.id.EthereumInfo);
-        usdtCard = (CardView) v.findViewById(R.id.TetherInfo);
-        xrpCard = (CardView) v.findViewById(R.id.XrpInfo);
-        ltcCard = (CardView) v.findViewById(R.id.LitecoinInfo);
-
 
         bottom_bar = v.findViewById(R.id.bottom_bar);
-
-        BtcPrice = (TextView) v.findViewById(R.id.BtcPrice);
-        EthPrice = (TextView) v.findViewById(R.id.EthPrice);
-        UsdtPrice = (TextView) v.findViewById(R.id.UsdtPrice);
-        XrpPrice = (TextView) v.findViewById(R.id.XrpPrice);
-        LtcPrice = (TextView) v.findViewById(R.id.LtcPrice);
-
-        BtcPercentage1hr = (TextView) v.findViewById(R.id.btc_perc_text_1hour);
-        BtcPercentage1day = (TextView) v.findViewById(R.id.btc_perc_text_1day);
-        BtcPercentage1week = (TextView) v.findViewById(R.id.btc_perc_text_1week);
-
-
-        BtcLogoPercentage1hr = (ImageView) v.findViewById(R.id.btc_perc_logo_1hour);
-        BtcLogoPercentage1day = (ImageView) v.findViewById(R.id.btc_perc_logo_1day);
-        BtcLogoPercentage1week = (ImageView) v.findViewById(R.id.btc_perc_logo_1week);
-
-        EthPercentage1hr = (TextView) v.findViewById(R.id.eth_perc_text_1hour);
-        EthPercentage1day = (TextView) v.findViewById(R.id.eth_perc_text_1day);
-        EthPercentage1week = (TextView) v.findViewById(R.id.eth_perc_text_1week);
-
-
-        EthLogoPercentage1hr = (ImageView) v.findViewById(R.id.eth_perc_logo_1hour);
-        EthLogoPercentage1day = (ImageView) v.findViewById(R.id.eth_perc_logo_1day);
-        EthLogoPercentage1week = (ImageView) v.findViewById(R.id.eth_perc_logo_1week);
-
-        USDTPercentage1hr = (TextView) v.findViewById(R.id.usdt_perc_text_1hour);
-        USDTPercentage1day = (TextView) v.findViewById(R.id.usdt_perc_text_1day);
-        USDTPercentage1week = (TextView) v.findViewById(R.id.usdt_perc_text_1week);
-
-
-        USDTLogoPercentage1hr = (ImageView) v.findViewById(R.id.usdt_perc_logo_1hour);
-        USDTLogoPercentage1day = (ImageView) v.findViewById(R.id.usdt_perc_logo_1day);
-        USDTLogoPercentage1week = (ImageView) v.findViewById(R.id.usdt_perc_logo_1week);
-
-        XRPPercentage1hr = (TextView) v.findViewById(R.id.xrp_perc_text_1hour);
-        XRPPercentage1day = (TextView) v.findViewById(R.id.xrp_perc_text_1day);
-        XRPPercentage1week = (TextView) v.findViewById(R.id.xrp_perc_text_1week);
-
-
-        XRPLogoPercentage1hr = (ImageView) v.findViewById(R.id.xrp_perc_logo_1hour);
-        XRPLogoPercentage1day = (ImageView) v.findViewById(R.id.xrp_perc_logo_1day);
-        XRPLogoPercentage1week = (ImageView) v.findViewById(R.id.xrp_perc_logo_1week);
-
-        LTCPercentage1hr = (TextView) v.findViewById(R.id.ltc_perc_text_1hour);
-        LTCPercentage1day = (TextView) v.findViewById(R.id.ltc_perc_text_1day);
-        LTCPercentage1week = (TextView) v.findViewById(R.id.ltc_perc_text_1week);
-
-
-        LTCLogoPercentage1hr = (ImageView) v.findViewById(R.id.ltc_perc_logo_1hour);
-        LTCLogoPercentage1day = (ImageView) v.findViewById(R.id.ltc_perc_logo_1day);
-        LTCLogoPercentage1week = (ImageView) v.findViewById(R.id.ltc_perc_logo_1week);
-
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setTitle("BPI Loading");
-        progressDialog.setMessage("Wait...");
-        loadPrice(btcCard);
-        loadPercentage(btcCard);
-
-        loadPrice(ethCard);
-        loadPercentage(ethCard);
-
-        loadPrice(usdtCard);
-        loadPercentage(usdtCard);
-
-        loadPrice(xrpCard);
-        loadPercentage(xrpCard);
-
-        loadPrice(ltcCard);
-        loadPercentage(ltcCard);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {//reload everything that contains live values
-                loadPrice(btcCard);
-                loadPercentage(btcCard);
-
-                loadPrice(ethCard);
-                loadPercentage(ethCard);
-
-                loadPrice(usdtCard);
-                loadPercentage(usdtCard);
-
-                loadPrice(xrpCard);
-                loadPercentage(xrpCard);
-
-                loadPrice(ltcCard);
-                loadPercentage(ltcCard);
+                new loadCryptoPrices().execute();
                 loadWallets();
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -286,13 +194,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 }, 3 * 1000);
             }
         });
-        btcCard.setOnClickListener(this);
-        ethCard.setOnClickListener(this);
-        ltcCard.setOnClickListener(this);
-        usdtCard.setOnClickListener(this);
-        xrpCard.setOnClickListener(this);
-
+        new loadCryptoPrices().execute();
         loadWallets();
+        loadCryptoCards(SupportedCurrencies);
         return v;
     }
 
@@ -328,65 +232,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         final TextView wallet_usd_balance = walletView.findViewById(R.id.wallet_balance_usd);
         final double current_crypto_balance = Double.parseDouble(balance);
-        Request request = new Request.Builder().url(CONSTANTS.MARKET_UPDATES_URL2).build();
-        okHttpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Toast.makeText(getActivity(), "Error during BPI loading:" + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String body = response.body().string();
-                if (getActivity() == null)
-                    return;
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        switch (CurrencyName) {
-                            case "Bitcoin":
-                                parseLoad(body, current_crypto_balance, wallet_usd_balance, CONSTANTS.BITCOIN_INDEX_JSON);
-                                break;
-                            case "Etherum":
-                                parseLoad(body, current_crypto_balance, wallet_usd_balance, CONSTANTS.ETHERUM_INDEX_JSON);
-                                break;
-                            case "Tether":
-                                parseLoad(body, current_crypto_balance, wallet_usd_balance, CONSTANTS.TETHER_INDEX_JSON);
-                                break;
-                            case "Ripple":
-                                parseLoad(body, current_crypto_balance, wallet_usd_balance, CONSTANTS.XRP_INDEX_JSON);
-                                break;
-                            case "Litecoin":
-                                parseLoad(body, current_crypto_balance, wallet_usd_balance, CONSTANTS.LITECOIN_INDEX_JSON);
-                                break;
-                        }
-                    }
-                });
-            }
-        });
+        double current_usd_balance = 0;
+        if (cryptoPrices.get(currency_type) != null)
+            current_usd_balance = current_crypto_balance * cryptoPrices.get(currency_type);
+        current_usd_balance = Math.round(current_usd_balance * 1000) / 1000.0;
+        wallet_usd_balance.setText(Double.toString(current_usd_balance));
         walletList.addView(walletView);
-    }
-
-    /*This function loads the current balance of a wallet in USD(it's done by retreiving the current price from the JSON)*/
-    private void parseLoad(String body, double crypto_balance, TextView usdBalance, int apiJsonIndex) {
-        try {
-            JSONObject jsonObject = new JSONObject(body);                           //get the JSON body
-            JSONArray bpis = jsonObject.getJSONArray("data");                //get the array data which contains the currencies
-            JSONObject crypto_info = bpis.getJSONObject(apiJsonIndex);
-            double crypto_price = crypto_info.getJSONObject("quote").getJSONObject("USD").getDouble("price");
-            double current_usd_balance = crypto_balance * crypto_price;
-            current_usd_balance = Math.round(current_usd_balance * 1000) / 1000.0;
-            usdBalance.setText(Double.toString(current_usd_balance));
-        } catch (Exception e) {
-        }
     }
 
     private void loadWallets() {
         try {
-            new LoadWallets().execute().get();
+            new LoadWallets().execute();
             walletList.removeAllViews();
         } catch (Exception e) {
         }
+
         if (!walletListMaps.isEmpty()) {//walletListMaps will contain hash maps  containing the user's wallets
             for (HashMap<String, String> wallet : walletListMaps) {
                 String wallet_name = wallet.get("type_name");
@@ -396,7 +256,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     case "Bitcoin":
                         addWalletView(wallet_name, R.drawable.bitcoin, wallet_type_symbol, wallet_balance);
                         break;
-                    case "Etherum":
+                    case "Ethereum":
                         addWalletView(wallet_name, R.drawable.ethereum, wallet_type_symbol, wallet_balance);
                         break;
                     case "Tether":
@@ -424,12 +284,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             public void onClick(DialogInterface dialog, int which) {
                 try {
                     new DeleteWallets().execute(CurrencyName).get();
-                }catch (Exception e){
-                    Log.v("DeleteWallet",Arrays.toString(e.getStackTrace()));
+                } catch (Exception e) {
+                    Log.v("DeleteWallet", Arrays.toString(e.getStackTrace()));
                 }
-                if(deleteWalletSuccess){
+                if (deleteWalletSuccess) {
                     walletList.removeView(v);
-                    deleteWalletSuccess=false;
+                    deleteWalletSuccess = false;
                 }
 
                 dialog.cancel();
@@ -444,192 +304,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-
-    private void loadPrice(final CardView cv) {
-        Request request = new Request.Builder().url(CONSTANTS.MARKET_UPDATES_URL2).build();
-        progressDialog.show();
-        okHttpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Toast.makeText(getActivity(), "Error during BPI loading:" + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String body = response.body().string();
-                if (getActivity() == null)
-                    return;
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressDialog.dismiss();
-                        switch (cv.getId()) {
-                            case R.id.BitcoinInfo:
-                                parseBpiResponse(body, CONSTANTS.BITCOIN_INDEX_JSON, BtcPrice, "Bitcoin");
-                                break;
-                            case R.id.EthereumInfo:
-                                parseBpiResponse(body, CONSTANTS.ETHERUM_INDEX_JSON, EthPrice, "Etherum");
-                                break;
-                            case R.id.TetherInfo:
-                                parseBpiResponse(body, CONSTANTS.TETHER_INDEX_JSON, UsdtPrice, "Tether");
-                                break;
-                            case R.id.XrpInfo:
-                                parseBpiResponse(body, CONSTANTS.XRP_INDEX_JSON, XrpPrice, "Ripple");
-                                break;
-                            case R.id.LitecoinInfo:
-                                parseBpiResponse(body, CONSTANTS.LITECOIN_INDEX_JSON, LtcPrice, "Litecoin");
-                                break;
-                        }
-                    }
-                });
-            }
-        });
-    }
-
-    private void parseBpiResponse(String body, int currencyIndex, TextView price, String cryptoName) {
-        try {
-            JSONObject jsonObject = new JSONObject(body);                           //get the JSON body
-            JSONArray bpis = jsonObject.getJSONArray("data");                //get the array data which contains the currencies
-            JSONObject crypto_info = bpis.getJSONObject(currencyIndex);
-            double crypto_price = crypto_info.getJSONObject("quote").getJSONObject("USD").getDouble("price");
-            cryptoPrices.put(cryptoName, crypto_price);
-            NumberFormat defaultFormat = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
-            price.setText("US" + defaultFormat.format(crypto_price));
-        } catch (Exception e) {
-        }
-    }
-
-    private void loadPercentage(final CardView cv) {
-        Request request = new Request.Builder().url(CONSTANTS.MARKET_UPDATES_URL2).build();
-        progressDialog.show();
-        okHttpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Toast.makeText(getActivity(), "Error during BPI loading:" + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String body = response.body().string();
-                if (getActivity() == null)
-                    return;
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        switch (cv.getId()) {
-                            case R.id.BitcoinInfo:
-                                parseBpiPercResponse(body, CONSTANTS.BITCOIN_INDEX_JSON, BtcPercentage1hr, BtcPercentage1day, BtcPercentage1week,
-                                        BtcLogoPercentage1hr, BtcLogoPercentage1day, BtcLogoPercentage1week);
-                                break;
-                            case R.id.EthereumInfo:
-                                parseBpiPercResponse(body, CONSTANTS.ETHERUM_INDEX_JSON, EthPercentage1hr, EthPercentage1day, EthPercentage1week,
-                                        EthLogoPercentage1hr, EthLogoPercentage1day, EthLogoPercentage1week);
-                                break;
-                            case R.id.TetherInfo:
-                                parseBpiPercResponse(body, CONSTANTS.TETHER_INDEX_JSON, USDTPercentage1hr, USDTPercentage1day, USDTPercentage1week,
-                                        USDTLogoPercentage1hr, USDTLogoPercentage1day, USDTLogoPercentage1week);
-                                break;
-                            case R.id.XrpInfo:
-                                parseBpiPercResponse(body, CONSTANTS.XRP_INDEX_JSON, XRPPercentage1hr, XRPPercentage1day, XRPPercentage1week,
-                                        XRPLogoPercentage1hr, XRPLogoPercentage1day, XRPLogoPercentage1week);
-                                break;
-                            case R.id.LitecoinInfo:
-                                parseBpiPercResponse(body, CONSTANTS.LITECOIN_INDEX_JSON, LTCPercentage1hr, LTCPercentage1day, LTCPercentage1week,
-                                        LTCLogoPercentage1hr, LTCLogoPercentage1day, LTCLogoPercentage1week);
-                                break;
-                        }
-                        progressDialog.dismiss();
-                    }
-                });
-            }
-        });
-    }
-
-    private void parseBpiPercResponse(String body, int currencyIndex, TextView percentage1hr,
-                                      TextView percentage1day, TextView percentage1week,
-                                      ImageView logo1hr, ImageView logo1day, ImageView logo1week) {
-        try {
-            JSONObject jsonObject = new JSONObject(body);
-            JSONArray bpis = jsonObject.getJSONArray("data");
-            JSONObject crypto_info = bpis.getJSONObject(currencyIndex);
-            double curr_percentage_1hr = crypto_info.getJSONObject("quote").getJSONObject("USD").getDouble("percent_change_1h");
-            double curr_percentage_1day = crypto_info.getJSONObject("quote").getJSONObject("USD").getDouble("percent_change_24h");
-            double curr_percentage_1week = crypto_info.getJSONObject("quote").getJSONObject("USD").getDouble("percent_change_7d");
-            String curr_perc_1hr = Double.toString(curr_percentage_1hr);
-            String curr_perc_1day = Double.toString(curr_percentage_1day);
-            String curr_perc_1week = Double.toString(curr_percentage_1week);
-
-            Double curr_perc_1hr_double = Double.parseDouble(curr_perc_1hr);
-            Double curr_perc_1day_double = Double.parseDouble(curr_perc_1day);
-            Double curr_perc_1week_double = Double.parseDouble(curr_perc_1week);
-
-            curr_perc_1hr_double = ((double) Math.round(curr_perc_1hr_double * 100)) / 100.0;
-            curr_perc_1day_double = ((double) Math.round(curr_perc_1day_double * 100)) / 100.0;
-            curr_perc_1week_double = ((double) Math.round(curr_perc_1week_double * 100)) / 100.0;
-
-            percentage1hr.setText(curr_perc_1hr_double + "%");
-            percentage1day.setText(curr_perc_1day_double + "%");
-            percentage1week.setText(curr_perc_1week_double + "%");
-
-            if (curr_perc_1hr_double >= 0) {
-                percentage1hr.setTextColor(Color.GREEN);
-                logo1hr.setImageResource(R.drawable.increase);
-                logo1hr.invalidate();
-            } else {
-                percentage1hr.setTextColor(Color.RED);
-                logo1hr.setImageResource(R.drawable.decrease);
-                logo1hr.invalidate();
-
-            }
-            if (curr_perc_1day_double >= 0) {
-                percentage1day.setTextColor(Color.GREEN);
-                logo1day.setImageResource(R.drawable.increase);
-                logo1day.invalidate();
-            } else {
-                percentage1day.setTextColor(Color.RED);
-                logo1day.setImageResource(R.drawable.decrease);
-                logo1day.invalidate();
-            }
-            if (curr_perc_1week_double >= 0) {
-                percentage1week.setTextColor(Color.GREEN);
-                logo1week.setImageResource(R.drawable.increase);
-                logo1week.invalidate();
-            } else {
-                percentage1week.setTextColor(Color.RED);
-                logo1week.setImageResource(R.drawable.decrease);
-                logo1week.invalidate();
-            }
-        } catch (Exception e) {
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        Intent i;
-        i = new Intent(getActivity(), CryptoInfo.class);
-        switch (v.getId()) {
-            case R.id.BitcoinInfo:
-                CryptoInfo.CryptoIndex = CONSTANTS.BITCOIN_INDEX_JSON;
-                break;
-            case R.id.EthereumInfo:
-                CryptoInfo.CryptoIndex = CONSTANTS.ETHERUM_INDEX_JSON;
-                break;
-            case R.id.TetherInfo:
-                CryptoInfo.CryptoIndex = CONSTANTS.TETHER_INDEX_JSON;
-                break;
-            case R.id.XrpInfo:
-                CryptoInfo.CryptoIndex = CONSTANTS.XRP_INDEX_JSON;
-                break;
-            case R.id.LitecoinInfo:
-                CryptoInfo.CryptoIndex = CONSTANTS.LITECOIN_INDEX_JSON;
-                break;
-            default:
-                CryptoInfo.CryptoIndex = -1;
-        }
-        startActivity(i);
-    }
-
 
     private class AsyncAddWallet extends AsyncTask<String, String, String> {
         ProgressDialog pdLoading = new ProgressDialog(getActivity());
@@ -775,7 +449,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
 
     }
-
 
     private class LoadWallets extends AsyncTask<String, String, String> {
         ProgressDialog pdLoading = new ProgressDialog(getActivity());
@@ -973,7 +646,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         Log.v("JSONresponse", result.toString());
                         int success = json.getInt("success");
                         if (success == 1) {
-                            deleteWalletSuccess=true;
+                            deleteWalletSuccess = true;
                         }
                     } catch (JSONException e1) {
                         Log.v("JSonError", Arrays.toString(e1.getStackTrace()));
@@ -1003,5 +676,329 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 conn.disconnect();
             }
         }
+    }
+
+    private class GetCurrencies extends AsyncTask<String, String, String> {
+        ProgressDialog pdLoading = new ProgressDialog(getActivity());
+        HttpURLConnection conn;
+        URL url = null;
+        public static final int CONNECTION_TIMEOUT = 10000;
+        public static final int READ_TIMEOUT = 15000;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                url = new URL("http://10.0.2.2/cryptoBank/public/WalletController/getSupportedWallets");
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                Log.d("CONNECTPHP", "error in connection1");
+                return "exception1";
+            }
+            try {
+                //here we will setup HttpURLConnection to connect with php scripts to send and receive data
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(READ_TIMEOUT);
+                conn.setConnectTimeout(CONNECTION_TIMEOUT);
+                conn.setRequestMethod("POST");//the request method must correspond with the written php code
+
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                //append parameters to url so that the script uses them
+                Uri.Builder builder = new Uri.Builder();
+                String query = builder.build().getEncodedQuery();
+                OutputStream os;
+                os = conn.getOutputStream();//Open connection
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                if (query != null)
+                    writer.write(query);//write the formed query to the output stream
+                writer.flush();
+                writer.close();
+                os.close();
+                conn.connect();
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                Log.d("CONNECTPHP", Arrays.toString(e1.getStackTrace()));
+                return "exception2";
+            }
+
+            try {
+                int response_code = conn.getResponseCode();
+                if (response_code == HttpURLConnection.HTTP_OK) {
+                    InputStream input = conn.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                    StringBuilder result = new StringBuilder();
+                    String line;
+
+                    while ((line = reader.readLine()) != null) {
+                        result.append(line);//the result here will be what the echo from the php script
+                    }
+                    try {
+                        JSONObject json = new JSONObject(result.toString());
+                        Log.v("JSONresponse", result.toString());
+                        int success = json.getInt("success");
+                        if (success == 1) {
+                            try {
+                                JSONObject jsonResponse = new JSONObject(result.toString());
+                                SupportedCurrencies.clear();
+                                JSONArray currencies = jsonResponse.getJSONArray("supported_wallets");
+                                for (int i = 0; i < currencies.length(); i++) {
+                                    JSONObject currency = currencies.getJSONObject(i);
+                                    String cur_name = currency.getString("type_name");
+                                    String cur_symbol = currency.getString("type_symbol");
+                                    int id = currency.getInt("type_id");
+                                    SupportedCurrencies.add(new CurrencyType(cur_name, cur_symbol, id));
+                                }
+                            } catch (JSONException j) {
+
+                            }
+                        }
+                    } catch (JSONException e1) {
+                        Log.v("JSonError", Arrays.toString(e1.getStackTrace()));
+                        e1.printStackTrace();
+                    }
+                    return result.toString();//result will be used in onPostExecute method
+                } else {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setMessage("Connection Failed");
+                    builder.setCancelable(false);
+                    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                    Log.d("CONNECTPHP", "error in connection3");
+                    return "unsuccesful";
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d("CONNECTPHP", "error in connection4");
+                return "exception3";
+            } finally {
+                conn.disconnect();
+            }
+        }
+    }
+
+    private class loadCryptoPrices extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            URL url = null;
+            URLConnection urlConnection = null;
+            try {
+                for (int i = 0; i < SupportedCurrencies.size(); i++) {
+                    if (SupportedCurrencies.get(i).getCurrencyName().equals("Tether")) {
+                        cryptoPrices.put("USDT", 1.0);
+                        continue;
+                    }
+                    try {
+                        url = new URL(CONSTANTS.getUrlFor(SupportedCurrencies.get(i).getCurrencySymbol()));
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    }
+                    urlConnection = url.openConnection();
+                    InputStream in = urlConnection.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder result = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        result.append(line);//the result here will be what the echo from the php script
+                    }
+                    try {
+                        JSONObject json = new JSONObject(result.toString());
+                        cryptoPrices.put(SupportedCurrencies.get(i).getCurrencySymbol(), json.getDouble("price"));
+                    } catch (JSONException e1) {
+                        Log.v("JSonError", Arrays.toString(e1.getStackTrace()));
+                        e1.printStackTrace();
+                    }
+                }
+                return null;
+
+            } catch (IOException e) {
+                Log.d("CONNECTPHP4", "error in connection4");
+            }
+            return null;
+        }
+    }
+
+    private class loadCryptoPercentage extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            URL url = null;
+            try {
+                url = new URL(CONSTANTS.MARKET_UPDATES_URL2);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            URLConnection urlConnection = null;
+            try {
+                urlConnection = url.openConnection();
+                InputStream in = urlConnection.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                StringBuilder result = new StringBuilder();
+                String line;
+
+                while ((line = reader.readLine()) != null) {
+                    result.append(line);//the result here will be what the echo from the php script
+                }
+                return result.toString();//result will be used in onPostExecute meth
+
+            } catch (IOException e) {
+                Log.d("CONNECTPHP4", "error in connection4");
+            }
+            return null;
+        }
+    }
+
+    private void loadCryptoCards(ArrayList<CurrencyType> currencyTypes) {
+        cryptoCardsLayout.removeAllViews();
+        JSONArray jsonArray = null;
+        try {
+            String jsonResponse = new loadCryptoPercentage().execute().get();
+            JSONObject jsonObject = new JSONObject(jsonResponse);
+            jsonArray = jsonObject.getJSONArray("data");
+        } catch (Exception e) {
+            return;
+        }
+        for (final CurrencyType cur : currencyTypes) {
+            final View cardView = getLayoutInflater().inflate(R.layout.crypto_card, null, false);
+            TextView CryptoName = cardView.findViewById(R.id.crypto_name);
+            TextView CryptoSymbol = cardView.findViewById(R.id.crypto_symbol);
+            TextView CryptoPrice = cardView.findViewById(R.id.crypto_price);
+            CryptoName.setText(cur.getCurrencyName());
+            CryptoSymbol.setText(cur.getCurrencySymbol());
+            NumberFormat defaultFormat = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
+            CryptoPrice.setText("US" + defaultFormat.format(cryptoPrices.get(cur.getCurrencySymbol())));
+            ImageView CryptoLogo = cardView.findViewById(R.id.logo);
+            cardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i;
+                    i = new Intent(getActivity(), CryptoInfo.class);
+                    switch (cur.getCurrencySymbol()) {
+                        case "BTC":
+                            CryptoInfo.CryptoIndex = CONSTANTS.BITCOIN_INDEX_JSON;
+                            break;
+                        case "ETH":
+                            CryptoInfo.CryptoIndex = CONSTANTS.ETHERUM_INDEX_JSON;
+                            break;
+                        case "USDT":
+                            CryptoInfo.CryptoIndex = CONSTANTS.TETHER_INDEX_JSON;
+                            break;
+                        case "XRP":
+                            CryptoInfo.CryptoIndex = CONSTANTS.XRP_INDEX_JSON;
+                            break;
+                        case "LTC":
+                            CryptoInfo.CryptoIndex = CONSTANTS.LITECOIN_INDEX_JSON;
+                            break;
+                        default:
+                            CryptoInfo.CryptoIndex = -1;
+                    }
+                    startActivity(i);
+                }
+            });
+            switch (cur.getCurrencySymbol()) {
+                case "BTC":
+                    CryptoLogo.setImageResource(R.drawable.bitcoin);
+                    break;
+                case "ETH":
+                    CryptoLogo.setImageResource(R.drawable.ethereum);
+                    break;
+                case "USDT":
+                    CryptoLogo.setImageResource(R.drawable.tether);
+                    break;
+                case "XRP":
+                    CryptoLogo.setImageResource(R.drawable.xrp);
+                    break;
+                case "LTC":
+                    CryptoLogo.setImageResource(R.drawable.litecoin);
+                    break;
+            }
+            Double curr_perc_1hr_double = 0.0;
+            Double curr_perc_1day_double = 0.0;
+            Double curr_perc_1week_double = 0.0;
+            for (int i = 0; i < jsonArray.length(); i++) {
+                try {
+                    if (jsonArray.getJSONObject(i).getString("symbol").equals(cur.getCurrencySymbol())) {
+                        JSONObject usd_object = jsonArray.getJSONObject(i).getJSONObject("quote").getJSONObject("USD");
+                        curr_perc_1hr_double = usd_object.getDouble("percent_change_1h");
+                        curr_perc_1day_double = usd_object.getDouble("percent_change_24h");
+                        curr_perc_1week_double = usd_object.getDouble("percent_change_7d");
+                    }
+                } catch (JSONException j) {
+
+                }
+            }
+            curr_perc_1hr_double = ((double) Math.round(curr_perc_1hr_double * 100)) / 100.0;
+            curr_perc_1day_double = ((double) Math.round(curr_perc_1day_double * 100)) / 100.0;
+            curr_perc_1week_double = ((double) Math.round(curr_perc_1week_double * 100)) / 100.0;
+
+
+            TextView CryptoOneHour = cardView.findViewById(R.id.crypto_perc_text_1hour);
+            TextView CryptoOneDay = cardView.findViewById(R.id.crypto_perc_text_1day);
+            TextView CryptoOneWeek = cardView.findViewById(R.id.crypto_perc_text_1week);
+
+            CryptoOneHour.setText(Double.toString(curr_perc_1hr_double));
+            CryptoOneDay.setText(Double.toString(curr_perc_1day_double));
+            CryptoOneWeek.setText(Double.toString(curr_perc_1week_double));
+
+            ImageView CryptoOneHourLogo = cardView.findViewById(R.id.crypto_perc_logo_1hour);
+            ImageView CryptoOneDayLogo = cardView.findViewById(R.id.crypto_perc_logo_1day);
+            ImageView CryptoOneWeekLogo = cardView.findViewById(R.id.crypto_perc_logo_1week);
+            if (curr_perc_1hr_double >= 0) {
+                CryptoOneHour.setTextColor(Color.GREEN);
+                CryptoOneHourLogo.setImageResource(R.drawable.increase);
+                CryptoOneHourLogo.invalidate();
+            } else {
+                CryptoOneHour.setTextColor(Color.RED);
+                CryptoOneHourLogo.setImageResource(R.drawable.decrease);
+                CryptoOneHourLogo.invalidate();
+
+            }
+            if (curr_perc_1day_double >= 0) {
+                CryptoOneDay.setTextColor(Color.GREEN);
+                CryptoOneDayLogo.setImageResource(R.drawable.increase);
+                CryptoOneDayLogo.invalidate();
+            } else {
+                CryptoOneDay.setTextColor(Color.RED);
+                CryptoOneDayLogo.setImageResource(R.drawable.decrease);
+                CryptoOneDayLogo.invalidate();
+            }
+            if (curr_perc_1week_double >= 0) {
+                CryptoOneWeek.setTextColor(Color.GREEN);
+                CryptoOneWeekLogo.setImageResource(R.drawable.increase);
+                CryptoOneWeekLogo.invalidate();
+            } else {
+                CryptoOneWeek.setTextColor(Color.RED);
+                CryptoOneWeekLogo.setImageResource(R.drawable.decrease);
+                CryptoOneWeekLogo.invalidate();
+            }
+
+            cryptoCardsLayout.addView(cardView);
+        }
+        final View cardViewEmpty = getLayoutInflater().inflate(R.layout.empty_card, null, false);
+        cryptoCardsLayout.addView(cardViewEmpty);
     }
 }
