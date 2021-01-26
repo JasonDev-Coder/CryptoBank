@@ -89,7 +89,7 @@ public class HomeFragment extends Fragment {
     private Button home, send, recent, receive;
     private ArrayList<HashMap<String, String>> walletListMaps = new ArrayList<>();//store the wallets of the user here
     public static HashMap<String, Double> cryptoPrices = new HashMap<>();//save crypto prices here
-    private ArrayList<CurrencyType> SupportedCurrencies = new ArrayList<>();
+    public static ArrayList<CurrencyType> SupportedCurrencies = new ArrayList<>();
     FragmentManager fragmentManager;
 
 
@@ -242,7 +242,7 @@ public class HomeFragment extends Fragment {
 
     private void loadWallets() {
         try {
-            new LoadWallets().execute();
+            new LoadWallets().execute().get();
             walletList.removeAllViews();
         } catch (Exception e) {
         }

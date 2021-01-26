@@ -46,8 +46,10 @@ import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Array;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
@@ -78,7 +80,6 @@ public class SendFragment extends Fragment {
     private EditText cryptoInput, usdInput;
     private OkHttpClient okHttpClient = new OkHttpClient();
     private Button sendButton;
-
     public SendFragment() {
         // Required empty public constructor
     }
@@ -115,16 +116,25 @@ public class SendFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.send, container, false);
+        send_address = v.findViewById(R.id.address_edit_field);
+        button_scan = (ImageButton) v.findViewById(R.id.qr_button);
+        cryptoInput = v.findViewById(R.id.input_amount_crypto);
+        usdInput = v.findViewById(R.id.input_amount_usd);
         spinner_choice = v.findViewById(R.id.currrency_spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.currencies_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner_choice.setAdapter(adapter);
+        String []adapterStrings=new String[HomeFragment.SupportedCurrencies.size()];
+        for(int i=0;i<HomeFragment.SupportedCurrencies.size();i++)
+            adapterStrings[i]=HomeFragment.SupportedCurrencies.get(i).getCurrencyName();
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item,adapterStrings); //selected item will look like a spinner set from XML
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner_choice.setAdapter(spinnerArrayAdapter);
         spinner_choice.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 ((TextView) parentView.getChildAt(0)).setTextColor(Color.WHITE);
                 ((TextView) parentView.getChildAt(0)).setTextSize(25);
-                Convert(true);
+                if(!cryptoInput.getText().toString().isEmpty()){
+                    Convert(true);
+                }
             }
 
             @Override
@@ -132,10 +142,6 @@ public class SendFragment extends Fragment {
 
             }
         });
-        send_address = v.findViewById(R.id.address_edit_field);
-        button_scan = (ImageButton) v.findViewById(R.id.qr_button);
-        cryptoInput = v.findViewById(R.id.input_amount_crypto);
-        usdInput = v.findViewById(R.id.input_amount_usd);
         cryptoInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -220,6 +226,7 @@ public class SendFragment extends Fragment {
             return;
         }
         String sendAddress = send_address.getText().toString();//get the address to send to
+        Log.v("WALLETADDR",sendAddress);
         if (sendAddress.isEmpty()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setMessage("Input an address");
@@ -231,82 +238,39 @@ public class SendFragment extends Fragment {
             });
             AlertDialog dialog = builder.create();
             dialog.show();
-        } else
+        }
+        else
             new AsyncSend().execute(walletName, amount_send_crypto,amount_send_us, sendAddress);
     }
-
-    private void ChangePrice(final int index, final boolean CrypToUs) {
-        Request request = new Request.Builder().url(CONSTANTS.MARKET_UPDATES_URL2).build();
-        okHttpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Toast.makeText(getActivity(), "Error during BPI loading:" + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String body = response.body().string();
-                if (getActivity() == null)
-                    return;
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        parseBpiResponse(body, index, CrypToUs);
-                    }
-                });
-            }
-        });
-    }
-
-    private void parseBpiResponse(String body, int currencyIndex, boolean CrypToUs) {
-        try {
-            JSONObject jsonObject = new JSONObject(body);
-            JSONArray cryptos = jsonObject.getJSONArray("data");
-            JSONObject crypto_info = cryptos.getJSONObject(currencyIndex);
-            double crypto_price = crypto_info.getJSONObject("quote").getJSONObject("USD").getDouble("price");
-            double value = 0;
-            if (CrypToUs) {
-                try {
-                    value = Double.parseDouble(cryptoInput.getText().toString());
-                } catch (Exception e) {
-                    usdInput.setText("");
-                    return;
-                }
-                double usd = crypto_price * value;
-                usdInput.setText(Double.toString(usd));
-            } else {
-                try {
-                    value = Double.parseDouble(usdInput.getText().toString());
-                } catch (Exception e) {
-                    cryptoInput.setText("");
-                    return;
-                }
-                double crypto = value / crypto_price;
-                DecimalFormat df = new DecimalFormat("#");
-                df.setMaximumFractionDigits(8);
-                cryptoInput.setText(String.format("%.8f", crypto));
-            }
-        } catch (Exception e) {
-        }
-    }
-
     private void Convert(boolean cryoToUs) {
         String Cryp_String_spinner = (String) spinner_choice.getSelectedItem();
-        switch (Cryp_String_spinner) {
-            case "Bitcoin":
-                ChangePrice(CONSTANTS.BITCOIN_INDEX_JSON, cryoToUs);
+        CurrencyType c = null;
+        for (CurrencyType cur : HomeFragment.SupportedCurrencies) {
+            if (cur.getCurrencyName().equals(Cryp_String_spinner)) {
+                c = cur;
                 break;
-            case "Etherum":
-                ChangePrice(CONSTANTS.ETHERUM_INDEX_JSON, cryoToUs);
-                break;
-            case "USD-T":
-                ChangePrice(CONSTANTS.TETHER_INDEX_JSON, cryoToUs);
-                break;
-            case "XRP":
-                ChangePrice(CONSTANTS.XRP_INDEX_JSON, cryoToUs);
-            case "Litecoin":
-                ChangePrice(CONSTANTS.LITECOIN_INDEX_JSON, cryoToUs);
-                break;
+            }
+        }
+        double value = 0;
+
+        if (cryoToUs) {
+            try {
+                value = Double.parseDouble(cryptoInput.getText().toString());
+            } catch (Exception e) {
+                return;
+            }
+            double usd = HomeFragment.cryptoPrices.get(c.getCurrencySymbol()) * value;
+            usdInput.setText(Double.toString(usd));
+        } else {
+            try {
+                value = Double.parseDouble(usdInput.getText().toString());
+            } catch (Exception e) {
+                return;
+            }
+            double crypto = value / HomeFragment.cryptoPrices.get(c.getCurrencySymbol());
+            DecimalFormat df = new DecimalFormat("#");
+            df.setMaximumFractionDigits(8);
+            cryptoInput.setText(String.format("%.8f", crypto));
         }
     }
 
@@ -488,6 +452,5 @@ public class SendFragment extends Fragment {
                 dialog.show();
             }
         }
-
     }
 }
