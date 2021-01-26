@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -85,7 +86,6 @@ public class HomeFragment extends Fragment {
     private LinearLayout walletList;
     private LinearLayout cryptoCardsLayout;
     private AnimatedBottomBar bottom_bar;
-
     private Button home, send, recent, receive;
     private ArrayList<HashMap<String, String>> walletListMaps = new ArrayList<>();//store the wallets of the user here
     public static HashMap<String, Double> cryptoPrices = new HashMap<>();//save crypto prices here
@@ -136,12 +136,6 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.home_layout, container, false);
         cryptoCardsLayout = v.findViewById(R.id.cards_layout);
-        try {
-            new GetCurrencies().execute().get();//wait until it's done
-        } catch (Exception e) {
-        }
-        Log.v("SuppPrices", Integer.toString(cryptoPrices.size()));
-
         walletList = (LinearLayout) v.findViewById(R.id.wallets);
         ImageView addWalletMenu = (ImageView) v.findViewById(R.id.addWallet_menu);
         addWalletMenu.setOnClickListener(new View.OnClickListener() {
@@ -194,11 +188,25 @@ public class HomeFragment extends Fragment {
                 }, 3 * 1000);
             }
         });
+        try {
+            new GetCurrencies().execute();//wait until it's done
+        } catch (Exception e) {
+        };
         new loadCryptoPrices().execute();
         loadWallets();
+        Log.v("HIIII", "HIIIII");
         loadCryptoCards(SupportedCurrencies);
         return v;
     }
+
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        //Code executes EVERY TIME user views the fragment
+
+            // Code executes ONLY THE FIRST TIME fragment is viewed.
+        }
 
     private void addWallet(final String CurrencyName, final int image, final String currency_type, final String balance) {
         try {
@@ -460,7 +468,7 @@ public class HomeFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
+            pdLoading.show();
         }
 
         @Override
@@ -469,7 +477,6 @@ public class HomeFragment extends Fragment {
                 url = new URL("http://10.0.2.2/cryptoBank/public/WalletController/getWallets");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
-                Log.d("CONNECTPHP", "error in connection1");
                 return "exception1";
             }
             try {
@@ -502,7 +509,6 @@ public class HomeFragment extends Fragment {
                 conn.connect();
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
-                Log.d("CONNECTPHP", Arrays.toString(e1.getStackTrace()));
                 return "exception2";
             }
 
@@ -554,12 +560,11 @@ public class HomeFragment extends Fragment {
                     });
                     AlertDialog dialog = builder.create();
                     dialog.show();
-                    Log.d("CONNECTPHP", "error in connection3");
+
                     return "unsuccesful";
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.d("CONNECTPHP", "error in connection4");
                 return "exception3";
             } finally {
                 conn.disconnect();
@@ -568,7 +573,7 @@ public class HomeFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String result) {
-
+            pdLoading.dismiss();
         }
 
     }
@@ -697,7 +702,6 @@ public class HomeFragment extends Fragment {
                 url = new URL("http://10.0.2.2/cryptoBank/public/WalletController/getSupportedWallets");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
-                Log.d("CONNECTPHP", "error in connection1");
                 return "exception1";
             }
             try {
@@ -723,7 +727,6 @@ public class HomeFragment extends Fragment {
                 conn.connect();
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
-                Log.d("CONNECTPHP", Arrays.toString(e1.getStackTrace()));
                 return "exception2";
             }
 
@@ -789,10 +792,12 @@ public class HomeFragment extends Fragment {
     }
 
     private class loadCryptoPrices extends AsyncTask<String, String, String> {
+        private ProgressDialog dialog = new ProgressDialog(getContext());
+
         @Override
         protected void onPreExecute() {
+            dialog.show();
             super.onPreExecute();
-
         }
 
         @Override
@@ -834,6 +839,12 @@ public class HomeFragment extends Fragment {
             }
             return null;
         }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            dialog.dismiss();
+        }
     }
 
     private class loadCryptoPercentage extends AsyncTask<String, String, String> {
@@ -866,7 +877,6 @@ public class HomeFragment extends Fragment {
                 return result.toString();//result will be used in onPostExecute meth
 
             } catch (IOException e) {
-                Log.d("CONNECTPHP4", "error in connection4");
             }
             return null;
         }
