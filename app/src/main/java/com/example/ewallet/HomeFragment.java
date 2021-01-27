@@ -135,6 +135,11 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.home_layout, container, false);
+        try {
+            if (SupportedCurrencies.isEmpty())
+                new GetCurrencies().execute();//wait until it's done
+        } catch (Exception e) {
+        }
         cryptoCardsLayout = v.findViewById(R.id.cards_layout);
         walletList = (LinearLayout) v.findViewById(R.id.wallets);
         ImageView addWalletMenu = (ImageView) v.findViewById(R.id.addWallet_menu);
@@ -178,7 +183,6 @@ public class HomeFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {//reload everything that contains live values
-                new loadCryptoPrices().execute();
                 loadWallets();
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -188,25 +192,13 @@ public class HomeFragment extends Fragment {
                 }, 3 * 1000);
             }
         });
-        try {
-            new GetCurrencies().execute();//wait until it's done
-        } catch (Exception e) {
-        }
-        ;
-        new loadCryptoPrices().execute();
+        if (cryptoPrices.isEmpty())
+            new loadCryptoPrices().execute();
+
         loadWallets();
-        Log.v("HIIII", "HIIIII");
-        loadCryptoCards(SupportedCurrencies);
+        if (cryptoCardsLayout.getChildCount() == 0)
+            loadCryptoCards(SupportedCurrencies);
         return v;
-    }
-
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        //Code executes EVERY TIME user views the fragment
-
-        // Code executes ONLY THE FIRST TIME fragment is viewed.
     }
 
     private void addWallet(final String CurrencyName, final int image, final String currency_type, final String balance) {
