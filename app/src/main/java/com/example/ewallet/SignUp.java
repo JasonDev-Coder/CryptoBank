@@ -43,6 +43,7 @@ import java.util.Locale;
 public class SignUp extends AppCompatActivity {
     EditText name, username, email, password, birthdate;
     final Calendar myCalendar = Calendar.getInstance();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +53,7 @@ public class SignUp extends AppCompatActivity {
         email = findViewById(R.id.email_form);
         password = findViewById(R.id.password_form);
         birthdate = findViewById(R.id.datebirth_form);
-        EditText edittext= (EditText) findViewById(R.id.datebirth_form);
+        EditText edittext = (EditText) findViewById(R.id.datebirth_form);
         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
 
             @Override
@@ -78,13 +79,15 @@ public class SignUp extends AppCompatActivity {
         });
 
     }
+
     private void updateLabel() {
         String myFormat = "yyyy/MM/dd"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
-        if(myCalendar.getTime().before(new Date()))
+        if (myCalendar.getTime().before(new Date()))
             birthdate.setText(sdf.format(myCalendar.getTime()));
     }
+
     public void SignUp(View v) {
         final String name_str = name.getText().toString();
         final String username_str = username.getText().toString();
@@ -211,6 +214,8 @@ public class SignUp extends AppCompatActivity {
                     Toast.makeText(SignUp.this, "Missing Field", Toast.LENGTH_LONG).show();
                 } else if (jsonErrorType.equalsIgnoreCase("Already Exists")) {
                     Toast.makeText(SignUp.this, "Email already used", Toast.LENGTH_LONG).show();
+                } else if (jsonErrorType.equalsIgnoreCase("Already Exists Username")) {
+                    Toast.makeText(SignUp.this, "Username already used", Toast.LENGTH_LONG).show();
                 } else if (jsonErrorType.equalsIgnoreCase("Invalid Email")) {
                     builder.setMessage("Invalid Email");
                     builder.create().show();
