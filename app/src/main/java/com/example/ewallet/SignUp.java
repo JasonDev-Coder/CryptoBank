@@ -41,7 +41,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class SignUp extends AppCompatActivity {
-    EditText name, username, email, password, birthdate;
+    EditText name, email, password, birthdate;
     final Calendar myCalendar = Calendar.getInstance();
 
     @Override
@@ -49,7 +49,6 @@ public class SignUp extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_up);
         name = findViewById(R.id.name_form);
-        username = findViewById(R.id.username_form);
         email = findViewById(R.id.email_form);
         password = findViewById(R.id.password_form);
         birthdate = findViewById(R.id.datebirth_form);
@@ -90,16 +89,15 @@ public class SignUp extends AppCompatActivity {
 
     public void SignUp(View v) {
         final String name_str = name.getText().toString();
-        final String username_str = username.getText().toString();
         final String email_str = email.getText().toString();
         final String password_str = password.getText().toString();
         final String birthdate_str = birthdate.getText().toString();
-        if (name_str.isEmpty() || username_str.isEmpty() || email_str.isEmpty() || password_str.isEmpty() || birthdate_str.isEmpty()) {
+        if (name_str.isEmpty()  || email_str.isEmpty() || password_str.isEmpty() || birthdate_str.isEmpty()) {
             Toast.makeText(SignUp.this, "Missing Field", Toast.LENGTH_LONG).show();
             return;
         }
         Date d = new Date(birthdate_str);
-        new AsyncLogin().execute(name_str, username_str, password_str, email_str, birthdate_str);
+        new AsyncLogin().execute(name_str, password_str, email_str, birthdate_str);
     }
 
     private class AsyncLogin extends AsyncTask<String, String, String> {
@@ -138,10 +136,9 @@ public class SignUp extends AppCompatActivity {
                 //append parameters to url so that the script uses them
                 Uri.Builder builder = new Uri.Builder()
                         .appendQueryParameter("name", params[0])//params[0] is the email from AsyncLogin().execute(email,password);
-                        .appendQueryParameter("username", params[1])//params[1] is the username AsyncLogin().execute(email,username....);
-                        .appendQueryParameter("password", params[2])
-                        .appendQueryParameter("email", params[3])
-                        .appendQueryParameter("birthdate", params[4]);
+                        .appendQueryParameter("password", params[1])
+                        .appendQueryParameter("email", params[2])
+                        .appendQueryParameter("birthdate", params[3]);
                 //strings username and password must correspond with the written php code(in my case i used $_POST["username"]
                 String query = builder.build().getEncodedQuery();
                 OutputStream os;
@@ -214,9 +211,7 @@ public class SignUp extends AppCompatActivity {
                     Toast.makeText(SignUp.this, "Missing Field", Toast.LENGTH_LONG).show();
                 } else if (jsonErrorType.equalsIgnoreCase("Already Exists")) {
                     Toast.makeText(SignUp.this, "Email already used", Toast.LENGTH_LONG).show();
-                } else if (jsonErrorType.equalsIgnoreCase("Already Exists Username")) {
-                    Toast.makeText(SignUp.this, "Username already used", Toast.LENGTH_LONG).show();
-                } else if (jsonErrorType.equalsIgnoreCase("Invalid Email")) {
+                }  else if (jsonErrorType.equalsIgnoreCase("Invalid Email")) {
                     builder.setMessage("Invalid Email");
                     builder.create().show();
                 } else if (jsonErrorType.equalsIgnoreCase("Invalid Password")) {
