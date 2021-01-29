@@ -20,6 +20,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,6 +37,7 @@ import org.apache.http.NameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -83,6 +85,7 @@ public class HomeFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private TextView noWallets;
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearLayout walletList;
     private LinearLayout cryptoCardsLayout;
@@ -142,6 +145,7 @@ public class HomeFragment extends Fragment {
         dialog.setMessage("Loading...");
         dialog.setTitle("Loading Wallets");
         dialog.show();
+        noWallets = (TextView)v.findViewById(R.id.noWallets);
         cryptoCardsLayout = v.findViewById(R.id.cards_layout);
         walletList = (LinearLayout) v.findViewById(R.id.wallets);
 
@@ -235,6 +239,7 @@ public class HomeFragment extends Fragment {
             current_usd_balance = current_crypto_balance * cryptoPrices.get(currency_type);
         current_usd_balance = Math.round(current_usd_balance * 1000) / 1000.0;
         wallet_usd_balance.setText(Double.toString(current_usd_balance));
+        noWallets.setText(null);
         walletList.addView(walletView);
     }
 
