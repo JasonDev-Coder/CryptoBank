@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -98,6 +99,7 @@ public class HomeFragment extends Fragment {
     private String mParam2;
     private static boolean addWalletBoolean = false;
     private static boolean deleteWalletSuccess = false;
+    private ProgressDialog dialog;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -135,13 +137,15 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.home_layout, container, false);
-        try {
-            if (SupportedCurrencies.isEmpty())
-                new GetCurrencies().execute();//wait until it's done
-        } catch (Exception e) {
-        }
+        dialog = new ProgressDialog(getContext());
+        dialog.setCancelable(false);
+        dialog.setMessage("Loading...");
+        dialog.setTitle("Loading Wallets");
+        dialog.show();
         cryptoCardsLayout = v.findViewById(R.id.cards_layout);
         walletList = (LinearLayout) v.findViewById(R.id.wallets);
+
+        new GetCurrencies().execute();
         ImageView addWalletMenu = (ImageView) v.findViewById(R.id.addWallet_menu);
         addWalletMenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,12 +182,11 @@ public class HomeFragment extends Fragment {
             }
         });
         swipeRefreshLayout = v.findViewById(R.id.refresh_layout_home);
-
         bottom_bar = v.findViewById(R.id.bottom_bar);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {//reload everything that contains live values
-                loadWallets();
+                new LoadWallets().execute();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -192,12 +195,6 @@ public class HomeFragment extends Fragment {
                 }, 3 * 1000);
             }
         });
-        if (cryptoPrices.isEmpty())
-            new loadCryptoPrices().execute();
-
-        loadWallets();
-        if (cryptoCardsLayout.getChildCount() == 0)
-            loadCryptoCards(SupportedCurrencies);
         return v;
     }
 
@@ -242,13 +239,9 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadWallets() {
-        try {
-            new LoadWallets().execute().get();
-            walletList.removeAllViews();
-        } catch (Exception e) {
-        }
-
+    Log.v("WALLETPRICE",cryptoPrices.size()+"");
         if (!walletListMaps.isEmpty()) {//walletListMaps will contain hash maps  containing the user's wallets
+            walletList.removeAllViews();
             for (HashMap<String, String> wallet : walletListMaps) {
                 String wallet_name = wallet.get("type_name");
                 String wallet_balance = wallet.get("balance");
@@ -452,7 +445,6 @@ public class HomeFragment extends Fragment {
     }
 
     private class LoadWallets extends AsyncTask<String, String, String> {
-        ProgressDialog pdLoading = new ProgressDialog(getActivity());
         HttpURLConnection conn;
         URL url = null;
         public static final int CONNECTION_TIMEOUT = 10000;
@@ -461,7 +453,6 @@ public class HomeFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            pdLoading.show();
         }
 
         @Override
@@ -516,30 +507,6 @@ public class HomeFragment extends Fragment {
                     while ((line = reader.readLine()) != null) {
                         result.append(line);//the result here will be what the echo from the php script
                     }
-                    try {
-                        JSONObject json = new JSONObject(result.toString());
-                        Log.v("JSONresponse", result.toString());
-                        int success = json.getInt("success");
-                        if (success == 1) {
-                            walletListMaps.clear();
-                            JSONArray walletsArray = json.getJSONArray("wallets");
-                            Log.d("wallets", walletsArray.toString());
-                            for (int i = 0; i < walletsArray.length(); i++) {
-                                JSONObject jsonWallet = walletsArray.getJSONObject(i);
-                                HashMap<String, String> walletMap = new HashMap<>();
-                                Iterator<String> walletIterator = jsonWallet.keys();
-                                while (walletIterator.hasNext()) {
-                                    String key = walletIterator.next();
-                                    walletMap.put(key, jsonWallet.getString(key));
-                                }
-                                walletListMaps.add(walletMap);
-                            }
-                        }
-
-                    } catch (JSONException e1) {
-                        Log.v("JSonError", Arrays.toString(e1.getStackTrace()));
-                        e1.printStackTrace();
-                    }
                     return result.toString();//result will be used in onPostExecute method
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -566,7 +533,32 @@ public class HomeFragment extends Fragment {
 
         @Override
         protected void onPostExecute(String result) {
-            pdLoading.dismiss();
+            try {
+                JSONObject json = new JSONObject(result);
+                Log.v("JSONresponse", result);
+                int success = json.getInt("success");
+                if (success == 1) {
+                    walletListMaps.clear();
+                    JSONArray walletsArray = json.getJSONArray("wallets");
+                    Log.d("wallets", walletsArray.toString());
+                    for (int i = 0; i < walletsArray.length(); i++) {
+                        JSONObject jsonWallet = walletsArray.getJSONObject(i);
+                        HashMap<String, String> walletMap = new HashMap<>();
+                        Iterator<String> walletIterator = jsonWallet.keys();
+                        while (walletIterator.hasNext()) {
+                            String key = walletIterator.next();
+                            walletMap.put(key, jsonWallet.getString(key));
+                        }
+                        walletListMaps.add(walletMap);
+                    }
+                    Log.v("WALLETTT",walletListMaps.size()+"");
+                    loadWallets();
+                }
+
+            } catch (JSONException e1) {
+                Log.v("JSonError", Arrays.toString(e1.getStackTrace()));
+                e1.printStackTrace();
+            }
         }
 
     }
@@ -677,7 +669,6 @@ public class HomeFragment extends Fragment {
     }
 
     private class GetCurrencies extends AsyncTask<String, String, String> {
-        ProgressDialog pdLoading = new ProgressDialog(getActivity());
         HttpURLConnection conn;
         URL url = null;
         public static final int CONNECTION_TIMEOUT = 10000;
@@ -734,30 +725,6 @@ public class HomeFragment extends Fragment {
                     while ((line = reader.readLine()) != null) {
                         result.append(line);//the result here will be what the echo from the php script
                     }
-                    try {
-                        JSONObject json = new JSONObject(result.toString());
-                        Log.v("JSONresponse", result.toString());
-                        int success = json.getInt("success");
-                        if (success == 1) {
-                            try {
-                                JSONObject jsonResponse = new JSONObject(result.toString());
-                                SupportedCurrencies.clear();
-                                JSONArray currencies = jsonResponse.getJSONArray("supported_wallets");
-                                for (int i = 0; i < currencies.length(); i++) {
-                                    JSONObject currency = currencies.getJSONObject(i);
-                                    String cur_name = currency.getString("type_name");
-                                    String cur_symbol = currency.getString("type_symbol");
-                                    int id = currency.getInt("type_id");
-                                    SupportedCurrencies.add(new CurrencyType(cur_name, cur_symbol, id));
-                                }
-                            } catch (JSONException j) {
-
-                            }
-                        }
-                    } catch (JSONException e1) {
-                        Log.v("JSonError", Arrays.toString(e1.getStackTrace()));
-                        e1.printStackTrace();
-                    }
                     return result.toString();//result will be used in onPostExecute method
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -782,14 +749,40 @@ public class HomeFragment extends Fragment {
                 conn.disconnect();
             }
         }
+
+        @Override
+        protected void onPostExecute(String result) {
+            try {
+                JSONObject json = new JSONObject(result);
+                Log.v("JSONresponse", result);
+                int success = json.getInt("success");
+                if (success == 1) {
+                    try {
+                        JSONObject jsonResponse = new JSONObject(result);
+                        SupportedCurrencies.clear();
+                        JSONArray currencies = jsonResponse.getJSONArray("supported_wallets");
+                        for (int i = 0; i < currencies.length(); i++) {
+                            JSONObject currency = currencies.getJSONObject(i);
+                            String cur_name = currency.getString("type_name");
+                            String cur_symbol = currency.getString("type_symbol");
+                            int id = currency.getInt("type_id");
+                            SupportedCurrencies.add(new CurrencyType(cur_name, cur_symbol, id));
+                        }
+                    } catch (JSONException j) {
+
+                    }
+                }
+            } catch (JSONException e1) {
+                Log.v("JSonError", Arrays.toString(e1.getStackTrace()));
+                e1.printStackTrace();
+            }
+            new loadCryptoPrices().execute();
+        }
     }
 
     private class loadCryptoPrices extends AsyncTask<String, String, String> {
-        private ProgressDialog dialog = new ProgressDialog(getContext());
-
         @Override
         protected void onPreExecute() {
-            dialog.show();
             super.onPreExecute();
         }
 
@@ -836,7 +829,8 @@ public class HomeFragment extends Fragment {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            dialog.dismiss();
+            new LoadWallets().execute();
+            new loadCryptoPercentage().execute();
         }
     }
 
@@ -870,19 +864,25 @@ public class HomeFragment extends Fragment {
                 return result.toString();//result will be used in onPostExecute meth
 
             } catch (IOException e) {
+                return null;
             }
-            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Log.v("SUPPORTEDD",SupportedCurrencies.size()+"");
+            Log.v("SUPPORTEDD",cryptoPrices.size()+"");
+            loadCryptoCards(SupportedCurrencies,s);
         }
     }
 
-    private void loadCryptoCards(ArrayList<CurrencyType> currencyTypes) {
+    private void loadCryptoCards(ArrayList<CurrencyType> currencyTypes,String jsonResponse) {
         cryptoCardsLayout.removeAllViews();
         JSONArray jsonArray = null;
         try {
-            String jsonResponse = new loadCryptoPercentage().execute().get();
             JSONObject jsonObject = new JSONObject(jsonResponse);
             jsonArray = jsonObject.getJSONArray("data");
-        } catch (Exception e) {
+        } catch (JSONException e) {
             return;
         }
         for (final CurrencyType cur : currencyTypes) {
@@ -1003,6 +1003,7 @@ public class HomeFragment extends Fragment {
         }
         final View cardViewEmpty = getLayoutInflater().inflate(R.layout.empty_card, null, false);
         cryptoCardsLayout.addView(cardViewEmpty);
+        dialog.dismiss();
     }
 
 }
