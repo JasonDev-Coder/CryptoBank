@@ -28,7 +28,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="10dp"
                 android:layout_centerHorizontal="true"
-                android:src="@drawable/bitcoin" />
+                />
 
             <TextView
                 android:id="@+id/wallet_balance_text"
