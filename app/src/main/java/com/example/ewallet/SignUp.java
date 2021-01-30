@@ -218,7 +218,7 @@ public class SignUp extends AppCompatActivity {
                     builder.setMessage("Password must contains at least 1 capital letter,1 small letter,1 digit and length not less than 6");
                     builder.create().show();
                 } else {
-                    builder.setMessage("Unknown error occureed");
+                    builder.setMessage("Unknown error occured");
                     builder.create().show();
                 }
             } catch (JSONException j1) {
