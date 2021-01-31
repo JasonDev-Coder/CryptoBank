@@ -742,10 +742,11 @@ public class HomeFragment extends Fragment {
                             JSONObject currency = currencies.getJSONObject(i);
                             String cur_name = currency.getString("type_name");
                             String cur_symbol = currency.getString("type_symbol");
+                            String cur_desc=currency.getString("type_description");
                             int id = currency.getInt("type_id");
                             byte[] decodedString = Base64.decode(currency.getString("type_logo"), Base64.DEFAULT);
                             Bitmap image = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                            SupportedCurrencies.add(new CurrencyType(cur_name, cur_symbol, id, image));
+                            SupportedCurrencies.add(new CurrencyType(cur_name, cur_symbol, id, image,cur_desc));
                         }
                     } catch (JSONException j) {
 
@@ -878,28 +879,10 @@ public class HomeFragment extends Fragment {
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent i;
-                    i = new Intent(getActivity(), CryptoInfo.class);
-                    switch (cur.getCurrencySymbol()) {
-                        case "BTC":
-                            CryptoInfo.CryptoIndex = CONSTANTS.BITCOIN_INDEX_JSON;
-                            break;
-                        case "ETH":
-                            CryptoInfo.CryptoIndex = CONSTANTS.ETHERUM_INDEX_JSON;
-                            break;
-                        case "USDT":
-                            CryptoInfo.CryptoIndex = CONSTANTS.TETHER_INDEX_JSON;
-                            break;
-                        case "XRP":
-                            CryptoInfo.CryptoIndex = CONSTANTS.XRP_INDEX_JSON;
-                            break;
-                        case "LTC":
-                            CryptoInfo.CryptoIndex = CONSTANTS.LITECOIN_INDEX_JSON;
-                            break;
-                        default:
-                            CryptoInfo.CryptoIndex = -1;
-                    }
-                    startActivity(i);
+                    Intent intent;
+                    intent = new Intent(getActivity(), CryptoInfo.class);
+                    intent.putExtra("index_crypto",SupportedCurrencies.indexOf(cur));
+                    startActivity(intent);
                 }
             });
             CryptoLogo.setImageBitmap(cur.getImage());

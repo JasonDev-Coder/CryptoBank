@@ -35,7 +35,6 @@ import okhttp3.Response;
 
 
 public class CryptoInfo extends AppCompatActivity {
-    static int CryptoIndex = -1;
     private LineChart myChart;
     private OkHttpClient okHttpClient = new OkHttpClient();
     private ProgressDialog progressDialog;
@@ -46,12 +45,16 @@ public class CryptoInfo extends AppCompatActivity {
     TextView About_Info;
     TextView crypto_name;
     ImageView crypto_logo;
+    Bundle extras;
+    CurrencyType currencyType;
     public ImageView backimg;
 
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bitcoin);
+        extras=this.getIntent().getExtras();
+        currencyType=HomeFragment.SupportedCurrencies.get(extras.getInt("index_crypto"));
         backimg = (ImageView) findViewById(R.id.backimg);
         max_market_value = findViewById(R.id.max_sup_val);
         circ_sup_view = findViewById(R.id.circ_sup_val);
@@ -80,43 +83,14 @@ public class CryptoInfo extends AppCompatActivity {
     }
 
     private void load_crypto_about() {
-        switch (CryptoIndex) {
-            case CONSTANTS.BITCOIN_INDEX_JSON:
-                About_View.setText("About Bitcoin");
-                crypto_name.setText("Bitcoin");
-                crypto_logo.setImageResource(R.drawable.bitcoin);
-                About_Info.setText(R.string.btc_info);
-                break;
-            case CONSTANTS.ETHERUM_INDEX_JSON:
-                About_View.setText("About Etherum");
-                crypto_name.setText("Etherum");
-                crypto_logo.setImageResource(R.drawable.ethereum);
-                About_Info.setText(R.string.eth_info);
-                break;
-            case CONSTANTS.TETHER_INDEX_JSON:
-                About_View.setText("About Tether");
-                crypto_name.setText("USD-T");
-                crypto_logo.setImageResource(R.drawable.tether);
-                About_Info.setText(R.string.usdt_info);
-                break;
-            case CONSTANTS.XRP_INDEX_JSON:
-                About_View.setText("About XRP");
-                crypto_name.setText("XRP");
-                crypto_logo.setImageResource(R.drawable.xrp);
-                About_Info.setText(R.string.xrp_info);
-                break;
-            case CONSTANTS.LITECOIN_INDEX_JSON:
-                About_View.setText("About Litecoin");
-                crypto_name.setText("Litecoin");
-                crypto_logo.setImageResource(R.drawable.litecoin);
-                About_Info.setText(R.string.ltc_info);
-                break;
-
-        }
+        About_View.setText("About "+currencyType.getCurrencyName());
+        crypto_name.setText(currencyType.getCurrencyName());
+        crypto_logo.setImageBitmap(currencyType.getImage());
+        About_Info.setText(currencyType.getDescription());
     }
 
     public void load_data() {
-        Request request = new Request.Builder().url(CONSTANTS.HIST_BPI_LINK).build();
+        Request request = new Request.Builder().url(CONSTANTS.getHistUrlFor(currencyType.getCurrencySymbol())).build();
         progressDialog.show();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
@@ -138,29 +112,28 @@ public class CryptoInfo extends AppCompatActivity {
         });
     }
 
+    private void parseHistResponse(String body) {
+        String s;
+        int x = 1;
+        ArrayList<Entry> yValues = new ArrayList<>();
+        try {
+            JSONObject jsonObject = new JSONObject(body);
+            JSONArray hist_data = jsonObject.getJSONArray("result");
+            for(int i=0;i<hist_data.length();i++){
+                JSONArray values=hist_data.getJSONArray(i);
+                double yvalue = values.getDouble(2);
+                yValues.add(new Entry(x++, (float) yvalue));
+            }
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        } catch (Exception e) {
 
+        }
+        load_chart(yValues);
+    }
     private void load_chart(ArrayList<Entry> yValues) {
         String cryp_name;
-        switch (CryptoIndex) {
-            case 0:
-                cryp_name = "Bitcoin";
-                break;
-            case 1:
-                cryp_name = "Etherum";
-                break;
-            case 2:
-                cryp_name = "Tether";
-                break;
-            case 3:
-                cryp_name = "Ripple";
-                break;
-            case 4:
-                cryp_name = "Litecoin";
-                break;
-            default:
-                cryp_name = null;
-                break;
-        }
+        cryp_name=currencyType.getCurrencyName();
         myChart = findViewById(R.id.linechart);
         //myChart.setOnChartGestureListener(MoreBTCActivity.this);
         //myChart.setOnChartValueSelectedListener(MoreBTCActivity.this);
@@ -187,27 +160,6 @@ public class CryptoInfo extends AppCompatActivity {
         myChart.invalidate();
     }
 
-    private void parseHistResponse(String body) {
-        String s;
-        int x = 1;
-        ArrayList<Entry> yValues = new ArrayList<>();
-        try {
-            JSONObject jsonObject = new JSONObject(body);
-            JSONObject bpis = jsonObject.getJSONObject("bpi");
-            Iterator<String> it = bpis.keys();
-            while (it.hasNext()) {
-                s = it.next();
-                double yvalue = bpis.getDouble(s);
-                yValues.add(new Entry(x++, (float) yvalue));
-            }
-        } catch (JSONException ex) {
-            ex.printStackTrace();
-        } catch (Exception e) {
-
-        }
-        load_chart(yValues);
-    }
-
     public void load_market_stats() {
         Request request = new Request.Builder().url(CONSTANTS.MARKET_UPDATES_URL2).build();
         okHttpClient.newCall(request).enqueue(new Callback() {
@@ -231,42 +183,28 @@ public class CryptoInfo extends AppCompatActivity {
     }
 
     private void parseMarketResponse(String body) {
-        String curr_name;
-        switch (CryptoIndex) {
-            case CONSTANTS.BITCOIN_INDEX_JSON:
-                curr_name = "Bitcoin";
-                break;
-            case CONSTANTS.ETHERUM_INDEX_JSON:
-                curr_name = "Etherum";
-                break;
-            case CONSTANTS.TETHER_INDEX_JSON:
-                curr_name = "USD-T";
-                break;
-            case CONSTANTS.XRP_INDEX_JSON:
-                curr_name = "XRP";
-                break;
-            case CONSTANTS.LITECOIN_INDEX_JSON:
-                curr_name = "Litecoin";
-                break;
-            default:
-                curr_name = null;
-        }
+        String curr_name=currencyType.getCurrencyName();
         try {
             JSONObject jsonObject = new JSONObject(body);
             JSONArray bpis = jsonObject.getJSONArray("data");
-            JSONObject crypto_info = bpis.getJSONObject(CryptoIndex);
-            double circ_cup_int = crypto_info.getDouble("circulating_supply");
-            double crypto_price = crypto_info.getJSONObject("quote").getJSONObject("USD").getDouble("price");
-            Double market_cap_double = circ_cup_int * crypto_price;
-            String max_market_val = crypto_info.getString("max_supply");
-            Log.d("MAX_MARKET", String.valueOf(max_market_val));
-            if (max_market_val == "null")
-                max_market_value.setText("No Cap");
-            else
-                max_market_value.setText(truncateNumber((float) crypto_info.getDouble("max_supply")) + " " + curr_name);
-            circ_sup_view.setText(truncateNumber((float) circ_cup_int) + " " + curr_name);
-            NumberFormat defaultFormat = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
-            market_cap_val.setText("US" + defaultFormat.format(market_cap_double));
+            JSONObject crypto_info;
+            for(int i=0;i<bpis.length();i++) {
+                if (bpis.getJSONObject(i).getString("symbol").equals(currencyType.getCurrencySymbol())){
+                    crypto_info=bpis.getJSONObject(i);
+                    double circ_cup_int = crypto_info.getDouble("circulating_supply");
+                    double crypto_price = crypto_info.getJSONObject("quote").getJSONObject("USD").getDouble("price");
+                    Double market_cap_double = circ_cup_int * crypto_price;
+                    String max_market_val = crypto_info.getString("max_supply");
+                    Log.d("MAX_MARKET", String.valueOf(max_market_val));
+                    if (max_market_val.equals("null"))
+                        max_market_value.setText("No Cap");
+                    else
+                        max_market_value.setText(truncateNumber((float) crypto_info.getDouble("max_supply")) + " " + curr_name);
+                    circ_sup_view.setText(truncateNumber((float) circ_cup_int) + " " + curr_name);
+                    NumberFormat defaultFormat = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
+                    market_cap_val.setText("US" + defaultFormat.format(market_cap_double));
+                }
+            }
         } catch (JSONException ex) {
             ex.printStackTrace();
         } catch (Exception e) {

@@ -9,17 +9,19 @@ public class CurrencyType {
     private String CurrencySymbol;
     private int id;
     private Bitmap image;
+    private String description;
     public CurrencyType(String currencyName, String currencySymbol,int id) {
         CurrencyName = currencyName;
         CurrencySymbol = currencySymbol;
         this.id=id;
     }
 
-    public CurrencyType(String currencyName, String currencySymbol, int id, Bitmap image) {
+    public CurrencyType(String currencyName, String currencySymbol, int id, Bitmap image,String description) {
         CurrencyName = currencyName;
         CurrencySymbol = currencySymbol;
         this.id=id;
         this.image=image;
+        this.description=description;
     }
 
 
@@ -52,6 +54,14 @@ public class CurrencyType {
     }
     public void setImage(Bitmap image) {
         this.image = image;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override

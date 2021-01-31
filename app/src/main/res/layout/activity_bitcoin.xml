@@ -69,7 +69,6 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/aboutview"
             android:layout_marginStart="10dp"
-            android:text="@string/btc_info"
             android:textColor="@color/white" />
 
         <TextView
