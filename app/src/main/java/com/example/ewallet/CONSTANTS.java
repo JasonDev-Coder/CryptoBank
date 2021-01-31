@@ -15,4 +15,12 @@ public class CONSTANTS {
        return url_crypto;
     }
     final static String HIST_BPI_LINK = "https://api.coindesk.com/v1/bpi/historical/close.json";
+    final static String WALLET_TYPES_URL="http://10.0.2.2/cryptoBank/public/Wallet_TypeController/getSupportedWallets";
+    final static String ADD_WALLET_URL="http://10.0.2.2/cryptoBank/public/WalletController/addWallet";
+    final static String LOAD_WALLETS_URL="http://10.0.2.2/cryptoBank/public/WalletController/getWallets";
+    final static String DELETE_WALLET_URL="http://10.0.2.2/cryptoBank/public/WalletController/DeleteWallet";
+    final static String SEND_MONEY_URL="http://10.0.2.2/cryptoBank/public/WalletController/sendMoney";
+    final static String GET_WALLET_ADDRESS_URL="http://10.0.2.2/cryptoBank/public/WalletController/getWalletAddress";
+    final static String LOG_IN_URL="http://10.0.2.2/cryptoBank/public/UserController/LogIn";
+    final static String SIGN_UP_URL="http://10.0.2.2/cryptoBank/public/UserController/createUser";
 }

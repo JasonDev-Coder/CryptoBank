@@ -80,7 +80,7 @@ public class SignIn extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             try {
-                url = new URL("http://10.0.2.2/cryptoBank/public/UserController/LogIn");
+                url = new URL(CONSTANTS.LOG_IN_URL);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 return "exception1";

@@ -119,7 +119,7 @@ public class SignUp extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             try {
-                url = new URL("http://10.0.2.2/cryptoBank/public/UserController/createUser");
+                url = new URL(CONSTANTS.SIGN_UP_URL);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 return "exception1";

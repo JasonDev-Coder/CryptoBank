@@ -294,7 +294,7 @@ public class SendFragment extends Fragment {
         @Override
         protected String doInBackground(String... params) {
             try {
-                url = new URL("http://10.0.2.2/cryptoBank/public/WalletController/sendMoney");
+                url = new URL(CONSTANTS.SEND_MONEY_URL);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 Log.d("CONNECTPHP", "error in connection1");

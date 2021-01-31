@@ -208,7 +208,7 @@ public class RequestFragment extends Fragment implements AdapterView.OnItemSelec
         @Override
         protected String doInBackground(String... params) {
             try {
-                url = new URL("http://10.0.2.2/cryptoBank/public/WalletController/getWalletAddress");
+                url = new URL(CONSTANTS.GET_WALLET_ADDRESS_URL);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 Log.d("CONNECTPHP", "error in connection1");
