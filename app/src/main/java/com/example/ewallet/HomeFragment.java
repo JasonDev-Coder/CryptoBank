@@ -164,7 +164,13 @@ public class HomeFragment extends Fragment {
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        CurrencyType currencyType = SupportedCurrencies.get(item.getItemId() - 1);
+                        CurrencyType currencyType = null;
+                        for (CurrencyType cur : SupportedCurrencies) {
+                            if (cur.getCurrencyName().equals(item.getTitle())) {
+                                currencyType = cur;
+                                break;
+                            }
+                        }
                         addWallet(currencyType.getCurrencyName(), currencyType.getImage(), currencyType.getCurrencySymbol(), "0.01");
                         return true;
                     }
@@ -189,7 +195,8 @@ public class HomeFragment extends Fragment {
         return v;
     }
 
-    private void addWallet(final String CurrencyName, final Bitmap image, final String currency_type, final String balance) {
+    private void addWallet(final String CurrencyName, final Bitmap image,
+                           final String currency_type, final String balance) {
         try {
             new AsyncAddWallet().execute(CurrencyName).get();/*here i put .get() just because i want the thread to wait until AsyncAddWallet finishes execution
                   so we don't enter the if statement before the boolean changes its value*/
@@ -202,7 +209,8 @@ public class HomeFragment extends Fragment {
 
     }
 
-    private void addWalletView(final String CurrencyName, Bitmap image, String currency_type, String balance) {   //customize and add wallet to layout
+    private void addWalletView(final String CurrencyName, Bitmap image, String
+            currency_type, String balance) {   //customize and add wallet to layout
 
         final View walletView = getLayoutInflater().inflate(R.layout.wallet, null, false);//inflate the xml layout which represents the wallet
         ImageView wallet_logo = (ImageView) walletView.findViewById(R.id.wallet_logo);                      //change logo according to currency chosen
@@ -742,11 +750,11 @@ public class HomeFragment extends Fragment {
                             JSONObject currency = currencies.getJSONObject(i);
                             String cur_name = currency.getString("type_name");
                             String cur_symbol = currency.getString("type_symbol");
-                            String cur_desc=currency.getString("type_description");
+                            String cur_desc = currency.getString("type_description");
                             int id = currency.getInt("type_id");
                             byte[] decodedString = Base64.decode(currency.getString("type_logo"), Base64.DEFAULT);
                             Bitmap image = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                            SupportedCurrencies.add(new CurrencyType(cur_name, cur_symbol, id, image,cur_desc));
+                            SupportedCurrencies.add(new CurrencyType(cur_name, cur_symbol, id, image, cur_desc));
                         }
                     } catch (JSONException j) {
 
@@ -881,7 +889,7 @@ public class HomeFragment extends Fragment {
                 public void onClick(View v) {
                     Intent intent;
                     intent = new Intent(getActivity(), CryptoInfo.class);
-                    intent.putExtra("index_crypto",SupportedCurrencies.indexOf(cur));
+                    intent.putExtra("index_crypto", SupportedCurrencies.indexOf(cur));
                     startActivity(intent);
                 }
             });

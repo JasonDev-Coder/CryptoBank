@@ -86,7 +86,7 @@
 
     <EditText
         android:id="@+id/address_edit_field"
-        android:layout_width="355dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/to_address"
         android:layout_marginLeft="5dp"
@@ -96,7 +96,7 @@
         android:inputType="text"
         android:textColor="@color/white"
         android:textColorHint="#FFBD00"
-        android:textSize="15sp" />
+        android:textSize="18sp" />
 
     <ImageButton
         android:id="@+id/qr_button"
