@@ -257,7 +257,7 @@ public class SendFragment extends Fragment {
             try {
                 value = Double.parseDouble(cryptoInput.getText().toString());
             } catch (Exception e) {
-                usdInput.setText("");
+
                 return;
             }
             double usd = HomeFragment.cryptoPrices.get(c.getCurrencySymbol()) * value;
@@ -266,7 +266,6 @@ public class SendFragment extends Fragment {
             try {
                 value = Double.parseDouble(usdInput.getText().toString());
             } catch (Exception e) {
-                cryptoInput.setText("");
                 return;
             }
             double crypto = value / HomeFragment.cryptoPrices.get(c.getCurrencySymbol());

@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,8 +19,11 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -44,6 +48,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TreeSet;
@@ -63,11 +68,18 @@ public class RecentFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private ImageView transaction_type;
-    private TextView date, transaction_amount, transaction_amount_usd, transaction_date, transaction_time;
-    private TreeSet<TransactionModel> Alltransactions = new TreeSet<>();
+    private TreeSet<TransactionModel> Alltransactions = new TreeSet<>(new Comparator<TransactionModel>() {
+        @Override
+        public int compare(TransactionModel o1, TransactionModel o2) {
+            if(o1.getDate().compareTo(o2.getDate())==0){
+                return Double.compare(o1.getAmount_us(),o2.getAmount_us());
+            }else
+                return o1.getDate().compareTo(o2.getDate());
+        }
+    });
     private LinearLayout transactionsView;
-
+    private Spinner choice_spinner;
+    private String []sortby={"Date","Amount"};
     public RecentFragment() {
         // Required empty public constructor
     }
@@ -107,6 +119,45 @@ public class RecentFragment extends Fragment {
         Date c = Calendar.getInstance().getTime();
 
         transactionsView = v.findViewById(R.id.transactions_layout);
+        choice_spinner=v.findViewById(R.id.sort_spinner);
+        ArrayAdapter<String> arrayAdapter=new ArrayAdapter<>(getContext(),android.R.layout.simple_list_item_1,sortby);
+        choice_spinner.setAdapter(arrayAdapter);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        choice_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ((TextView) parent.getChildAt(0)).setTextColor(Color.WHITE);
+                ((TextView) parent.getChildAt(0)).setTextSize(18);
+                transactionsView.removeAllViews();
+                if(position==0){
+                    Alltransactions=new TreeSet<>(new Comparator<TransactionModel>() {
+                        @Override
+                        public int compare(TransactionModel o1, TransactionModel o2) {
+                            if(Double.compare(o1.getAmount_us(),o2.getAmount_us())==0){
+                                return o1.getDate().compareTo(o2.getDate());
+                            }else return Double.compare(o1.getAmount_us(),o2.getAmount_us());
+                        }
+                    });
+
+                }else{
+                    Alltransactions=new TreeSet<>(new Comparator<TransactionModel>() {
+                        @Override
+                        public int compare(TransactionModel o1, TransactionModel o2) {
+                            if(o1.getDate().compareTo(o2.getDate())==0){
+                                return Double.compare(o1.getAmount_us(),o2.getAmount_us());
+                            }else
+                                return o1.getDate().compareTo(o2.getDate());
+                        }
+                    });
+                }
+                loadTransactions();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         loadTransactions();
         return v;
     }
@@ -123,11 +174,11 @@ public class RecentFragment extends Fragment {
                     transaction_logo.setColorFilter(getResources().getColor(R.color.green));
                 } else transaction_logo.setImageResource(R.drawable.receive);
                 TextView crypto_amount = cardView.findViewById(R.id.transaction_amount_value);
-                model.setAmount_crypto(model.getAmount_crypto().setScale(2, BigDecimal.ROUND_DOWN));
+                model.setAmount_crypto(model.getAmount_crypto().setScale(10, BigDecimal.ROUND_DOWN));
                 DecimalFormat df = new DecimalFormat();
                 df.setMaximumFractionDigits(10);
 
-                df.setMinimumFractionDigits(3);
+                df.setMinimumFractionDigits(5);
 
                 df.setGroupingUsed(false);
 
@@ -305,28 +356,6 @@ public class RecentFragment extends Fragment {
         protected void onPostExecute(String result) {
             pdLoading.cancel();
         }
-
-    }
-
-    public String truncateNumber(float floatNumber) {
-        long million = 1000000L;
-        long billion = 1000000000L;
-        long trillion = 1000000000000L;
-        long number = Math.round(floatNumber);
-        if ((number >= million) && (number < billion)) {
-            float fraction = calculateFraction(number, million);
-            return Float.toString(fraction) + "M";
-        } else if ((number >= billion) && (number < trillion)) {
-            float fraction = calculateFraction(number, billion);
-            return Float.toString(fraction) + "B";
-        }
-        return Long.toString(number);
-    }
-
-    public float calculateFraction(long number, long divisor) {
-        long truncate = (number * 10L + (divisor / 2L)) / divisor;
-        float fraction = (float) truncate * 0.10F;
-        return fraction;
 
     }
 }

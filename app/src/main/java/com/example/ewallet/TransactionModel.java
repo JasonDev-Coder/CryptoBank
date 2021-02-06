@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 
-public class TransactionModel implements Comparable<TransactionModel> {
+public class TransactionModel{
     enum typeTransaction{
         SEND,RECEIVE;
     }
@@ -84,11 +84,4 @@ public class TransactionModel implements Comparable<TransactionModel> {
         this.type = type;
     }
 
-    @Override
-    public int compareTo(TransactionModel o) {
-        if(date.compareTo(o.getDate())==0){
-            return o.getAmount_crypto().compareTo(amount_crypto);
-        }else
-            return o.getDate().compareTo(date);
-    }
 }
