@@ -59,7 +59,7 @@ public class HelpFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     private EditText messageEditText;
-    private Button sendMessage;
+    private Button sendMessage,logOut;
 
     public HelpFragment() {
         // Required empty public constructor
@@ -109,6 +109,15 @@ public class HelpFragment extends Fragment {
                     return;
                 }
                 new HelpMsg().execute(help_message);
+            }
+        });
+
+        logOut = (Button)v.findViewById(R.id.logOut);
+        logOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new LogOut().execute();
+                startActivity(new Intent(getActivity(),SignIn.class));
             }
         });
         return v;
@@ -275,5 +284,13 @@ public class HelpFragment extends Fragment {
             }
         }
 
+    }
+
+    private class LogOut extends AsyncTask<String, String, String>{
+
+        @Override
+        protected String doInBackground(String... strings) {
+            return null;
+        }
     }
 }

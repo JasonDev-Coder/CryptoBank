@@ -101,7 +101,7 @@ public class QrScanner extends AppCompatActivity {
                             Intent data = new Intent();
                             data.putExtra("QRaddress", qrCodes.valueAt(0).displayValue);
                             setResult(RESULT_OK, data);
-                            finish();
+                            backHome();
                         }
                     });
                 }
