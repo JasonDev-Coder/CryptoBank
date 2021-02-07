@@ -42,6 +42,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -116,8 +117,16 @@ public class HelpFragment extends Fragment {
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new LogOut().execute();
+                try {
+                    new LogOut().execute().get();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 startActivity(new Intent(getActivity(),SignIn.class));
+                if(getActivity()!=null)
+                    getActivity().finish();
             }
         });
         return v;
@@ -287,9 +296,53 @@ public class HelpFragment extends Fragment {
     }
 
     private class LogOut extends AsyncTask<String, String, String>{
+        HttpURLConnection conn;
+        URL url = null;
+        public static final int CONNECTION_TIMEOUT = 10000;
+        public static final int READ_TIMEOUT = 15000;
 
         @Override
         protected String doInBackground(String... strings) {
+            try {
+                url = new URL(CONSTANTS.LOG_OUT_URL);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                Log.d("CONNECTPHP", "error in connection1");
+            }
+            try {
+                //here we will setup HttpURLConnection to connect with php scripts to send and receive data
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(READ_TIMEOUT);
+                conn.setConnectTimeout(CONNECTION_TIMEOUT);
+                conn.setRequestMethod("POST");//the request method must correspond with the written php code
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                String session_id = null;
+                if (getActivity() != null) {//We get the stores session id to use the current session
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                    session_id = prefs.getString("session_id", null);
+                    Log.v("sessionid_id", session_id);
+                }
+                //append parameters to url so that the script uses them
+                Uri.Builder builder = new Uri.Builder()
+                        .appendQueryParameter("session_id", session_id);
+
+                String query = builder.build().getEncodedQuery();
+                OutputStream os;
+                os = conn.getOutputStream();//Open connection
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                if (query != null)
+                    writer.write(query);//write the formed query to the output stream
+                writer.flush();
+                writer.close();
+                os.close();
+                conn.connect();
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                Log.d("CONNECTPHP", Arrays.toString(e1.getStackTrace()));
+            }finally {
+                conn.disconnect();
+            }
             return null;
         }
     }

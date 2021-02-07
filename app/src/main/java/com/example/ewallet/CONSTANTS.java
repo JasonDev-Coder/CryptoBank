@@ -22,4 +22,6 @@ public class CONSTANTS {
     final static String GET_WALLET_ADDRESS_URL="http://10.0.2.2/cryptoBank/public/WalletController/getWalletAddress";
     final static String LOG_IN_URL="http://10.0.2.2/cryptoBank/public/UserController/LogIn";
     final static String SIGN_UP_URL="http://10.0.2.2/cryptoBank/public/UserController/createUser";
+    final static String LOG_OUT_URL="http://10.0.2.2/cryptoBank/public/UserController/logOut";
+    final static String TRANSACTIONS_URL="http://10.0.2.2/cryptoBank/public/TransactionController/getTransactions";
 }

@@ -71,10 +71,10 @@ public class RecentFragment extends Fragment {
     private TreeSet<TransactionModel> Alltransactions = new TreeSet<>(new Comparator<TransactionModel>() {
         @Override
         public int compare(TransactionModel o1, TransactionModel o2) {
-            if(o1.getDate().compareTo(o2.getDate())==0){
-                return Double.compare(o1.getAmount_us(),o2.getAmount_us());
+            if(o2.getDate().compareTo(o1.getDate())==0){
+                return Double.compare(o2.getAmount_us(),o1.getAmount_us());
             }else
-                return o1.getDate().compareTo(o2.getDate());
+                return o2.getDate().compareTo(o1.getDate());
         }
     });
     private LinearLayout transactionsView;
@@ -133,9 +133,10 @@ public class RecentFragment extends Fragment {
                     Alltransactions=new TreeSet<>(new Comparator<TransactionModel>() {
                         @Override
                         public int compare(TransactionModel o1, TransactionModel o2) {
-                            if(Double.compare(o1.getAmount_us(),o2.getAmount_us())==0){
-                                return o1.getDate().compareTo(o2.getDate());
-                            }else return Double.compare(o1.getAmount_us(),o2.getAmount_us());
+                            if(o2.getDate().compareTo(o1.getDate())==0){
+                                return (int)(o2.getAmount_us()-o1.getAmount_us());
+                            }else
+                                return o2.getDate().compareTo(o1.getDate());
                         }
                     });
 
@@ -143,10 +144,10 @@ public class RecentFragment extends Fragment {
                     Alltransactions=new TreeSet<>(new Comparator<TransactionModel>() {
                         @Override
                         public int compare(TransactionModel o1, TransactionModel o2) {
-                            if(o1.getDate().compareTo(o2.getDate())==0){
-                                return Double.compare(o1.getAmount_us(),o2.getAmount_us());
-                            }else
-                                return o1.getDate().compareTo(o2.getDate());
+                            if(Double.compare(o2.getAmount_us(),o1.getAmount_us())==0){
+                                return o2.getDate().compareTo(o1.getDate());
+                            }else return Double.compare(o2.getAmount_us(),o1.getAmount_us());
+
                         }
                     });
                 }
@@ -232,7 +233,7 @@ public class RecentFragment extends Fragment {
         @Override
         protected String doInBackground(String... params) {
             try {
-                url = new URL("http://10.0.2.2/cryptoBank/public/TransactionController/getTransactions");
+                url = new URL(CONSTANTS.TRANSACTIONS_URL);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 Log.d("CONNECTPHP", "error in connection1");
