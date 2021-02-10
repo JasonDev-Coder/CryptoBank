@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
+//when user clicks on an transaction he can get a bottom sheet that will containt sender and receiver address
 public class TransactionBottomSheet extends BottomSheetDialogFragment {
     public TransactionBottomSheet(String from_addr,String to_addr){
         this.fromAddress=from_addr;

@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(int i, @Nullable AnimatedBottomBar.Tab tab, int i1, @NotNull AnimatedBottomBar.Tab tab1) {
                 Fragment fragment = null;
-                switch (tab1.getId()) {
+                switch (tab1.getId()) {//depending on the id load the fragment that the user chooses
                     case R.id.tab_req:
                         fragment = new RequestFragment();
                         break;

@@ -109,7 +109,7 @@ public class HelpFragment extends Fragment {
                     Toast.makeText(getActivity(), "Please enter a message", Toast.LENGTH_LONG).show();
                     return;
                 }
-                new HelpMsg().execute(help_message);
+                new HelpMsg().execute(help_message);//here we make calls to access our php scripts
             }
         });
 
@@ -118,13 +118,13 @@ public class HelpFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 try {
-                    new LogOut().execute().get();
+                    new LogOut().execute().get();//call php script to destroy session
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                startActivity(new Intent(getActivity(),SignIn.class));
+                startActivity(new Intent(getActivity(),SignIn.class));//on log out we return to log in screen
                 if(getActivity()!=null)
                     getActivity().finish();
             }
@@ -152,7 +152,7 @@ public class HelpFragment extends Fragment {
         @Override
         protected String doInBackground(String... params) {
             try {
-                url = new URL("http://10.0.2.2/cryptoBank/public/MessageController/sendMessage");
+                url = new URL(CONSTANTS.MESSAGE_URL);//the link send message method of the message controller
             } catch (MalformedURLException e) {
                 e.printStackTrace();
                 Log.d("CONNECTPHP", "error in connection1");
@@ -170,8 +170,7 @@ public class HelpFragment extends Fragment {
                 String session_id = null;
                 if (getActivity() != null) {//We get the stores session id to use the current session
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                    session_id = prefs.getString("session_id", null);
-                    Log.v("SESS_ID", session_id);
+                    session_id = prefs.getString("session_id", null);//we get the current session of the user
                 }
                 //append parameters to url so that the script uses them
                 Uri.Builder builder = new Uri.Builder()
@@ -194,6 +193,7 @@ public class HelpFragment extends Fragment {
             }
 
             try {
+                //here we want to read the response
                 int response_code = conn.getResponseCode();
                 if (response_code == HttpURLConnection.HTTP_OK) {
                     InputStream input = conn.getInputStream();
@@ -244,8 +244,8 @@ public class HelpFragment extends Fragment {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
-
-            if (result.equalsIgnoreCase("true")) {
+            //depending on the message the interaction with the user will happen
+            if (result.equalsIgnoreCase("true")) {//true display a success message for user
                 builder.setMessage("Thank you for contacting us !\n Please wait 24 hours before sending another  message.");
                 builder.setCancelable(false);
                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -266,7 +266,7 @@ public class HelpFragment extends Fragment {
                     }
                 }, 86400000);
 
-            } else if (result.equalsIgnoreCase("false")) {
+            } else if (result.equalsIgnoreCase("false")) {//display a failed message
                 builder.setMessage("Data insertion failed");
                 builder.setCancelable(false);
                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -278,7 +278,7 @@ public class HelpFragment extends Fragment {
                 AlertDialog dialog = builder.create();
                 dialog.show();
 
-            } else {
+            } else {//display a failed message
                 builder.setMessage("Unknown error");
                 builder.setCancelable(false);
                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {

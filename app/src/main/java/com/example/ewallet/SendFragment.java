@@ -150,7 +150,7 @@ public class SendFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (!usdInput.isFocused())
+                if (!usdInput.isFocused())//if we are writing amount in crypto
                     Convert(true);
 
             }
@@ -168,7 +168,7 @@ public class SendFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (!cryptoInput.isFocused())
+                if (!cryptoInput.isFocused())//if we are writing in usd amount we convert it to crypto
                     Convert(false);
             }
 
@@ -181,7 +181,7 @@ public class SendFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getActivity(), QrScanner.class);
-                startActivity(i);
+                startActivityForResult(i,1);
             }
 
         });
@@ -197,7 +197,6 @@ public class SendFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        getActivity();
         if (resultCode == Activity.RESULT_OK) {
             if (data.hasExtra("QRaddress")) {
                 send_address.setText(data.getExtras().getString("QRaddress"));
@@ -209,7 +208,7 @@ public class SendFragment extends Fragment {
         String walletName = (String) spinner_choice.getSelectedItem();//depending on the wallet name we will query the wallet type
         Log.v("WALLETNAME", walletName);
         String amount_send_crypto,amount_send_us;
-        try {
+        try {//parse the amounts
             amount_send_crypto = Double.toString(Double.parseDouble(cryptoInput.getText().toString()));//get the send amount parse it tp double to make sure only numbers are entered then parse it string to send it in post
             amount_send_us=Double.toString(Double.parseDouble(usdInput.getText().toString()));
         } catch (NumberFormatException e1) {
@@ -227,7 +226,7 @@ public class SendFragment extends Fragment {
         }
         String sendAddress = send_address.getText().toString();//get the address to send to
         Log.v("WALLETADDR",sendAddress);
-        if (sendAddress.isEmpty()) {
+        if (sendAddress.isEmpty()) {//tell the user about an error
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setMessage("Input an address");
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -240,7 +239,7 @@ public class SendFragment extends Fragment {
             dialog.show();
         }
         else
-            new AsyncSend().execute(walletName, amount_send_crypto,amount_send_us, sendAddress);
+            new AsyncSend().execute(walletName, amount_send_crypto,amount_send_us, sendAddress);//execute php script to send an amount
     }
     private void Convert(boolean cryoToUs) {
         String Cryp_String_spinner = (String) spinner_choice.getSelectedItem();
@@ -253,7 +252,7 @@ public class SendFragment extends Fragment {
         }
         double value = 0;
 
-        if (cryoToUs) {
+        if (cryoToUs) {//converts from crypto to us dollar
             try {
                 value = Double.parseDouble(cryptoInput.getText().toString());
             } catch (Exception e) {
@@ -262,13 +261,13 @@ public class SendFragment extends Fragment {
             }
             double usd = HomeFragment.cryptoPrices.get(c.getCurrencySymbol()) * value;
             usdInput.setText(Double.toString(usd));
-        } else {
+        } else {//the reverse
             try {
                 value = Double.parseDouble(usdInput.getText().toString());
             } catch (Exception e) {
                 return;
             }
-            double crypto = value / HomeFragment.cryptoPrices.get(c.getCurrencySymbol());
+            double crypto = value / HomeFragment.cryptoPrices.get(c.getCurrencySymbol());//get the crypto that we loaded from the homefragment
             DecimalFormat df = new DecimalFormat("#");
             df.setMaximumFractionDigits(8);
             cryptoInput.setText(String.format("%.8f", crypto));
@@ -322,7 +321,7 @@ public class SendFragment extends Fragment {
                         .appendQueryParameter("amount_crypto", params[1])//amount to send
                         .appendQueryParameter("amount_us", params[2])//amount to send
                         .appendQueryParameter("recv_addr", params[3])//receiver address
-                        .appendQueryParameter("session_id", session_id);
+                        .appendQueryParameter("session_id", session_id);//always supply the sessionid
 
                 String query = builder.build().getEncodedQuery();
                 OutputStream os;
@@ -391,7 +390,7 @@ public class SendFragment extends Fragment {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
-
+            //display a message to the user depending on the returned value in the json
             if (result.equalsIgnoreCase("true")) {
                 builder.setMessage("Transaction is on the way!");
                 builder.setCancelable(false);

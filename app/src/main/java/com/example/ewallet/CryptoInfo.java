@@ -54,7 +54,9 @@ public class CryptoInfo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bitcoin);
         extras=this.getIntent().getExtras();
+        //get the currency on which we clicked
         currencyType=HomeFragment.SupportedCurrencies.get(extras.getInt("index_crypto"));
+        //get the widget objects from xml file
         backimg = (ImageView) findViewById(R.id.backimg);
         max_market_value = findViewById(R.id.max_sup_val);
         circ_sup_view = findViewById(R.id.circ_sup_val);
@@ -63,6 +65,7 @@ public class CryptoInfo extends AppCompatActivity {
         About_Info = findViewById(R.id.desc_crypto);
         crypto_name=findViewById(R.id.cryptotxt);
         crypto_logo=findViewById(R.id.cryptoLogo);
+        //create a process dialog to use when making a request
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("BPI Loading");
         progressDialog.setMessage("Please wait");
@@ -83,6 +86,7 @@ public class CryptoInfo extends AppCompatActivity {
     }
 
     private void load_crypto_about() {
+        //put the name,logo and description of the chosen crypto
         About_View.setText("About "+currencyType.getCurrencyName());
         crypto_name.setText(currencyType.getCurrencyName());
         crypto_logo.setImageBitmap(currencyType.getImage());
@@ -90,6 +94,7 @@ public class CryptoInfo extends AppCompatActivity {
     }
 
     public void load_data() {
+        //make a request to get the data for the chosen crypto to load it in the graph
         Request request = new Request.Builder().url(CONSTANTS.getHistUrlFor(currencyType.getCurrencySymbol())).build();
         progressDialog.show();
         okHttpClient.newCall(request).enqueue(new Callback() {
@@ -113,16 +118,15 @@ public class CryptoInfo extends AppCompatActivity {
     }
 
     private void parseHistResponse(String body) {
-        String s;
         int x = 1;
         ArrayList<Entry> yValues = new ArrayList<>();
         try {
-            JSONObject jsonObject = new JSONObject(body);
+            JSONObject jsonObject = new JSONObject(body);//get the json response
             JSONArray hist_data = jsonObject.getJSONArray("result");
             for(int i=0;i<hist_data.length();i++){
                 JSONArray values=hist_data.getJSONArray(i);
-                double yvalue = values.getDouble(2);
-                yValues.add(new Entry(x++, (float) yvalue));
+                double yvalue = values.getDouble(2);//get the price from the json array
+                yValues.add(new Entry(x++, (float) yvalue));//add a new entry for the yValues
             }
         } catch (JSONException ex) {
             ex.printStackTrace();
@@ -135,15 +139,13 @@ public class CryptoInfo extends AppCompatActivity {
         String cryp_name;
         cryp_name=currencyType.getCurrencyName();
         myChart = findViewById(R.id.linechart);
-        //myChart.setOnChartGestureListener(MoreBTCActivity.this);
-        //myChart.setOnChartValueSelectedListener(MoreBTCActivity.this);
         myChart.getDescription().setEnabled(false);
-        myChart.getAxisLeft().setTextColor(Color.rgb(255, 189, 0));
+        myChart.getAxisLeft().setTextColor(Color.rgb(255, 189, 0));//color the axis
         myChart.getAxisRight().setTextColor(Color.rgb(255, 189, 0));
         myChart.getXAxis().setTextColor(Color.rgb(255, 189, 0));
         myChart.setBackgroundColor(Color.rgb(44, 44, 83));
         myChart.getLegend().setTextColor(Color.WHITE);
-        myChart.setDragEnabled(false);
+        myChart.setDragEnabled(false);//cant drag or scale on the graph
         myChart.setScaleEnabled(false);
         LineDataSet set1 = new LineDataSet(yValues, cryp_name+" variation");
         set1.setColor(Color.rgb(255, 189, 0));
@@ -161,6 +163,7 @@ public class CryptoInfo extends AppCompatActivity {
     }
 
     public void load_market_stats() {
+        //load data about the crypto such as market cap...
         Request request = new Request.Builder().url(CONSTANTS.MARKET_UPDATES_URL2).build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
@@ -186,22 +189,22 @@ public class CryptoInfo extends AppCompatActivity {
         String curr_name=currencyType.getCurrencyName();
         try {
             JSONObject jsonObject = new JSONObject(body);
-            JSONArray bpis = jsonObject.getJSONArray("data");
+            JSONArray bpis = jsonObject.getJSONArray("data");//we get the array which contains the data we need labeled by 'data'
             JSONObject crypto_info;
-            for(int i=0;i<bpis.length();i++) {
-                if (bpis.getJSONObject(i).getString("symbol").equals(currencyType.getCurrencySymbol())){
+            for(int i=0;i<bpis.length();i++) {//loop inside this array to find the data of crypto we need
+                if (bpis.getJSONObject(i).getString("symbol").equals(currencyType.getCurrencySymbol())){//when we find our crypto
+                    //get the required info to display from the json object
                     crypto_info=bpis.getJSONObject(i);
                     double circ_cup_int = crypto_info.getDouble("circulating_supply");
                     double crypto_price = crypto_info.getJSONObject("quote").getJSONObject("USD").getDouble("price");
                     Double market_cap_double = circ_cup_int * crypto_price;
                     String max_market_val = crypto_info.getString("max_supply");
-                    Log.d("MAX_MARKET", String.valueOf(max_market_val));
                     if (max_market_val.equals("null"))
                         max_market_value.setText("No Cap");
                     else
                         max_market_value.setText(truncateNumber((float) crypto_info.getDouble("max_supply")) + " " + curr_name);
                     circ_sup_view.setText(truncateNumber((float) circ_cup_int) + " " + curr_name);
-                    NumberFormat defaultFormat = NumberFormat.getCurrencyInstance(new Locale("en", "US"));
+                    NumberFormat defaultFormat = NumberFormat.getCurrencyInstance(new Locale("en", "US"));//format the market cap to display it in a currency formatted way
                     market_cap_val.setText("US" + defaultFormat.format(market_cap_double));
                 }
             }
@@ -212,7 +215,7 @@ public class CryptoInfo extends AppCompatActivity {
         }
     }
 
-    public String truncateNumber(float floatNumber) {
+    public String truncateNumber(float floatNumber) {//a function to turn any big number into a string containing symbols M or B or K for million billion thousand
         long million = 1000000L;
         long billion = 1000000000L;
         long trillion = 1000000000000L;

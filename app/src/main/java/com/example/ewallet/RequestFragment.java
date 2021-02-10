@@ -153,7 +153,7 @@ public class RequestFragment extends Fragment implements AdapterView.OnItemSelec
 
         }
     }
-
+    //function to generate QR from the wallet address
     public void generateQR() {
         float dip = 300f;
         Resources r = getResources();
@@ -172,7 +172,7 @@ public class RequestFragment extends Fragment implements AdapterView.OnItemSelec
             e.printStackTrace();
         }
     }
-
+    //on click button copy the selected text
     public void copyToClipBoard() {
         ClipboardManager clipboard = (ClipboardManager) Objects.requireNonNull(getActivity()).getSystemService(Context.CLIPBOARD_SERVICE);
         String wallet_address = address_view.getText().toString();
@@ -193,7 +193,7 @@ public class RequestFragment extends Fragment implements AdapterView.OnItemSelec
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
-
+    //load the chosen wallet address
     private class GetWalletAddress extends AsyncTask<String, String, String> {
         HttpURLConnection conn;
         URL url = null;

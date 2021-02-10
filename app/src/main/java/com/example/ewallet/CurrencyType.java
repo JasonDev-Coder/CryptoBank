@@ -1,15 +1,14 @@
 package com.example.ewallet;
 
 import android.graphics.Bitmap;
-import android.media.Image;
-import android.widget.ImageView;
 
+// a plain java class that will be used to load cryptocurrencies data from the db into objects of this type
 public class CurrencyType {
-    private String CurrencyName;
-    private String CurrencySymbol;
+    private String CurrencyName;//nmae
+    private String CurrencySymbol;//symbol
     private int id;
-    private Bitmap image;
-    private String description;
+    private Bitmap image;//image of the crypto
+    private String description;//description of the crypto
     public CurrencyType(String currencyName, String currencySymbol,int id) {
         CurrencyName = currencyName;
         CurrencySymbol = currencySymbol;

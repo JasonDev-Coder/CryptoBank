@@ -100,7 +100,7 @@ public class QrScanner extends AppCompatActivity {
                             textView.setText(qrCodes.valueAt(0).displayValue);
                             Intent data = new Intent();
                             data.putExtra("QRaddress", qrCodes.valueAt(0).displayValue);
-                            setResult(RESULT_OK, data);
+                            setResult(RESULT_OK, data);//set the result for the parent intent to use
                             backHome();
                         }
                     });

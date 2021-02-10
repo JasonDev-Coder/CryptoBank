@@ -96,7 +96,7 @@ public class HomeFragment extends Fragment {
     private Button home, send, recent, receive;
     private ArrayList<HashMap<String, String>> walletListMaps = new ArrayList<>();//store the wallets of the user here
     public static HashMap<String, Double> cryptoPrices = new HashMap<>();//save crypto prices here
-    public static ArrayList<CurrencyType> SupportedCurrencies = new ArrayList<>();
+    public static ArrayList<CurrencyType> SupportedCurrencies = new ArrayList<>();//save all the cryptos from our DB here
     FragmentManager fragmentManager;
 
 
@@ -148,30 +148,30 @@ public class HomeFragment extends Fragment {
         dialog.setMessage("Loading...");
         dialog.setTitle("Loading Wallets");
         dialog.show();
-        noWallets = (TextView) v.findViewById(R.id.noWallets);
-        cryptoCardsLayout = v.findViewById(R.id.cards_layout);
-        walletList = (LinearLayout) v.findViewById(R.id.wallets);
+        noWallets = (TextView) v.findViewById(R.id.noWallets);// when the user have no wallets this message is displayed
+        cryptoCardsLayout = v.findViewById(R.id.cards_layout);//layout where we will load the cryptos that the app supports
+        walletList = (LinearLayout) v.findViewById(R.id.wallets);//layout  where we will load the wallets of user
 
-        new GetCurrencies().execute();
+        new GetCurrencies().execute();//execute the php script that will load the currencies from the database
         ImageView addWalletMenu = (ImageView) v.findViewById(R.id.addWallet_menu);
         addWalletMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 PopupMenu popup = new PopupMenu(getActivity(), v);
                 for (CurrencyType currency : SupportedCurrencies) {
-                    popup.getMenu().add(0, currency.getId(), 0, currency.getCurrencyName());
+                    popup.getMenu().add(0, currency.getId(), 0, currency.getCurrencyName());//add the names the currencies in the popup and give them ids same as their db id
                 }
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         CurrencyType currencyType = null;
                         for (CurrencyType cur : SupportedCurrencies) {
-                            if (cur.getCurrencyName().equals(item.getTitle())) {
+                            if (cur.getCurrencyName().equals(item.getTitle())) {//get the corresponding currency object
                                 currencyType = cur;
                                 break;
                             }
                         }
-                        addWallet(currencyType.getCurrencyName(), currencyType.getImage(), currencyType.getCurrencySymbol(), "0.01");
+                        addWallet(currencyType.getCurrencyName(), currencyType.getImage(), currencyType.getCurrencySymbol(), "0.01");//add the wallet (default value 0.01 for testing purposes)
                         return true;
                     }
                 });
@@ -183,7 +183,7 @@ public class HomeFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {//reload everything that contains live values
-                new LoadWallets().execute();
+                new LoadWallets().execute();//reload the wallets
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -198,6 +198,7 @@ public class HomeFragment extends Fragment {
     private void addWallet(final String CurrencyName, final Bitmap image,
                            final String currency_type, final String balance) {
         try {
+            //call the php script to add the wallet in order to insert it in the database
             new AsyncAddWallet().execute(CurrencyName).get();/*here i put .get() just because i want the thread to wait until AsyncAddWallet finishes execution
                   so we don't enter the if statement before the boolean changes its value*/
         } catch (Exception e) {
@@ -221,6 +222,7 @@ public class HomeFragment extends Fragment {
                 removeWalletView(walletView, CurrencyName);                                                                //remove view from the layout
             }
         });
+        //load the required info of a wallet such as balance crypto and us logo name
         TextView wallet_balance = (TextView) walletView.findViewById(R.id.wallet_balance);
         TextView wallet_balance_text = (TextView) walletView.findViewById(R.id.wallet_currency_name);
         wallet_logo.setImageBitmap(image);
@@ -232,21 +234,22 @@ public class HomeFragment extends Fragment {
         double current_usd_balance = 0;
         if (cryptoPrices.get(currency_type) != null)
             current_usd_balance = current_crypto_balance * cryptoPrices.get(currency_type);
+        //round the balance 3 numbers after the point
         current_usd_balance = Math.round(current_usd_balance * 1000) / 1000.0;
         wallet_usd_balance.setText(Double.toString(current_usd_balance));
-        noWallets.setText(null);
-        walletList.addView(walletView);
+        noWallets.setText(null);//remove the add wallet text
+        walletList.addView(walletView);//add the wallet to the layout
     }
 
     private void loadWallets() {
         Log.v("WALLETPRICE", cryptoPrices.size() + "");
         if (!walletListMaps.isEmpty()) {//walletListMaps will contain hash maps  containing the user's wallets
-            walletList.removeAllViews();
+            walletList.removeAllViews();//remove view so that if we refresh we dont get each time more wallets
             for (HashMap<String, String> wallet : walletListMaps) {
                 String wallet_name = wallet.get("type_name");
                 String wallet_balance = wallet.get("balance");
                 String wallet_type_symbol = wallet.get("type_symbol");
-                byte[] decodedString = Base64.decode(wallet.get("type_logo"), Base64.DEFAULT);
+                byte[] decodedString = Base64.decode(wallet.get("type_logo"), Base64.DEFAULT);//decode the BLOB sent from the php
                 Bitmap image = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                 addWalletView(wallet_name, image, wallet_type_symbol, wallet_balance);
             }
@@ -262,11 +265,11 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 try {
-                    new DeleteWallets().execute(CurrencyName).get();
+                    new DeleteWallets().execute(CurrencyName).get();//call script to delete wallet from DB
                 } catch (Exception e) {
                     Log.v("DeleteWallet", Arrays.toString(e.getStackTrace()));
                 }
-                if (deleteWalletSuccess) {
+                if (deleteWalletSuccess) {//if the boolean is true delete the wallet from the layout
                     walletList.removeView(v);
                     deleteWalletSuccess = false;
                 }
@@ -321,7 +324,7 @@ public class HomeFragment extends Fragment {
                 String session_id = null;
                 if (getActivity() != null) {//We get the stored session id to use the current session
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                    session_id = prefs.getString("session_id", null);
+                    session_id = prefs.getString("session_id", null);//we always send the session id to know which user we are controlling
                     Log.d("sessionid_id", session_id);
                 }
                 //append parameters to url so that the script uses them
@@ -522,21 +525,19 @@ public class HomeFragment extends Fragment {
                 JSONObject json = new JSONObject(result);
                 Log.v("JSONresponse", result);
                 int success = json.getInt("success");
-                if (success == 1) {
+                if (success == 1) {//if all went good we can add the current wallets of the user
                     walletListMaps.clear();
                     JSONArray walletsArray = json.getJSONArray("wallets");
-                    Log.d("wallets", walletsArray.toString());
                     for (int i = 0; i < walletsArray.length(); i++) {
-                        JSONObject jsonWallet = walletsArray.getJSONObject(i);
+                        JSONObject jsonWallet = walletsArray.getJSONObject(i);//get the wallet array
                         HashMap<String, String> walletMap = new HashMap<>();
                         Iterator<String> walletIterator = jsonWallet.keys();
-                        while (walletIterator.hasNext()) {
+                        while (walletIterator.hasNext()) {//iterate through the keys and put each key and its value as
                             String key = walletIterator.next();
-                            walletMap.put(key, jsonWallet.getString(key));
+                            walletMap.put(key, jsonWallet.getString(key));//put in each hashmap logo name balance
                         }
-                        walletListMaps.add(walletMap);
+                        walletListMaps.add(walletMap);//save each hashmap in the array
                     }
-                    Log.v("WALLETTT", walletListMaps.size() + "");
                     loadWallets();
                 }
 
@@ -621,7 +622,7 @@ public class HomeFragment extends Fragment {
                         Log.v("JSONresponse", result.toString());
                         int success = json.getInt("success");
                         if (success == 1) {
-                            deleteWalletSuccess = true;
+                            deleteWalletSuccess = true;//if success is 1 then the boolean turns into true which will let us delete the wallet layout from the UI
                         }
                     } catch (JSONException e1) {
                         Log.v("JSonError", Arrays.toString(e1.getStackTrace()));
@@ -744,17 +745,17 @@ public class HomeFragment extends Fragment {
                 if (success == 1) {
                     try {
                         JSONObject jsonResponse = new JSONObject(result);
-                        SupportedCurrencies.clear();
+                        SupportedCurrencies.clear();//clear so that on refresh the layouts dont double up
                         JSONArray currencies = jsonResponse.getJSONArray("supported_wallets");
                         for (int i = 0; i < currencies.length(); i++) {
                             JSONObject currency = currencies.getJSONObject(i);
-                            String cur_name = currency.getString("type_name");
+                            String cur_name = currency.getString("type_name");//get from the json the name symbol description id and logo
                             String cur_symbol = currency.getString("type_symbol");
                             String cur_desc = currency.getString("type_description");
                             int id = currency.getInt("type_id");
                             byte[] decodedString = Base64.decode(currency.getString("type_logo"), Base64.DEFAULT);
                             Bitmap image = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                            SupportedCurrencies.add(new CurrencyType(cur_name, cur_symbol, id, image, cur_desc));
+                            SupportedCurrencies.add(new CurrencyType(cur_name, cur_symbol, id, image, cur_desc));//load each queried currency into aan object of type CurrencyType for better structured code
                         }
                     } catch (JSONException j) {
 
@@ -764,7 +765,7 @@ public class HomeFragment extends Fragment {
                 Log.v("JSonError", Arrays.toString(e1.getStackTrace()));
                 e1.printStackTrace();
             }
-            new loadCryptoPrices().execute();
+            new loadCryptoPrices().execute();//after finishing loading we can now load their current prices
         }
     }
 
@@ -780,13 +781,13 @@ public class HomeFragment extends Fragment {
             URL url = null;
             URLConnection urlConnection = null;
             try {
-                for (int i = 0; i < SupportedCurrencies.size(); i++) {
+                for (int i = 0; i < SupportedCurrencies.size(); i++) {//iterate thourgh all the currencies
                     if (SupportedCurrencies.get(i).getCurrencyName().equals("Tether")) {
-                        cryptoPrices.put("USDT", 1.0);
+                        cryptoPrices.put("USDT", 1.0);//if the currency is USDT then load just 1 because our api compares crypto to usdt in order to give a price
                         continue;
                     }
                     try {
-                        url = new URL(CONSTANTS.getUrlFor(SupportedCurrencies.get(i).getCurrencySymbol()));
+                        url = new URL(CONSTANTS.getUrlFor(SupportedCurrencies.get(i).getCurrencySymbol()));//for each currency get its required info through a call to the api
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
                     }
@@ -801,6 +802,7 @@ public class HomeFragment extends Fragment {
                     try {
                         JSONObject json = new JSONObject(result.toString());
                         cryptoPrices.put(SupportedCurrencies.get(i).getCurrencySymbol(), json.getDouble("price"));
+                        //put the prices in the map(will be used in other fragments or activities too)
                     } catch (JSONException e1) {
                         Log.v("JSonError", Arrays.toString(e1.getStackTrace()));
                         e1.printStackTrace();
@@ -809,7 +811,6 @@ public class HomeFragment extends Fragment {
                 return null;
 
             } catch (IOException e) {
-                Log.d("CONNECTPHP4", "error in connection4");
             }
             return null;
         }
@@ -817,7 +818,7 @@ public class HomeFragment extends Fragment {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            new LoadWallets().execute();
+            new LoadWallets().execute();    //when finishing loading the prices we need now to load the wallets and the crypto currency cards
             new loadCryptoPercentage().execute();
         }
     }
@@ -874,7 +875,7 @@ public class HomeFragment extends Fragment {
         } catch (JSONException e) {
             return;
         }
-        for (final CurrencyType cur : currencyTypes) {
+        for (final CurrencyType cur : currencyTypes) {//for each currency
             final View cardView = getLayoutInflater().inflate(R.layout.crypto_card, null, false);
             TextView CryptoName = cardView.findViewById(R.id.crypto_name);
             TextView CryptoSymbol = cardView.findViewById(R.id.crypto_symbol);
@@ -893,15 +894,16 @@ public class HomeFragment extends Fragment {
                     startActivity(intent);
                 }
             });
+            //put the crypto logo
             CryptoLogo.setImageBitmap(cur.getImage());
             Double curr_perc_1hr_double = 0.0;
             Double curr_perc_1day_double = 0.0;
             Double curr_perc_1week_double = 0.0;
-            for (int i = 0; i < jsonArray.length(); i++) {
+            for (int i = 0; i < jsonArray.length(); i++) {//loop to find the required currency in the array
                 try {
                     if (jsonArray.getJSONObject(i).getString("symbol").equals(cur.getCurrencySymbol())) {
                         JSONObject usd_object = jsonArray.getJSONObject(i).getJSONObject("quote").getJSONObject("USD");
-                        curr_perc_1hr_double = usd_object.getDouble("percent_change_1h");
+                        curr_perc_1hr_double = usd_object.getDouble("percent_change_1h");//get the percentage in 1h, 1week and 1 month
                         curr_perc_1day_double = usd_object.getDouble("percent_change_24h");
                         curr_perc_1week_double = usd_object.getDouble("percent_change_7d");
                         break;
@@ -910,6 +912,7 @@ public class HomeFragment extends Fragment {
 
                 }
             }
+            //round the percentage to 2 nums after the point
             curr_perc_1hr_double = ((double) Math.round(curr_perc_1hr_double * 100)) / 100.0;
             curr_perc_1day_double = ((double) Math.round(curr_perc_1day_double * 100)) / 100.0;
             curr_perc_1week_double = ((double) Math.round(curr_perc_1week_double * 100)) / 100.0;
@@ -926,6 +929,7 @@ public class HomeFragment extends Fragment {
             ImageView CryptoOneHourLogo = cardView.findViewById(R.id.crypto_perc_logo_1hour);
             ImageView CryptoOneDayLogo = cardView.findViewById(R.id.crypto_perc_logo_1day);
             ImageView CryptoOneWeekLogo = cardView.findViewById(R.id.crypto_perc_logo_1week);
+            //if the % was down we change the logo to red arrow instead of green
             if (curr_perc_1hr_double >= 0) {
                 CryptoOneHour.setTextColor(Color.GREEN);
                 CryptoOneHourLogo.setImageResource(R.drawable.increase);
@@ -957,7 +961,7 @@ public class HomeFragment extends Fragment {
             cryptoCardsLayout.addView(cardView);
         }
         final View cardViewEmpty = getLayoutInflater().inflate(R.layout.empty_card, null, false);
-        cryptoCardsLayout.addView(cardViewEmpty);
+        cryptoCardsLayout.addView(cardViewEmpty);//add an empty card(was causing bugs that we couldnt scroll down so we decided to put empty one in the end)
         dialog.dismiss();
     }
 
