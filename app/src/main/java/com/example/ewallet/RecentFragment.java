@@ -71,15 +71,16 @@ public class RecentFragment extends Fragment {
     private TreeSet<TransactionModel> Alltransactions = new TreeSet<>(new Comparator<TransactionModel>() {
         @Override
         public int compare(TransactionModel o1, TransactionModel o2) {
-            if(o2.getDate().compareTo(o1.getDate())==0){
-                return Double.compare(o2.getAmount_us(),o1.getAmount_us());
-            }else
+            if (o2.getDate().compareTo(o1.getDate()) == 0) {
+                return Double.compare(o2.getAmount_us(), o1.getAmount_us());
+            } else
                 return o2.getDate().compareTo(o1.getDate());
         }
     });
     private LinearLayout transactionsView;
     private Spinner choice_spinner;
-    private String []sortby={"Date","Amount"};
+    private String[] sortby = {"Date", "Amount"};
+
     public RecentFragment() {
         // Required empty public constructor
     }
@@ -119,8 +120,8 @@ public class RecentFragment extends Fragment {
         Date c = Calendar.getInstance().getTime();
 
         transactionsView = v.findViewById(R.id.transactions_layout);
-        choice_spinner=v.findViewById(R.id.sort_spinner);
-        ArrayAdapter<String> arrayAdapter=new ArrayAdapter<>(getContext(),android.R.layout.simple_list_item_1,sortby);
+        choice_spinner = v.findViewById(R.id.sort_spinner);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, sortby);
         choice_spinner.setAdapter(arrayAdapter);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         choice_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -129,25 +130,25 @@ public class RecentFragment extends Fragment {
                 ((TextView) parent.getChildAt(0)).setTextColor(Color.WHITE);
                 ((TextView) parent.getChildAt(0)).setTextSize(18);
                 transactionsView.removeAllViews();
-                if(position==0){//pos 0 is for the date
+                if (position == 0) {//pos 0 is for the date
                     //create comparator for the treeset depending on the osrting method chosen
-                    Alltransactions=new TreeSet<>(new Comparator<TransactionModel>() {
+                    Alltransactions = new TreeSet<>(new Comparator<TransactionModel>() {
                         @Override
                         public int compare(TransactionModel o1, TransactionModel o2) {
-                            if(o2.getDate().compareTo(o1.getDate())==0){
-                                return (int)(o2.getAmount_us()-o1.getAmount_us());
-                            }else
+                            if (o2.getDate().compareTo(o1.getDate()) == 0) {
+                                return (int) (o2.getAmount_us() - o1.getAmount_us());
+                            } else
                                 return o2.getDate().compareTo(o1.getDate());
                         }
                     });
 
-                }else{//pos 1 is for the amount
-                    Alltransactions=new TreeSet<>(new Comparator<TransactionModel>() {
+                } else {//pos 1 is for the amount
+                    Alltransactions = new TreeSet<>(new Comparator<TransactionModel>() {
                         @Override
                         public int compare(TransactionModel o1, TransactionModel o2) {
-                            if(Double.compare(o2.getAmount_us(),o1.getAmount_us())==0){
+                            if (Double.compare(o2.getAmount_us(), o1.getAmount_us()) == 0) {
                                 return o2.getDate().compareTo(o1.getDate());
-                            }else return Double.compare(o2.getAmount_us(),o1.getAmount_us());
+                            } else return Double.compare(o2.getAmount_us(), o1.getAmount_us());
 
                         }
                     });
@@ -163,6 +164,7 @@ public class RecentFragment extends Fragment {
         loadTransactions();
         return v;
     }
+
     //function to load the transactions in cards
     public void loadTransactions() {
         try {
@@ -212,6 +214,7 @@ public class RecentFragment extends Fragment {
             Log.v("ExceptionLoad", Arrays.toString(e.getStackTrace()));
         }
     }
+
     //load the transactions from the DB
     private class GetRecents extends AsyncTask<String, String, String> {
         ProgressDialog pdLoading = new ProgressDialog(getActivity());
@@ -289,37 +292,43 @@ public class RecentFragment extends Fragment {
                         Alltransactions.clear();
                         JSONObject jsonResponse = new JSONObject(result.toString());
                         JSONObject jsonSent = jsonResponse.getJSONObject("send");
-                        JSONArray jsonSentTransactions = jsonSent.getJSONArray("transactions");
-                        for (int i = 0; i < jsonSentTransactions.length(); i++) {//we get the sent transactions
-                            JSONObject sentTransac = jsonSentTransactions.getJSONObject(i);
-                            TransactionModel model = new TransactionModel();
-                            model.setWallet_addr_sender(sentTransac.getString("wallet_address_sender"));//set the address of sender and receiver
-                            model.setWallet_addr_receiver(sentTransac.getString("wallet_address_receiver"));
-                            model.setAmount_crypto(new BigDecimal(sentTransac.getDouble("amount_crypto")));
-                            model.setAmount_us(sentTransac.getDouble("amount_us"));
-                            Log.v("dateJSon", sentTransac.getString("date"));
-                            Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(sentTransac.getString("date"));
-                            model.setDate(date);
-                            model.setType_symbol(sentTransac.getString("type_symbol"));
-                            TransactionModel.typeTransaction typeTransaction = TransactionModel.typeTransaction.SEND;
-                            model.setType(typeTransaction);
-                            Alltransactions.add(model);
+                        String errorSend = jsonSent.getString("error_type");
+                        if (errorSend.equalsIgnoreCase("found")) {
+                            JSONArray jsonSentTransactions = jsonSent.getJSONArray("transactions");
+                            for (int i = 0; i < jsonSentTransactions.length(); i++) {//we get the sent transactions
+                                JSONObject sentTransac = jsonSentTransactions.getJSONObject(i);
+                                TransactionModel model = new TransactionModel();
+                                model.setWallet_addr_sender(sentTransac.getString("wallet_address_sender"));//set the address of sender and receiver
+                                model.setWallet_addr_receiver(sentTransac.getString("wallet_address_receiver"));
+                                model.setAmount_crypto(new BigDecimal(sentTransac.getDouble("amount_crypto")));
+                                model.setAmount_us(sentTransac.getDouble("amount_us"));
+                                Log.v("dateJSon", sentTransac.getString("date"));
+                                Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(sentTransac.getString("date"));
+                                model.setDate(date);
+                                model.setType_symbol(sentTransac.getString("type_symbol"));
+                                TransactionModel.typeTransaction typeTransaction = TransactionModel.typeTransaction.SEND;
+                                model.setType(typeTransaction);
+                                Alltransactions.add(model);
+                            }
                         }
                         JSONObject jsonReceive = jsonResponse.getJSONObject("receive");
-                        JSONArray jsonReceiveTransactions = jsonReceive.getJSONArray("transactions");
-                        for (int i = 0; i < jsonReceiveTransactions.length(); i++) {//we get the received transactions
-                            JSONObject sentTransac = jsonReceiveTransactions.getJSONObject(i);
-                            TransactionModel model = new TransactionModel();//save each transaction in an object
-                            model.setWallet_addr_sender(sentTransac.getString("wallet_address_sender"));
-                            model.setWallet_addr_receiver(sentTransac.getString("wallet_address_receiver"));
-                            model.setAmount_crypto(new BigDecimal(sentTransac.getDouble("amount_crypto")));
-                            model.setAmount_us(sentTransac.getDouble("amount_us"));
-                            Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(sentTransac.getString("date"));//format the date
-                            model.setDate(date);
-                            model.setType_symbol(sentTransac.getString("type_symbol"));
-                            TransactionModel.typeTransaction typeTransaction = TransactionModel.typeTransaction.RECEIVE;
-                            model.setType(typeTransaction);
-                            Alltransactions.add(model);//we add each transaction object to the list
+                        String errorReceive=jsonReceive.getString("error_type");
+                        if(errorReceive.equalsIgnoreCase("found")) {
+                            JSONArray jsonReceiveTransactions = jsonReceive.getJSONArray("transactions");
+                            for (int i = 0; i < jsonReceiveTransactions.length(); i++) {//we get the received transactions
+                                JSONObject sentTransac = jsonReceiveTransactions.getJSONObject(i);
+                                TransactionModel model = new TransactionModel();//save each transaction in an object
+                                model.setWallet_addr_sender(sentTransac.getString("wallet_address_sender"));
+                                model.setWallet_addr_receiver(sentTransac.getString("wallet_address_receiver"));
+                                model.setAmount_crypto(new BigDecimal(sentTransac.getDouble("amount_crypto")));
+                                model.setAmount_us(sentTransac.getDouble("amount_us"));
+                                Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(sentTransac.getString("date"));//format the date
+                                model.setDate(date);
+                                model.setType_symbol(sentTransac.getString("type_symbol"));
+                                TransactionModel.typeTransaction typeTransaction = TransactionModel.typeTransaction.RECEIVE;
+                                model.setType(typeTransaction);
+                                Alltransactions.add(model);//we add each transaction object to the list
+                            }
                         }
                     } catch (JSONException j1) {
                     } catch (ParseException e) {
