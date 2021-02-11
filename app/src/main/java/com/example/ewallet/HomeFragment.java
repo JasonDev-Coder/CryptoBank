@@ -542,8 +542,6 @@ public class HomeFragment extends Fragment {
                 }
 
             } catch (JSONException e1) {
-                Log.v("JSonError", Arrays.toString(e1.getStackTrace()));
-                e1.printStackTrace();
             }
         }
 

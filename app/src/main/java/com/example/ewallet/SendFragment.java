@@ -19,6 +19,7 @@ import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -168,7 +169,7 @@ public class SendFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (!cryptoInput.isFocused())//if we are writing in usd amount we convert it to crypto
+                if (!cryptoInput.isFocused() && usdInput.isFocused())//if we are writing in usd amount we convert it to crypto
                     Convert(false);
             }
 
