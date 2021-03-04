@@ -19,15 +19,15 @@ public class CONSTANTS {
     }
     private final static String HIST_DATA_LINK="https://api.cryptowat.ch/markets/kraken/cryp_symbolusd/trades?limit=30";
     //PHP scripts links
-    final static String WALLET_TYPES_URL="http://10.0.2.2/cryptoBank/public/Wallet_TypeController/getSupportedWallets";
-    final static String ADD_WALLET_URL="http://10.0.2.2/cryptoBank/public/WalletController/addWallet";
-    final static String LOAD_WALLETS_URL="http://10.0.2.2/cryptoBank/public/WalletController/getWallets";
-    final static String DELETE_WALLET_URL="http://10.0.2.2/cryptoBank/public/WalletController/DeleteWallet";
-    final static String SEND_MONEY_URL="http://10.0.2.2/cryptoBank/public/WalletController/sendMoney";
-    final static String GET_WALLET_ADDRESS_URL="http://10.0.2.2/cryptoBank/public/WalletController/getWalletAddress";
-    final static String LOG_IN_URL="http://10.0.2.2/cryptoBank/public/UserController/LogIn";
-    final static String SIGN_UP_URL="http://10.0.2.2/cryptoBank/public/UserController/createUser";
-    final static String LOG_OUT_URL="http://10.0.2.2/cryptoBank/public/UserController/logOut";
-    final static String TRANSACTIONS_URL="http://10.0.2.2/cryptoBank/public/TransactionController/getTransactions";
-    final static String MESSAGE_URL="http://10.0.2.2/cryptoBank/public/MessageController/sendMessage";
+    final static String WALLET_TYPES_URL="http://10.0.2.2/CryptoBank/scripts/public/Wallet_TypeController/getSupportedWallets";
+    final static String ADD_WALLET_URL="http://10.0.2.2/CryptoBank/scripts/public/WalletController/addWallet";
+    final static String LOAD_WALLETS_URL="http://10.0.2.2/CryptoBank/scripts/public/WalletController/getWallets";
+    final static String DELETE_WALLET_URL="http://10.0.2.2/CryptoBank/scripts/public/WalletController/DeleteWallet";
+    final static String SEND_MONEY_URL="http://10.0.2.2/CryptoBank/scripts/public/WalletController/sendMoney";
+    final static String GET_WALLET_ADDRESS_URL="http://10.0.2.2/CryptoBank/scripts/public/WalletController/getWalletAddress";
+    final static String LOG_IN_URL="http://10.0.2.2/CryptoBank/scripts/public/UserController/LogIn";
+    final static String SIGN_UP_URL="http://10.0.2.2/CryptoBank/scripts/public/UserController/createUser";
+    final static String LOG_OUT_URL="http://10.0.2.2/CryptoBank/scripts/public/UserController/logOut";
+    final static String TRANSACTIONS_URL="http://10.0.2.2/CryptoBank/scripts/public/TransactionController/getTransactions";
+    final static String MESSAGE_URL="http://10.0.2.2/CryptoBank/scripts/public/MessageController/sendMessage";
 }
